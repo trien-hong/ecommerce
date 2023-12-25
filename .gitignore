@@ -1,0 +1,6 @@
+.env
+*.pyc
+*.pyo
+media
+pages/migrations/*
+!pages/migrations/__init__.py

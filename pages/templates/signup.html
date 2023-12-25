@@ -1,0 +1,99 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>E-commerce | Signup</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}"/>
+    <script type="text/javascript" src="{% static 'bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'jquery/jquery.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'signup.css' %}"/>
+  </head>
+  <body>
+    <div class="container px-0">
+      <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand">E-commerce</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'login_view' %}" title="Login page">Login</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{% url 'signup_view' %}" title="Signup page"><u>Signup</u></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'reset_password_view' %}" title="Reset password page">Reset password</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <div class="content py-4">
+        <div class="signup_form px-3 py-3">
+          <h2 class="py-0 my-0">SIGNUP</h2>
+          <hr>
+          <form action="{% url 'signup_view' %}" method="POST">
+            {% csrf_token %}
+            <table>
+              {{signup_form}}
+            </table>
+            <div class="signup_button pt-3">
+              <input class="btn btn-primary" type="submit" value="SIGNUP" title="Signup">
+            </div>
+          </form>
+          <div class="footer">
+            <hr>
+            <a class="nav-link" href="{% url 'login_view' %}" title="Login page">Already have an account?<b><u class="ps-2">Login here</u></b></a>
+            <hr>
+            <a class="nav-link" href="{% url 'reset_password_view' %}" title="Reset password page">Forgot your password?<b><u class="ps-2">Reset here</u></b></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% if messages %}
+      {% for message in messages %}
+        <div class="modal" id="modal" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              {% if message.tags == 'error' %}
+                <div class="modal-header text-danger">
+                  <h4 class="modal-title"><b><u>ERROR</u></b></h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="CLOSE" title="CLOSE ALERT"></button>
+                </div>
+                <div class="modal-body">
+                  <ul>
+                    {{message}}
+                  </ul>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" title="CLOSE ALERT">CLOSE</button>
+                </div>
+              {% endif %}
+              {% if message.tags == 'success' %}
+                <div class="modal-header text-success">
+                  <h4 class="modal-title"><b><u>SUCCESS</u></b></h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="CLOSE" title="CLOSE ALERT"></button>
+                </div>
+                <div class="modal-body">
+                  <p class="py-0 my-0">{{message}}</p>
+                </div>
+                <div class="modal-footer">
+                  <a type="button" class="btn btn-primary" title="LOGIN" href="{% url 'login_view' %}">LOGIN</a>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" title="CLOSE ALERT">CLOSE</button>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+      <script type="text/javascript">
+        $(document).ready(function(){
+            $("#modal").modal('show');
+        });
+      </script>
+    {% endif %}
+  </body>
+</html>

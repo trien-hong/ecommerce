@@ -1,0 +1,9 @@
+/* I'll eventually try to combine all CSS into one file */
+
+body {
+    background-color: darkgray;
+}
+
+.container {
+    background-color: lightgray;
+}

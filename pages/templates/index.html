@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>E-commerce | Homepage</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}"/>
+    <script type="text/javascript" src="{% static 'bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'jquery/jquery.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'index.css' %}"/>
+  </head>
+  <body>
+    <div class="container min-vh-100 px-0">
+      <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand">E-commerce</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{% url 'index_view' %}" title="Homepage"><u>Home</u></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'add_product_view' %}" title="Add product">Add product</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout_user' %}" title="Logout user">Logout</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <div>
+        {% if products %}
+          {% for product in products %}
+            <p>{{product.title}}</p>
+            <p>{{product.picture}}</p>
+            <img src="{{product.picture.url}}">
+            <p>{{product.category}}</p>
+            <p>{{product.description}}</p>
+            <p>{{product.list_date}}</p>
+            <p>{{product.lister}}</p>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,50 @@
+/* I'll eventually try to combine all CSS into one file */
+
+body {
+    background-color: darkgray;
+}
+
+ul {
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
+
+li::marker {
+    color: #EA868F;
+}
+
+.container {
+    background-color: lightgray;
+}
+
+.content {
+    display: flex;
+    justify-content: center;
+}
+
+.add_product_form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #EEEEEE;
+    border: 2px solid black;
+    width: 700px;
+}
+
+.add_product_form th {
+    width: 15%;
+}
+
+.add_product_form form, .add_product_form table, .add_product_form tbody, .add_product_form tr, .add_product_form textarea {
+    width: 100%;
+}
+
+.add_product_form hr {
+    width: 100%;
+}
+
+.add_product_button {
+    display: flex;
+    justify-content: center;
+}
