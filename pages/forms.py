@@ -50,13 +50,20 @@ class AddProduct(forms.Form):
         ("living room", "living room"),
         ("garage", "garage"),
         ("bathroom", "bathroom"),
-        ("bedroom", "bedroom")
+        ("bedroom", "bedroom"),
+        ("office", "office"),
+        ("outdoor", "outdoor"),
+        ("toys", "toys"),
+        ("games", "games"),
+        ("clothing", "clothing"),
+        ("electronics", "electronics"),
+        ("mechanical parts", "mechanical parts")
     ]
 
     title = forms.CharField(max_length=25, widget=forms.TextInput(attrs={'placeholder': 'Enter the product title', 'size': '30'}))
     picture = forms.ImageField()
-    category = forms.TypedChoiceField(choices=CHOICES_CATEGORY)
     description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"rows": "6"}))
+    category = forms.TypedChoiceField(choices=CHOICES_CATEGORY)
 
     # i can't seem to validate the picture within the form. i'll try again later.
     # def clean_picture(self):

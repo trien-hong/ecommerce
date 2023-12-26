@@ -91,7 +91,7 @@ def add_product_view(request):
         else:
             ext = picture.name.split(".")[-1]
             picture.name = "product_picture_id_" + str(uuid.uuid4())[:13] + "." + ext
-            product = Products(title=product_info['title'], picture=picture, category=product_info['category'], description=product_info['description'], lister=user)
+            product = Products(title=product_info['title'], picture=picture, description=product_info['description'], category=product_info['category'], lister=user)
             product.save()
             messages.add_message(request, messages.SUCCESS, "Your product has been successfully added. Image less than/greater than 325x325 have been upsized/downsized and cropped to the middle and center.")
             return redirect(add_product_view)

@@ -31,17 +31,24 @@
           </div>
         </div>
       </nav>
-      <div>
+      <div class="content py-2 px-2">
         {% if products %}
-          {% for product in products %}
-            <p>{{product.title}}</p>
-            <p>{{product.picture}}</p>
-            <img src="{{product.picture.url}}">
-            <p>{{product.category}}</p>
-            <p>{{product.description}}</p>
-            <p>{{product.list_date}}</p>
-            <p>{{product.lister}}</p>
-          {% endfor %}
+          <div class="products">
+            {% for product in products %}
+              <div class="product py-2 px-3 my-2 mx-2" id="id_{{product.id}}">
+                <h5><b>{{product.title}}</b></h5>
+                <img src="{{product.picture.url}}">
+                <p>{{product.description}}</p>
+                <p>Category: {{product.category}}</p>
+                <p>List Date: {{product.list_date}}</p>
+                <p>Lister: {{product.lister}}</p>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="no_products py-3 my-2">
+            <h1>There are currently no products to show.<br><br>Why not be the first? <a href="{% url 'add_product_view' %}" title="Add product">Add product</a></h1>
+          </div>
         {% endif %}
       </div>
     </div>
