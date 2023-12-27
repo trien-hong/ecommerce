@@ -1,4 +1,5 @@
 import uuid
+from django.http import HttpResponseRedirect
 from django.views.decorators.cache import never_cache
 from django.utils.safestring import mark_safe
 from django.shortcuts import render, redirect
@@ -8,7 +9,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from . import forms
-from . models import Products
+from . models import Product
+from . models import Cart
 # Create your views here.
 
 @never_cache
@@ -71,7 +73,7 @@ def reset_password_view(request):
 @login_required
 def index_view(request):
     if request.method == "GET":
-        products = Products.objects.all()
+        products = Product.objects.all()
         return render(request, 'index.html', { 'products': products })
 
 @never_cache
@@ -79,8 +81,8 @@ def index_view(request):
 def product_view(request, id):
     if request.method == "GET":
         try:
-            product = Products.objects.get(id=id)
-        except Products.DoesNotExist:
+            product = Product.objects.get(id=id)
+        except Product.DoesNotExist:
             product = None
         return render(request, 'product.html', { 'product': product })
 
@@ -95,16 +97,49 @@ def add_product_view(request):
         picture = request.FILES['picture']
         user = User.objects.get(id=request.user.id)
         # i can't seem to validate the picture within the form. i'll try again later.
-        if picture.size > 5 * 1024 * 1024:
+        if picture.size > 5*1024*1024:
             messages.add_message(request, messages.ERROR, mark_safe("<li>Image is greater than 5MB. Please upload an image that is less than 5MB.</li>"))
             return redirect(add_product_view)
         else:
             ext = picture.name.split(".")[-1]
             picture.name = "product_picture_id_" + str(uuid.uuid4())[:13] + "." + ext
-            product = Products(title=product_info['title'], picture=picture, description=product_info['description'], category=product_info['category'], lister=user)
+            product = Product(title=product_info['title'], picture=picture, description=product_info['description'], category=product_info['category'], lister=user)
             product.save()
             messages.add_message(request, messages.SUCCESS, "Your product has been successfully added. Image less than/greater than 500x500 have been upsized/downsized and cropped to the middle and center.")
             return redirect(add_product_view)
+
+@never_cache
+@login_required
+def add_to_cart_view(request, id):
+    if request.method == "POST":
+        try:
+            product = Product.objects.get(id=id)
+            user = User.objects.get(id=request.user.id)
+            if product.lister == user:
+                messages.add_message(request, messages.ERROR, mark_safe("<li>You cannot add your own product to the cart.</li>"))
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            elif Cart.objects.filter(product_id=id, user_id=request.user.id).exists():
+                messages.add_message(request, messages.ERROR, mark_safe("<li>Product already exist in your cart.</li>"))
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            else:
+                cart = Cart(product=product, user=user)
+                cart.save()
+                messages.add_message(request, messages.SUCCESS, "You've successfully added \"" + product.title + "\" product to your cart.")
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        except Product.DoesNotExist:
+            product = None
+            messages.add_message(request, messages.ERROR, mark_safe("<li>There seems to be an error in adding this item to your cart. It's possible someone already bought the item.</li>"))
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+@never_cache
+@login_required
+def cart_view(request):
+    if request.method == "GET":
+        try:
+            cart = Cart.objects.filter(user_id=request.user.id)
+        except Cart.DoesNotExist:
+            cart = None
+        return render(request, 'cart.html', { 'cart': cart })
 
 @never_cache
 @login_required

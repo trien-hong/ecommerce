@@ -4,6 +4,10 @@ body {
     background-color: darkgray;
 }
 
+li::marker {
+    color: #EA868F;
+}
+
 .container {
     background-color: lightgray;
 }

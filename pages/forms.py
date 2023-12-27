@@ -1,5 +1,5 @@
 from django import forms
-from django.core.files.images import get_image_dimensions
+# from django.core.files.images import get_image_dimensions
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -44,7 +44,7 @@ class RestPassword(forms.Form):
         return confirm_password
 
 class AddProduct(forms.Form):
-    # i'll add in more category later
+    # i'll add in more categories and possible more fields later
     CHOICES_CATEGORY = [
         ("kitchen", "kitchen"),
         ("living room", "living room"),

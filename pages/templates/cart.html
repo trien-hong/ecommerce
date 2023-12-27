@@ -2,11 +2,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>E-commerce | Homepage</title>
+    <title>E-commerce | Cart</title>
     <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}"/>
     <script type="text/javascript" src="{% static 'bootstrap/bootstrap.bundle.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'jquery/jquery.min.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'index.css' %}"/>
+    <link rel="stylesheet" href="{% static 'cart.css' %}"/>
   </head>
   <body>
     <div class="container min-vh-100 px-0">
@@ -19,13 +19,13 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="{% url 'index_view' %}" title="Homepage"><u>Home</u></a>
+                <a class="nav-link" href="{% url 'index_view' %}" title="Homepage">Home</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'add_product_view' %}" title="Add product">Add product</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'cart_view' %}" title="View cart">Cart</a>
+                <a class="nav-link active" aria-current="page" href="{% url 'cart_view' %}" title="View cart"><u>Cart</u></a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'logout_user' %}" title="Logout user">Logout</a>
@@ -34,27 +34,27 @@
           </div>
         </div>
       </nav>
-      <div class="content mx-2 py-2">
-        {% if products %}
-          <div class="products">
-            {% for product in products %}
-              <div class="product text-break px-3 mx-2 my-2" id="id_{{product.id}}">
-                <h4 class="product_title py-1 pt-2"><b>{{product.title}}</b></h4>
-                <a class="product_image py-1" href="{% url 'product_view' id=product.id %}" title="Click to view more details of this product"><img src="{{product.picture.url}}" alt="product picture" style="width: 100%;"></a>
-                <p class="product_description py-1"><b>{{product.description}}</b></p>
-                <p class="product_category pt-1"><b>Category: {{product.category}}</b></p>
-                <form class="pb-3" action="{% url 'add_to_cart_view' id=product.id %}" method="POST">
-                  {% csrf_token %}
-                  <div class="add_to_cart_button pt-3">
-                    <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart">
+      <div class="content py-1">
+        {% if cart %}
+          <div class="cart">
+            <div class="items mx-4">
+              {% for item in cart %}
+                <div class="item my-4" id="id_{{item.product.id}}">
+                  <div class="item_number px-3">
+                    <h4>{{forloop.counter}}.)</h4>
                   </div>
-                </form>
-              </div>
-            {% endfor %}
+                  <div class="item_details pt-2">
+                    <h4 class="item_title pb-2 text-break">{{item.product.title}}</h4>
+                    <a class="item_image" href="{% url 'product_view' id=item.product.id %}" title="Click to view more details of this product"><img src="{{item.product.picture.url}}" alt="product picture" width="150" height="150"></a>
+                    <p class="pt-2"><b>Sold by: {{item.product.lister}}</b></p>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
           </div>
         {% else %}
-          <div class="no_products py-3 my-5">
-            <h1>There are currently no products to show.<br><br>Why not be the first? <a href="{% url 'add_product_view' %}" title="Add product">Add product</a></h1>
+          <div class="empty_cart py-3 my-5">
+            <h1>Your cart seems to be empty.<br><br>Why not try adding some items to your cart from the homepage first? <a href="{% url 'index_view' %}" title="Homepage">Homepage</a></h1>
           </div>
         {% endif %}
       </div>
