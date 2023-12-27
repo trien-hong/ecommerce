@@ -2,11 +2,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>E-commerce | Homepage</title>
+    <title>E-commerce | {% if product %}Product - {{product.title}}{% else %}Product not found{% endif %}</title>
     <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}"/>
     <script type="text/javascript" src="{% static 'bootstrap/bootstrap.bundle.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'jquery/jquery.min.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'index.css' %}"/>
+    <link rel="stylesheet" href="{% static 'product.css' %}"/>
   </head>
   <body>
     <div class="container min-vh-100 px-0">
@@ -19,7 +19,7 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="{% url 'index_view' %}" title="Homepage"><u>Home</u></a>
+                <a class="nav-link" href="{% url 'index_view' %}" title="Homepage">Home</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'add_product_view' %}" title="Add product">Add product</a>
@@ -31,21 +31,23 @@
           </div>
         </div>
       </nav>
-      <div class="content mx-2 my-2">
-        {% if products %}
-          <div class="products">
-            {% for product in products %}
-              <div class="product text-break px-3 mx-2 my-2" id="id_{{product.id}}">
-                <h4 class="product_title py-1"><b>{{product.title}}</b></h4>
-                <a class="product_image py-1" href="{% url 'product_view' id=product.id %}" title="Click to view more details of this product"><img src="{{product.picture.url}}" alt="product picture" style="width: 100%;"></a>
-                <p class="product_description py-1"><b>{{product.description}}</b></p>
-                <p class="product_category py-1 pb-2"><b>Category: {{product.category}}</b></p>
-              </div>
-            {% endfor %}
+      <div class="content">
+        {% if product %}
+          <div class="product text-break my-3 mx-3" id="id_{{product.id}}">
+            <div class="product_main_identifiers mx-4">
+              <h2 class="product_title py-3"><b>{{product.title}}</b></h2>
+              <img class="product_image pb-4" src="{{product.picture.url}}" alt="product picture">
+            </div>
+            <div class="product_sub_identifiers text-wrap">
+              <h3 class="product_description pb-5">{{product.description}}</h3>
+              <h3 class="product_category py-1">Category: {{product.category}}</h3>
+              <h3 class="product_list_date py-1">List Date: {{product.list_date}}</h3>
+              <h3 class="product_lister py-1">Lister: {{product.lister}}</h3>
+            </div>
           </div>
         {% else %}
-          <div class="no_products py-3 my-2">
-            <h1>There are currently no products to show.<br><br>Why not be the first? <a href="{% url 'add_product_view' %}" title="Add product">Add product</a></h1>
+          <div class="no_product py-3 my-2">
+            <h1>The ID of this product does not match a record on our database.<br><br>Please ensure the ID is correct.</h1>
           </div>
         {% endif %}
       </div>

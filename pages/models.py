@@ -22,7 +22,7 @@ class Products(models.Model):
     ]
 
     title = models.CharField(max_length=25)
-    picture = ResizedImageField(size=[325, 325], crop=['middle', 'center'], quality=100, upload_to="product_picture", null=False, blank=False)
+    picture = ResizedImageField(size=[500, 500], crop=['middle', 'center'], quality=100, upload_to="product_picture", null=False, blank=False)
     description = models.CharField(max_length=500)
     category = models.CharField(choices=CHOICES_CATEGORY)
     list_date = models.DateTimeField(auto_now=True)

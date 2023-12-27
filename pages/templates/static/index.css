@@ -20,7 +20,11 @@ body {
     flex-direction: column;
     background-color: wheat;
     border: 2px solid black;
-    border-radius: 15px;
+}
+
+.product_title, .product_image, .product_description, .product_category {
+    padding: 0px;
+    margin: 0px;
 }
 
 .no_products {

@@ -1,0 +1,47 @@
+/* I'll eventually try to combine all CSS into one file */
+
+body {
+    background-color: darkgray;
+}
+
+.container {
+    background-color: lightgray;
+}
+
+.product {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: wheat;
+    border: 2px solid black;
+}
+
+.product_main_identifiers {
+    text-align: center;
+    display : flex;
+    flex-direction: column;
+}
+
+.product_sub_identifiers {
+    text-align: center;
+    display : flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items : center;
+    width: 100%;
+}
+
+.product_title, .product_image, .product_description, .product_category, .product_list_date, .product_lister {
+    padding: 0px;
+    margin: 0px;
+}
+
+.no_product {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: wheat;
+    border: 2px solid black;
+    border-radius: 15px;
+    width: 65%
+}

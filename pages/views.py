@@ -76,6 +76,16 @@ def index_view(request):
 
 @never_cache
 @login_required
+def product_view(request, id):
+    if request.method == "GET":
+        try:
+            product = Products.objects.get(id=id)
+        except Products.DoesNotExist:
+            product = None
+        return render(request, 'product.html', { 'product': product })
+
+@never_cache
+@login_required
 def add_product_view(request):
     if request.method == "GET":
         add_product_form = forms.AddProduct()
@@ -85,7 +95,7 @@ def add_product_view(request):
         picture = request.FILES['picture']
         user = User.objects.get(id=request.user.id)
         # i can't seem to validate the picture within the form. i'll try again later.
-        if picture.size > 5*1024*1024:
+        if picture.size > 5 * 1024 * 1024:
             messages.add_message(request, messages.ERROR, mark_safe("<li>Image is greater than 5MB. Please upload an image that is less than 5MB.</li>"))
             return redirect(add_product_view)
         else:
@@ -93,7 +103,7 @@ def add_product_view(request):
             picture.name = "product_picture_id_" + str(uuid.uuid4())[:13] + "." + ext
             product = Products(title=product_info['title'], picture=picture, description=product_info['description'], category=product_info['category'], lister=user)
             product.save()
-            messages.add_message(request, messages.SUCCESS, "Your product has been successfully added. Image less than/greater than 325x325 have been upsized/downsized and cropped to the middle and center.")
+            messages.add_message(request, messages.SUCCESS, "Your product has been successfully added. Image less than/greater than 500x500 have been upsized/downsized and cropped to the middle and center.")
             return redirect(add_product_view)
 
 @never_cache
