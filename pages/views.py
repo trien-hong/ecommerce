@@ -62,7 +62,7 @@ def reset_password_view(request):
             user = User.objects.get(username=form.cleaned_data["username"])
             user.set_password(form.cleaned_data["confirm_password"])
             user.save()
-            messages.add_message(request, messages.SUCCESS, "The password associated with the username has been reset. You can now login.")
+            messages.add_message(request, messages.SUCCESS, "The password associated with the username has been reset. You may now login.")
             return redirect(reset_password_view)
         else:
             error_string = get_form_errors(form)
@@ -105,7 +105,7 @@ def add_product_view(request):
             picture.name = "product_picture_id_" + str(uuid.uuid4())[:13] + "." + ext
             product = Product(title=product_info['title'], picture=picture, description=product_info['description'], category=product_info['category'], lister=user)
             product.save()
-            messages.add_message(request, messages.SUCCESS, "Your product has been successfully added. Image less than/greater than 500x500 have been upsized/downsized and cropped to the middle and center.")
+            messages.add_message(request, messages.SUCCESS, "Your product, \"" + product.title + "\" has been successfully added. Image less than/greater than 500x500 have been upsized/downsized and cropped to the middle and center.")
             return redirect(add_product_view)
 
 @never_cache
@@ -119,16 +119,28 @@ def add_to_cart_view(request, id):
                 messages.add_message(request, messages.ERROR, mark_safe("<li>You cannot add your own product to the cart.</li>"))
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
             elif Cart.objects.filter(product_id=id, user_id=request.user.id).exists():
-                messages.add_message(request, messages.ERROR, mark_safe("<li>Product already exist in your cart.</li>"))
+                messages.add_message(request, messages.ERROR, mark_safe("<li>This product already exist in your cart.</li>"))
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
             else:
                 cart = Cart(product=product, user=user)
                 cart.save()
-                messages.add_message(request, messages.SUCCESS, "You've successfully added \"" + product.title + "\" product to your cart.")
+                messages.add_message(request, messages.SUCCESS, "You've successfully added, \"" + product.title + "\", to your cart.")
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        except Product.DoesNotExist:
-            product = None
+        except (Product.DoesNotExist, User.DoesNotExist, Cart.DoesNotExist):
             messages.add_message(request, messages.ERROR, mark_safe("<li>There seems to be an error in adding this item to your cart. It's possible someone already bought the item.</li>"))
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+@never_cache
+@login_required
+def remove_from_cart_view(request, id):
+    if request.method == "POST":
+        try:
+            item = Cart.objects.get(id=id)
+            item.delete()
+            messages.add_message(request, messages.SUCCESS, "The item, \"" + item.product.title + "\", has been successfully removed from your cart.")
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        except Cart.DoesNotExist:
+            messages.add_message(request, messages.ERROR, mark_safe("<li>There seems to be an error in remove this item from your cart.</li>"))
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 @never_cache

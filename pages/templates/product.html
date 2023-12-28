@@ -46,12 +46,14 @@
               <h3 class="product_category py-1">Category: {{product.category}}</h3>
               <h3 class="product_list_date py-1">List Date: {{product.list_date}}</h3>
               <h3 class="product_lister py-1">Lister: {{product.lister}}</h3>
-              <form class="pt-3" action="{% url 'add_to_cart_view' id=product.id %}" method="POST">
-                {% csrf_token %}
-                <div class="add_to_cart_button pt-3">
-                  <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart">
-                </div>
-              </form>
+              <div class="add_to_cart_form pt-3">
+                <form action="{% url 'add_to_cart_view' id=product.id %}" method="POST">
+                  {% csrf_token %}
+                  <div class="add_to_cart_button pt-3">
+                    <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart">
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         {% else %}

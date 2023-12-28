@@ -8,21 +8,35 @@ body {
     background-color: lightgray;
 }
 
-.item {
+li::marker {
+    color: #EA868F;
+}
+
+.title {
     display: flex;
-    flex-direction: row;
+    justify-content: center;
+}
+
+.items {
     background-color: wheat;
     border: 2px solid black;
 }
 
-.item_number {
+.item {
     display: flex;
+    justify-content: space-between;
     align-items: center;
 }
 
-.item_details h4 {
+.item h4, .item p {
     padding: 0px;
     margin: 0px;
+}
+
+.item_details {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .empty_cart {
