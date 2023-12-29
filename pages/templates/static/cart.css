@@ -25,7 +25,6 @@ li::marker {
 .item {
     display: flex;
     justify-content: space-between;
-    align-items: center;
 }
 
 .item h4, .item p {
@@ -37,6 +36,23 @@ li::marker {
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+
+.remove_from_cart_form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.already_bought {
+    display: flex;
+    justify-content: center;
+    background-color: #EA868F;
+}
+
+.check_out_form {
+    display: flex;
+    justify-content: center;
 }
 
 .empty_cart {

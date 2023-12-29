@@ -38,20 +38,22 @@
         {% if products %}
           <div class="products">
             {% for product in products %}
-              <div class="product text-break px-3 mx-2 my-2" id="id_{{product.id}}">
-                <h4 class="product_title py-1 pt-2"><b>{{product.title}}</b></h4>
-                <a class="product_image py-1" href="{% url 'product_view' id=product.id %}" title="Click to view more details of this product"><img src="{{product.picture.url}}" alt="product picture" style="width: 100%;"></a>
-                <p class="product_description py-1"><b>{{product.description}}</b></p>
-                <p class="product_category pt-1"><b>Category: {{product.category}}</b></p>
-                <div class="add_to_cart_form py-3">
-                  <form action="{% url 'add_to_cart_view' id=product.id %}" method="POST">
-                    {% csrf_token %}
-                    <div class="add_to_cart_button">
-                      <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart">
-                    </div>
-                  </form>
+              {% if product.bought == False %}
+                <div class="product text-break px-3 mx-2 my-2" id="id_{{product.id}}">
+                  <h4 class="product_title py-1 pt-2"><b>{{product.title}}</b></h4>
+                  <a class="product_image py-1" href="{% url 'product_view' id=product.id %}" title="Click to view more details of this product"><img src="{{product.picture.url}}" alt="product picture" style="width: 100%;"></a>
+                  <p class="product_description py-1"><b>{{product.description}}</b></p>
+                  <p class="product_category pt-1"><b>Category: {{product.category}}</b></p>
+                  <div class="add_to_cart_form py-3">
+                    <form action="{% url 'add_to_cart_view' id=product.id %}" method="POST">
+                      {% csrf_token %}
+                      <div class="add_to_cart_button">
+                        <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart">
+                      </div>
+                    </form>
+                  </div>
                 </div>
-              </div>
+              {% endif %}
             {% endfor %}
           </div>
         {% else %}

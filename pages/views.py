@@ -11,6 +11,7 @@ from django.contrib import messages
 from . import forms
 from . models import Product
 from . models import Cart
+from . models import Sold
 # Create your views here.
 
 @never_cache
@@ -103,7 +104,7 @@ def add_product_view(request):
         else:
             ext = picture.name.split(".")[-1]
             picture.name = "product_picture_id_" + str(uuid.uuid4())[:13] + "." + ext
-            product = Product(title=product_info['title'], picture=picture, description=product_info['description'], category=product_info['category'], lister=user)
+            product = Product(title=product_info['title'], picture=picture, description=product_info['description'], category=product_info['category'], lister=user, bought=False)
             product.save()
             messages.add_message(request, messages.SUCCESS, "Your product, \"" + product.title + "\" has been successfully added. Image less than/greater than 500x500 have been upsized/downsized and cropped to the middle and center.")
             return redirect(add_product_view)
@@ -118,7 +119,7 @@ def add_to_cart_view(request, id):
             if product.lister == user:
                 messages.add_message(request, messages.ERROR, mark_safe("<li>You cannot add your own product to the cart.</li>"))
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-            elif Cart.objects.filter(product_id=id, user_id=request.user.id).exists():
+            elif Cart.objects.filter(product=product, user=user).exists():
                 messages.add_message(request, messages.ERROR, mark_safe("<li>This product already exist in your cart.</li>"))
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
             else:
@@ -148,10 +149,35 @@ def remove_from_cart_view(request, id):
 def cart_view(request):
     if request.method == "GET":
         try:
-            cart = Cart.objects.filter(user_id=request.user.id)
-        except Cart.DoesNotExist:
+            user = User.objects.get(id=request.user.id)
+            cart = Cart.objects.filter(user=user)
+        except (Cart.DoesNotExist, User.DoesNotExist):
             cart = None
         return render(request, 'cart.html', { 'cart': cart })
+
+@never_cache
+@login_required
+def check_out_view(request):
+    if request.method == "POST":
+        already_bought = 0
+        user = User.objects.get(id=request.user.id)
+        cart = Cart.objects.filter(user=user)
+        for item in cart:
+            product = Product.objects.get(id=item.product.id)
+            if product.bought == False:    
+                product.bought = True
+                product.save()
+                sold = Sold(product=product, buyer=user)
+                sold.save()
+                item.delete()
+            else:
+                already_bought = already_bought + 1
+        if already_bought == 0:
+            messages.add_message(request, messages.SUCCESS, "Checkout was successful. All the items in your cart have been bought by you.")
+            return redirect(cart_view)
+        else:
+            messages.add_message(request, messages.SUCCESS, "Checkout was successful. However, some item(s) has been bought by another person and those item(s) are marked by \"SOLD OUT\". There was a total of " + str(already_bought) + " item(s) bought already. Those item(s) will not be purchased.")
+            return redirect(cart_view)
 
 @never_cache
 @login_required

@@ -42,18 +42,23 @@
               {% for item in cart %}
                 <div class="item" id="id_{{item.product.id}}">
                   <div class="item_details">
-                    <div class="px-4">
+                    <div class="px-5">
                       <h4 class="item_number">{{forloop.counter}}.)</h4>
                     </div>
                     <div>
                       <h4 class="item_title py-2 text-break">{{item.product.title}}</h4>
                       <a class="item_image" href="{% url 'product_view' id=item.product.id %}" title="Click to view more details of this product"><img src="{{item.product.picture.url}}" alt="product picture" width="150" height="150"></a>
-                      <p class="item_seller py-2"><b>Sold by: {{item.product.lister}}</b></p>
+                      <p class="item_seller pt-2"><b>Sold by: {{item.product.lister}}</b></p>
                     </div>
                   </div>
-                  <div class="remove_from_cart_form me-4">
+                  <div class="remove_from_cart_form px-5">
                     <form action="{% url 'remove_from_cart_view' id=item.id %}" method="POST">
                       {% csrf_token %}
+                      {% if item.product.bought == True %}
+                        <div class="already_bought mb-2">
+                          <h4><b><u>SOLD OUT</u></b></h4>
+                        </div>
+                      {% endif %}
                       <div class="remove_from_cart_button">
                         <input class="btn btn-primary" type="submit" value="REMOVE ITEM" title="Remove item">
                       </div>
@@ -62,6 +67,14 @@
                 </div>
                 <hr>
               {% endfor %}
+              <div class="check_out_form pb-3">
+                <form action="{% url 'check_out_view' %}" method="POST">
+                  {% csrf_token %}
+                  <div class="check_out_button">
+                    <input class="btn btn-primary btn-lg" type="submit" value="CHECK OUT" title="Check out">
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         {% else %}
