@@ -37,11 +37,11 @@
       <div class="content">
         {% if product %}
           <div class="product text-break my-3 mx-3" id="id_{{product.id}}">
-            <div class="product_main_identifiers mx-4">
+            <div class="product_main_identifiers ms-4 me-2">
               <h2 class="product_title py-3"><b>{{product.title}}</b></h2>
               <img class="product_image pb-4" src="{{product.picture.url}}" alt="product picture">
             </div>
-            <div class="product_sub_identifiers text-wrap">
+            <div class="product_sub_identifiers ms-2 me-4 text-wrap">
               <h3 class="product_description pb-5">{{product.description}}</h3>
               <h3 class="product_category py-1">Category: {{product.category}}</h3>
               <h3 class="product_list_date py-1">List Date: {{product.list_date}}</h3>
@@ -49,9 +49,18 @@
               <div class="add_to_cart_form pt-3">
                 <form action="{% url 'add_to_cart_view' id=product.id %}" method="POST">
                   {% csrf_token %}
-                  <div class="add_to_cart_button pt-3">
-                    <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart">
-                  </div>
+                  {% if product.bought == True %}
+                    <div class="already_bought mb-2">
+                      <h4 title="Sorry, this product is already sold out"><b><u>SOLD OUT</u></b></h4>
+                    </div>
+                    <div class="add_to_cart_button pt-3">
+                      <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Sorry, this product is already sold out" disabled>
+                    </div>
+                  {% else %}
+                    <div class="add_to_cart_button pt-3">
+                      <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart">
+                    </div>
+                  {% endif %}
                 </form>
               </div>
             </div>

@@ -4,6 +4,11 @@ body {
     background-color: darkgray;
 }
 
+ul {
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
+
 li::marker {
     color: #EA868F;
 }
@@ -38,6 +43,10 @@ li::marker {
 .product_title, .product_image, .product_description, .product_category, .product_list_date, .product_lister {
     padding: 0px;
     margin: 0px;
+}
+
+.already_bought {
+    background-color: #EA868F;
 }
 
 .no_product {

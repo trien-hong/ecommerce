@@ -74,7 +74,7 @@ def reset_password_view(request):
 @login_required
 def index_view(request):
     if request.method == "GET":
-        products = Product.objects.all()
+        products = Product.objects.all().exclude(bought=True)
         return render(request, 'index.html', { 'products': products })
 
 @never_cache
@@ -116,11 +116,14 @@ def add_to_cart_view(request, id):
         try:
             product = Product.objects.get(id=id)
             user = User.objects.get(id=request.user.id)
-            if product.lister == user:
+            if product.bought == True:
+                messages.add_message(request, messages.ERROR, mark_safe("<li>Sorry, this product, \"" + product.title + "\" is now sold out.</li>"))
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            elif product.lister == user:
                 messages.add_message(request, messages.ERROR, mark_safe("<li>You cannot add your own product to the cart.</li>"))
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
             elif Cart.objects.filter(product=product, user=user).exists():
-                messages.add_message(request, messages.ERROR, mark_safe("<li>This product already exist in your cart.</li>"))
+                messages.add_message(request, messages.ERROR, mark_safe("<li>This product, \"" + product.title + "\" already exist in your cart.</li>"))
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
             else:
                 cart = Cart(product=product, user=user)
@@ -128,7 +131,7 @@ def add_to_cart_view(request, id):
                 messages.add_message(request, messages.SUCCESS, "You've successfully added, \"" + product.title + "\", to your cart.")
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         except (Product.DoesNotExist, User.DoesNotExist, Cart.DoesNotExist):
-            messages.add_message(request, messages.ERROR, mark_safe("<li>There seems to be an error in adding this item to your cart. It's possible someone already bought the item.</li>"))
+            messages.add_message(request, messages.ERROR, mark_safe("<li>There seems to be an error in adding this product to your cart.</li>"))
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 @never_cache
