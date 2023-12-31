@@ -178,8 +178,27 @@ def check_out_view(request):
         if already_bought == 0:
             messages.add_message(request, messages.SUCCESS, "Checkout was successful. All the items in your cart have been bought by you.")
             return redirect(cart_view)
+        elif already_bought == 1:
+            if (cart.count() == already_bought):
+                messages.add_message(request, messages.ERROR, mark_safe("<li>Checkout was unsuccessful. The item you wanted to buy has been bought by another person.</li>"))
+                return redirect(cart_view)
+            else:
+                messages.add_message(request, messages.SUCCESS, "Checkout was successful. However, there was 1 item that has been bought by another person and that item is now marked by \"SOLD OUT\". That 1 item will not be purchased.")
+                return redirect(cart_view)
         else:
-            messages.add_message(request, messages.SUCCESS, "Checkout was successful. However, some item(s) has been bought by another person and those item(s) are marked by \"SOLD OUT\". There was a total of " + str(already_bought) + " item(s) bought already. Those item(s) will not be purchased.")
+            if (cart.count() == already_bought):
+                messages.add_message(request, messages.ERROR, mark_safe("<li>Checkout was unsuccessful. The item(s) you wanted to buy has been bought by another person.</li>"))
+                return redirect(cart_view)
+            else:
+                messages.add_message(request, messages.SUCCESS, "Checkout was successful. However, some item(s) has been bought by another person and those item(s) are now marked by \"SOLD OUT\". There was a total of " + str(already_bought) + " item(s) bought already. Those item(s) will not be purchased.")
+                return redirect(cart_view)
+        
+@never_cache
+@login_required
+def confirm_message(request, type):
+    if request.method == "GET":
+        if type == "check-out":
+            messages.add_message(request, messages.WARNING, "Are you sure you want to proceed with check out?")
             return redirect(cart_view)
 
 @never_cache

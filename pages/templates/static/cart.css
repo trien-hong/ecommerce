@@ -55,7 +55,7 @@ li::marker {
     background-color: #EA868F;
 }
 
-.check_out_form {
+.check_out_confirm {
     display: flex;
     justify-content: center;
 }
