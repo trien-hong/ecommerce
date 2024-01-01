@@ -211,7 +211,8 @@ def profile_option_view(request, option):
         elif option == 'wish-list':
             return render(request, 'profile.html', { 'user': user, 'option': 'wish-list' })
         elif option == 'listing-history':
-            return render(request, 'profile.html', { 'user': user, 'option': 'listing-history' })
+            listing_history = Product.objects.filter(lister=user)
+            return render(request, 'profile.html', { 'user': user, 'option': 'listing-history', 'listing_history': listing_history})
         elif option == 'purchase-history':
             return render(request, 'profile.html', { 'user': user, 'option': 'purchase-history' })
         elif option == 'delete-account':

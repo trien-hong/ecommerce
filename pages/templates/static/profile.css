@@ -1,3 +1,5 @@
+/* I'll eventually try to combine all CSS into one file */
+
 body {
     background-color: darkgray;
 }
@@ -41,10 +43,30 @@ li::marker {
 .view {
     display: flex;
     justify-content: center;
+    text-align: center;
+    align-items: center;
     width: 80%;
 }
 
-.option_none {
+.listing_history {
+    height: 77vh;
+    overflow-y: auto;
+}
+
+.products {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.product {
+    text-align: center;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    background-color: white;
+    border: 2px solid black;
+}
+
+.bought {
+    background-color: #EA868F;
 }

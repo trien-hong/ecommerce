@@ -41,7 +41,7 @@
         <div class="welcome pb-2">
           <h1>Welcome, {{user.username}}!</h1>
         </div>
-        <div class="options">
+        <div class="options mh-100">
           <div class="profile_buttons px-2 py-2">
             {% if option == 'settings' %}
               <a class="btn btn-success mb-5" href="{% url 'profile_option_view' option='settings' %}" role="button" title="Settings"><u>Settings</u></a>
@@ -74,7 +74,7 @@
             {% endif %}
           </div>
           <div class="vr"></div>
-          <div class="view px-2 py-2">
+          <div class="view">
             <!-- will implement each option one at a time -->
             {% if option == None %}
               <h1 class="option_none">Please choose from 1 of the 5 options.</h1>
@@ -83,7 +83,23 @@
             {% elif option == 'wish-list' %}
               <h3><u>Wish List</u></h3>
             {% elif option == 'listing-history' %}
-              <h3><u>Listing History</u></h3>
+              <div class="listing_history">
+                <div class="products text-break">
+                  {% for product in listing_history %}
+                    <div class="product px-3 mx-2 my-2" id="id_{{product.id}}">
+                      <h4 class="product_title py-1 pt-2"><b>{{product.title}}</b></h4>
+                      <a class="product_image py-1" href="{% url 'product_view' id=product.id %}" title="Click to view more details of this product"><img src="{{product.picture.url}}" alt="product picture" style="width: 100%;"></a>
+                      <p class="product_description py-1"><b>{{product.description}}</b></p>
+                      <p class="product_category pt-1"><b>Category: {{product.category}}</b></p>
+                      {% if product.bought == True %}
+                        <div class="bought pb-1 mb-3">
+                          <h4 class="py-0 my-0" title="This product was bought from a buyer"><b><u>SOLD</u></b></h4>
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
             {% elif option == 'purchase-history' %}
               <h3><u>Purchase History</u></h3>
             {% elif option == 'delete-account' %}
