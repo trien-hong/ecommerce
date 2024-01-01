@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>E-commerce | Profile</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}"/>
+    <script type="text/javascript" src="{% static 'bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'jquery/jquery.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'profile.css' %}"/>
+  </head>
+  <body>
+    <div class="container min-vh-100 px-0">
+      <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand">E-commerce</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'index_view' %}" title="Homepage">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{% url 'profile_view' %}" title="View profile"><u>Profile</u></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'add_product_view' %}" title="Add product">Add product</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'cart_view' %}" title="View cart">Cart</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout_user' %}" title="Logout user">Logout</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <div class="content px-2 py-2">
+        <div class="welcome pb-2">
+          <h1>Welcome, {{user.username}}!</h1>
+        </div>
+        <div class="options">
+          <div class="profile_buttons px-2 py-2">
+            {% if option == 'settings' %}
+              <a class="btn btn-success mb-5" href="{% url 'profile_option_view' option='settings' %}" role="button" title="Settings"><u>Settings</u></a>
+            {% else %}
+              <a class="btn btn-primary mb-5" href="{% url 'profile_option_view' option='settings' %}" role="button" title="">Settings</a>
+            {% endif %}
+            <hr>
+            {% if option == 'wish-list' %}
+              <a class="btn btn-success my-5" href="{% url 'profile_option_view' option='wish-list' %}" role="button" title="Wish list"><u>Wish List</u></a>
+            {% else %}
+              <a class="btn btn-primary my-5" href="{% url 'profile_option_view' option='wish-list' %}" role="button" title="Wish list">Wish List</a>
+            {% endif %}
+            <hr>
+            {% if option == 'listing-history' %}
+              <a class="btn btn-success my-5" href="{% url 'profile_option_view' option='listing-history' %}" role="button" title="Listing history"><u>Listing History</u></a>
+            {% else %}
+              <a class="btn btn-primary my-5" href="{% url 'profile_option_view' option='listing-history' %}" role="button" title="Listing history">Listing History</a>
+            {% endif %}
+            <hr>
+            {% if option == 'purchase-history' %}
+              <a class="btn btn-success my-5" href="{% url 'profile_option_view' option='purchase-history' %}" role="button" title="Purchase history"><u>Purchase History</u></a>
+            {% else %}
+              <a class="btn btn-primary my-5" href="{% url 'profile_option_view' option='purchase-history' %}" role="button" title="Purchase history">Purchase History</a>
+            {% endif %}
+            <hr>
+            {% if option == 'delete-account' %}
+              <a class="btn btn-success mt-5" href="{% url 'profile_option_view' option='delete-account' %}" role="button" title="Delete account"><u>Delete Account</u></a>
+            {% else %}
+              <a class="btn btn-primary mt-5" href="{% url 'profile_option_view' option='delete-account' %}" role="button" title="Delete account">Delete Account</a>
+            {% endif %}
+          </div>
+          <div class="vr"></div>
+          <div class="view px-2 py-2">
+            <!-- will implement each option one at a time -->
+            {% if option == None %}
+              <h1 class="option_none">Please choose from 1 of the 5 options.</h1>
+            {% elif option == 'settings' %}
+              <h3><u>Settings</u></h3>
+            {% elif option == 'wish-list' %}
+              <h3><u>Wish List</u></h3>
+            {% elif option == 'listing-history' %}
+              <h3><u>Listing History</u></h3>
+            {% elif option == 'purchase-history' %}
+              <h3><u>Purchase History</u></h3>
+            {% elif option == 'delete-account' %}
+              <h3><u>Delete Account</u></h3>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

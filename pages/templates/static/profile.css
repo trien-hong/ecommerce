@@ -1,0 +1,50 @@
+body {
+    background-color: darkgray;
+}
+
+ul {
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
+
+li::marker {
+    color: #EA868F;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    background-color: lightgray;
+}
+
+.welcome {
+    display: flex;
+    justify-content: center;
+}
+
+.options {
+    display: flex;
+    justify-content: space-between;
+    background-color: wheat;
+    border: 2px solid black;
+}
+
+.profile_buttons {
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+}
+
+.view {
+    display: flex;
+    justify-content: center;
+    width: 80%;
+}
+
+.option_none {
+    display: flex;
+    align-items: center;
+}

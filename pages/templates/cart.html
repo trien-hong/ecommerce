@@ -22,6 +22,9 @@
                 <a class="nav-link" href="{% url 'index_view' %}" title="Homepage">Home</a>
               </li>
               <li class="nav-item">
+                <a class="nav-link" href="{% url 'profile_view' %}" title="View profile">Profile</a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link" href="{% url 'add_product_view' %}" title="Add product">Add product</a>
               </li>
               <li class="nav-item">
@@ -43,7 +46,7 @@
                 <div class="item" id="id_{{item.product.id}}">
                   <div class="item_details">
                     <div class="px-5">
-                      <h4 class="item_number">{{forloop.counter}}.)</h4>
+                      <h4 class="item_number">{{forloop.counter}}.&#41;</h4>
                     </div>
                     <div>
                       <h4 class="item_title py-2 text-break">{{item.product.title}}</h4>

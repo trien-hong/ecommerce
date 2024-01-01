@@ -96,7 +96,7 @@ def add_product_view(request):
     if request.method == "POST":
         product_info = request.POST
         picture = request.FILES['picture']
-        user = User.objects.get(id=request.user.id)
+        user = request.user
         # i can't seem to validate the picture within the form. i'll try again later.
         if picture.size > 5*1024*1024:
             messages.add_message(request, messages.ERROR, mark_safe("<li>Image is greater than 5MB. Please upload an image that is less than 5MB.</li>"))
@@ -111,11 +111,22 @@ def add_product_view(request):
 
 @never_cache
 @login_required
+def cart_view(request):
+    if request.method == "GET":
+        try:
+            user = request.user
+            cart = Cart.objects.filter(user=user)
+        except (Cart.DoesNotExist, User.DoesNotExist):
+            cart = None
+        return render(request, 'cart.html', { 'cart': cart })
+
+@never_cache
+@login_required
 def add_to_cart_view(request, id):
     if request.method == "POST":
         try:
             product = Product.objects.get(id=id)
-            user = User.objects.get(id=request.user.id)
+            user = request.user
             if product.bought == True:
                 messages.add_message(request, messages.ERROR, mark_safe("<li>Sorry, this product, \"" + product.title + "\" is now sold out.</li>"))
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -142,28 +153,17 @@ def remove_from_cart_view(request, id):
             item = Cart.objects.get(id=id)
             item.delete()
             messages.add_message(request, messages.SUCCESS, "The item, \"" + item.product.title + "\", has been successfully removed from your cart.")
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            return redirect(cart_view)
         except Cart.DoesNotExist:
             messages.add_message(request, messages.ERROR, mark_safe("<li>There seems to be an error in remove this item from your cart.</li>"))
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
-@never_cache
-@login_required
-def cart_view(request):
-    if request.method == "GET":
-        try:
-            user = User.objects.get(id=request.user.id)
-            cart = Cart.objects.filter(user=user)
-        except (Cart.DoesNotExist, User.DoesNotExist):
-            cart = None
-        return render(request, 'cart.html', { 'cart': cart })
+            return redirect(cart_view)
 
 @never_cache
 @login_required
 def check_out_view(request):
     if request.method == "POST":
         already_bought = 0
-        user = User.objects.get(id=request.user.id)
+        user = request.user
         cart = Cart.objects.filter(user=user)
         for item in cart:
             product = Product.objects.get(id=item.product.id)
@@ -192,7 +192,33 @@ def check_out_view(request):
             else:
                 messages.add_message(request, messages.SUCCESS, "Checkout was successful. However, some item(s) has been bought by another person and those item(s) are now marked by \"SOLD OUT\". There was a total of " + str(already_bought) + " item(s) bought already. Those item(s) will not be purchased.")
                 return redirect(cart_view)
-        
+
+@never_cache
+@login_required
+def profile_view(request):
+    if request.method == "GET":
+        user = request.user
+        return render(request, 'profile.html', { 'user': user, 'option': None })
+
+@never_cache
+@login_required
+def profile_option_view(request, option):
+    if request.method == "GET":
+        user = request.user
+        # will implement each option one at a time
+        if option == 'settings':
+            return render(request, 'profile.html', { 'user': user, 'option': 'settings' })
+        elif option == 'wish-list':
+            return render(request, 'profile.html', { 'user': user, 'option': 'wish-list' })
+        elif option == 'listing-history':
+            return render(request, 'profile.html', { 'user': user, 'option': 'listing-history' })
+        elif option == 'purchase-history':
+            return render(request, 'profile.html', { 'user': user, 'option': 'purchase-history' })
+        elif option == 'delete-account':
+            return render(request, 'profile.html', { 'user': user, 'option': 'delete-account' })
+        else:
+            return render(request, 'profile.html', { 'user': user, 'option': None })
+
 @never_cache
 @login_required
 def confirm_message(request, type):
