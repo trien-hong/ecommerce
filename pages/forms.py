@@ -1,6 +1,7 @@
 from django import forms
 # from django.core.files.images import get_image_dimensions
 from django.contrib.auth import get_user_model
+
 User = get_user_model()
 
 class Login(forms.Form):
@@ -46,6 +47,7 @@ class RestPassword(forms.Form):
 class AddProduct(forms.Form):
     # i'll add in more categories and possible more fields later
     CHOICES_CATEGORY = [
+        ("", "Choose a category"),
         ("kitchen", "kitchen"),
         ("living room", "living room"),
         ("garage", "garage"),
@@ -56,14 +58,25 @@ class AddProduct(forms.Form):
         ("toys", "toys"),
         ("games", "games"),
         ("clothing", "clothing"),
-        ("electronics", "electronics"),
-        ("mechanical parts", "mechanical parts")
+        ("electronics", "electronics")
     ]
 
-    title = forms.CharField(max_length=25, widget=forms.TextInput(attrs={'placeholder': 'Enter the product title', 'size': '30'}))
+    CHOICES_CONDITION = [
+        ("", "Choose a condition"),
+        ("new", "new"),
+        ("open box", "open box"),
+        ("preowned", "preowned"),
+        ("used (like new)", "used (like new)"),
+        ("used (moderately)", "used (moderately)"),
+        ("used (heavily)", "used (heavily)"),
+        ("broken (unusable)", "broken (unusable)")
+    ]
+
+    title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Enter the product title', 'size': '35'}))
     picture = forms.ImageField()
     description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"rows": "6"}))
-    category = forms.TypedChoiceField(choices=CHOICES_CATEGORY)
+    category = forms.ChoiceField(choices=CHOICES_CATEGORY)
+    condition = forms.ChoiceField(choices=CHOICES_CONDITION)
 
     # i can't seem to validate the picture within the form. i'll try again later.
     # def clean_picture(self):

@@ -17,23 +17,33 @@ class Product(models.Model):
         ("toys", "toys"),
         ("games", "games"),
         ("clothing", "clothing"),
-        ("electronics", "electronics"),
-        ("mechanical parts", "mechanical parts")
+        ("electronics", "electronics")
+    ]
+
+    CHOICES_CONDITION = [
+        ("new", "new"),
+        ("open box", "open box"),
+        ("preowned", "preowned"),
+        ("used (like new)", "used (like new)"),
+        ("used (moderately)", "used (moderately)"),
+        ("used (heavily)", "used (heavily)"),
+        ("broken (unusable)", "broken (unusable)")
     ]
 
     title = models.CharField(max_length=50)
     picture = ResizedImageField(size=[500, 500], crop=['middle', 'center'], quality=100, upload_to="product_picture", null=False, blank=False)
     description = models.CharField(max_length=500)
     category = models.CharField(choices=CHOICES_CATEGORY)
+    condition = models.CharField(choices=CHOICES_CONDITION)
     list_date = models.DateTimeField(auto_now=True)
-    lister = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=None)
+    seller = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     bought = models.BooleanField()
 
 class Cart(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, default=None)
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=None)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
 class Sold(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, default=None)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     buy_date = models.DateTimeField(auto_now=True)
-    buyer = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=None)
+    buyer = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)

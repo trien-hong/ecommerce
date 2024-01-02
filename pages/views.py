@@ -104,7 +104,7 @@ def add_product_view(request):
         else:
             ext = picture.name.split(".")[-1]
             picture.name = "product_picture_id_" + str(uuid.uuid4())[:13] + "." + ext
-            product = Product(title=product_info['title'], picture=picture, description=product_info['description'], category=product_info['category'], lister=user, bought=False)
+            product = Product(title=product_info['title'], picture=picture, description=product_info['description'], category=product_info['category'], condition=product_info['condition'], seller=user, bought=False)
             product.save()
             messages.add_message(request, messages.SUCCESS, "Your product, \"" + product.title + "\" has been successfully added. Image less than/greater than 500x500 have been upsized/downsized and cropped to the middle and center.")
             return redirect(add_product_view)
@@ -130,7 +130,7 @@ def add_to_cart_view(request, id):
             if product.bought == True:
                 messages.add_message(request, messages.ERROR, mark_safe("<li>Sorry, this product, \"" + product.title + "\" is now sold out.</li>"))
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-            elif product.lister == user:
+            elif product.seller == user:
                 messages.add_message(request, messages.ERROR, mark_safe("<li>You cannot add your own product to the cart.</li>"))
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
             elif Cart.objects.filter(product=product, user=user).exists():
@@ -211,7 +211,7 @@ def profile_option_view(request, option):
         elif option == 'wish-list':
             return render(request, 'profile.html', { 'user': user, 'option': 'wish-list' })
         elif option == 'listing-history':
-            listing_history = Product.objects.filter(lister=user)
+            listing_history = Product.objects.filter(seller=user)
             return render(request, 'profile.html', { 'user': user, 'option': 'listing-history', 'listing_history': listing_history})
         elif option == 'purchase-history':
             purchase_history = Sold.objects.filter(buyer=user)
