@@ -26,9 +26,14 @@ li::marker {
 }
 
 .product_main_identifiers {
-    text-align: center;
     display : flex;
+    text-align: center;
     flex-direction: column;
+    width: 50%;
+}
+
+.product_image {
+    width: 100%;
 }
 
 .product_sub_identifiers {
@@ -37,12 +42,7 @@ li::marker {
     flex-direction: column;
     justify-content: center;
     align-items : center;
-    width: 100%;
-}
-
-.product_title, .product_image, .product_description, .product_category, .product_list_date, .product_lister {
-    padding: 0px;
-    margin: 0px;
+    width: 50%;
 }
 
 .already_bought {

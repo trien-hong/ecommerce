@@ -31,11 +31,6 @@ li::marker {
     border: 2px solid black;
 }
 
-.product_title, .product_image, .product_description, .product_category {
-    padding: 0px;
-    margin: 0px;
-}
-
 .no_products {
     text-align: center;
     margin-left: auto;

@@ -83,25 +83,48 @@
             {% elif option == 'wish-list' %}
               <h3><u>Wish List</u></h3>
             {% elif option == 'listing-history' %}
-              <div class="listing_history">
-                <div class="products text-break">
-                  {% for product in listing_history %}
-                    <div class="product px-3 mx-2 my-2" id="id_{{product.id}}">
-                      <h4 class="product_title py-1 pt-2"><b>{{product.title}}</b></h4>
-                      <a class="product_image py-1" href="{% url 'product_view' id=product.id %}" title="Click to view more details of this product"><img src="{{product.picture.url}}" alt="product picture" style="width: 100%;"></a>
-                      <p class="product_description py-1"><b>{{product.description}}</b></p>
-                      <p class="product_category pt-1"><b>Category: {{product.category}}</b></p>
-                      {% if product.bought == True %}
-                        <div class="bought pb-1 mb-3">
-                          <h4 class="py-0 my-0" title="This product was bought from a buyer"><b><u>SOLD</u></b></h4>
-                        </div>
-                      {% endif %}
-                    </div>
-                  {% endfor %}
+              {% if listing_history %}
+                <div class="listing_history">
+                  <div class="products text-break">
+                    {% for item in listing_history %}
+                      <div class="product px-3 py-2 mx-2 my-2" id="id_{{item.id}}">
+                        <h4><b>{{item.title}}</b></h4>
+                        <a class="pt-2" href="{% url 'product_view' id=item.id %}" title="Click to view more details of this product"><img src="{{item.picture.url}}" alt="product picture" style="width: 100%;"></a>
+                        <p class="pt-3"><b>{{item.description}}</b></p>
+                        <p><b>Category: {{item.category}}</b></p>
+                        {% if item.bought == True %}
+                          <div class="bought pb-1 mb-2">
+                            <h4 class="py-0 my-0" title="This product was bought from a buyer"><b><u>SOLD</u></b></h4>
+                          </div>
+                        {% endif %}
+                      </div>
+                    {% endfor %}
+                  </div>
                 </div>
-              </div>
+              {% else %}
+                <div class="no_listing_history py-4 px-4">
+                  <h1>Your history for listing is empty.<br><br>You have not added any products yet.</h1>
+                </div>
+              {% endif %}
             {% elif option == 'purchase-history' %}
-              <h3><u>Purchase History</u></h3>
+              {% if purchase_history %}
+                <div class="purchase_history">
+                  <div class="products text-break">
+                    {% for item in purchase_history %}
+                      <div class="product px-3 py-2 mx-2 my-2" id="id_{{item.product.id}}">
+                        <h4><b>{{item.product.title}}</b></h4>
+                        <a class="pt-2" href="{% url 'product_view' id=item.product.id %}" title="Click to view more details of this product"><img src="{{item.product.picture.url}}" alt="product picture" style="width: 100%;"></a>
+                        <p class="pt-3"><b>{{item.product.description}}</b></p>
+                        <p><b>Category: {{item.product.category}}</b></p>
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% else %}
+                <div class="no_purchase_history py-4 px-4">
+                  <h1>Your history for purchases is empty.<br><br>You have not made any purcahses yet.</h1>
+                </div>
+              {% endif %}
             {% elif option == 'delete-account' %}
               <h3><u>Delete Account</u></h3>
             {% endif %}
