@@ -12,7 +12,6 @@ from . import forms
 from . models import Product
 from . models import Cart
 from . models import Sold
-# Create your views here.
 
 @never_cache
 def login_view(request):
@@ -74,18 +73,23 @@ def reset_password_view(request):
 @login_required
 def index_view(request):
     if request.method == "GET":
+        user = request.user
         products = Product.objects.all().exclude(bought=True)
-        return render(request, 'index.html', { 'products': products })
+        return render(request, 'index.html', { 'products': products, 'current_username': user.username })
 
 @never_cache
 @login_required
 def product_view(request, id):
     if request.method == "GET":
         try:
+            user = request.user
             product = Product.objects.get(id=id)
+            if (product.seller != user):
+                product.views = product.views + 1
+                product.save()
         except Product.DoesNotExist:
             product = None
-        return render(request, 'product.html', { 'product': product })
+        return render(request, 'product.html', { 'product': product, 'current_username': user.username })
 
 @never_cache
 @login_required
@@ -104,7 +108,7 @@ def add_product_view(request):
         else:
             ext = picture.name.split(".")[-1]
             picture.name = "product_picture_id_" + str(uuid.uuid4())[:13] + "." + ext
-            product = Product(title=product_info['title'], picture=picture, description=product_info['description'], category=product_info['category'], condition=product_info['condition'], seller=user, bought=False)
+            product = Product(title=product_info['title'], picture=picture, description=product_info['description'], category=product_info['category'], condition=product_info['condition'], seller=user, bought=False, views=0)
             product.save()
             messages.add_message(request, messages.SUCCESS, "Your product, \"" + product.title + "\" has been successfully added. Image less than/greater than 500x500 have been upsized/downsized and cropped to the middle and center.")
             return redirect(add_product_view)
@@ -113,11 +117,8 @@ def add_product_view(request):
 @login_required
 def cart_view(request):
     if request.method == "GET":
-        try:
-            user = request.user
-            cart = Cart.objects.filter(user=user)
-        except (Cart.DoesNotExist, User.DoesNotExist):
-            cart = None
+        user = request.user
+        cart = Cart.objects.filter(user=user)
         return render(request, 'cart.html', { 'cart': cart })
 
 @never_cache
@@ -141,7 +142,7 @@ def add_to_cart_view(request, id):
                 cart.save()
                 messages.add_message(request, messages.SUCCESS, "You've successfully added, \"" + product.title + "\", to your cart.")
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        except (Product.DoesNotExist, User.DoesNotExist, Cart.DoesNotExist):
+        except Product.DoesNotExist:
             messages.add_message(request, messages.ERROR, mark_safe("<li>There seems to be an error in adding this product to your cart.</li>"))
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
@@ -166,15 +167,19 @@ def check_out_view(request):
         user = request.user
         cart = Cart.objects.filter(user=user)
         for item in cart:
-            product = Product.objects.get(id=item.product.id)
-            if product.bought == False:    
-                product.bought = True
-                product.save()
-                sold = Sold(product=product, buyer=user)
-                sold.save()
-                item.delete()
-            else:
-                already_bought = already_bought + 1
+            try:
+                product = Product.objects.get(id=item.product.id)
+                if product.bought == False:    
+                    product.bought = True
+                    product.save()
+                    sold = Sold(product=product, buyer=user)
+                    sold.save()
+                    item.delete()
+                else:
+                    already_bought = already_bought + 1
+            except (Product.DoesNotExist):
+                messages.add_message(request, messages.ERROR, mark_safe("<li>There seemed to be an error with one, some, or all your items in your cart.</li><li>It's possible the seller delisted an item in your cart.</li>"))
+                return redirect(cart_view)
         if already_bought == 0:
             messages.add_message(request, messages.SUCCESS, "Checkout was successful. All the items in your cart have been bought by you.")
             return redirect(cart_view)

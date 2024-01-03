@@ -49,9 +49,15 @@
                 <div class="add_to_cart_form pb-2">
                   <form action="{% url 'add_to_cart_view' id=product.id %}" method="POST">
                     {% csrf_token %}
-                    <div class="add_to_cart_button">
-                      <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart">
-                    </div>
+                    {% if current_username == product.seller.username %}
+                      <div class="add_to_cart_button">
+                        <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart" disabled>
+                      </div>
+                    {% else %}
+                      <div class="add_to_cart_button">
+                        <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart">
+                      </div>
+                    {% endif %}
                   </form>
                 </div>
               </div>

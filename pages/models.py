@@ -2,32 +2,61 @@ from django_resized import ResizedImageField
 from django.db import models
 from django.contrib.auth import get_user_model
 
-# Create your models here.
-
 class Product(models.Model):
     # i'll add in more categories and possible more fields later
+    
+    PLEASE_CHOOSE_CATEGORY = ""
+    KITCHEN = "kitchen"
+    LIVING_ROOM = "living room"
+    GARAGE = "garage"
+    BATHROOM = "bathroom"
+    BEDROOM = "bedroom"
+    OFFICE = "office"
+    OUTDOOR = "outdoor"
+    TOYS = "toys"
+    GAMES = "games"
+    CLOTHING = "clothing"
+    ELECTRONICS = "electronics"
+
     CHOICES_CATEGORY = [
-        ("kitchen", "kitchen"),
-        ("living room", "living room"),
-        ("garage", "garage"),
-        ("bathroom", "bathroom"),
-        ("bedroom", "bedroom"),
-        ("office", "office"),
-        ("outdoor", "outdoor"),
-        ("toys", "toys"),
-        ("games", "games"),
-        ("clothing", "clothing"),
-        ("electronics", "electronics")
+        # actual values are what's stores in the database
+        # (actual values, human readable values)
+        # both are the same
+        (PLEASE_CHOOSE_CATEGORY, "Choose a category"),
+        (KITCHEN, "kitchen"),
+        (LIVING_ROOM, "living room"),
+        (GARAGE, "garage"),
+        (BATHROOM, "bathroom"),
+        (BEDROOM, "bedroom"),
+        (OFFICE, "office"),
+        (OUTDOOR, "outdoor"),
+        (TOYS, "toys"),
+        (GAMES, "games"),
+        (CLOTHING, "clothing"),
+        (ELECTRONICS, "electronics")
     ]
 
+    PLEASE_CHOOSE_CONDITION = ""
+    NEW = "new"
+    OPEN_BOX = "open box"
+    PREOWNED = "preowned"
+    USED_LIKE_NEW = "use (like new)"
+    USED_MODERATELY = "used (moderately)"
+    USED_HEAVILY = "used (heavily)"
+    BROKEN_UNUSABLE = "broken (unusable)"
+
     CHOICES_CONDITION = [
-        ("new", "new"),
-        ("open box", "open box"),
-        ("preowned", "preowned"),
-        ("used (like new)", "used (like new)"),
-        ("used (moderately)", "used (moderately)"),
-        ("used (heavily)", "used (heavily)"),
-        ("broken (unusable)", "broken (unusable)")
+        # actual values are what's stores in the database
+        # (actual values, human readable values)
+        # both are the same
+        (PLEASE_CHOOSE_CONDITION, "Choose a condition"),
+        (NEW, "new"),
+        (OPEN_BOX, "open box"),
+        (PREOWNED, "preowned"),
+        (USED_LIKE_NEW, "used (like new)"),
+        (USED_MODERATELY, "used (moderately)"),
+        (USED_HEAVILY, "used (heavily)"),
+        (BROKEN_UNUSABLE, "broken (unusable)")
     ]
 
     title = models.CharField(max_length=50)
@@ -38,6 +67,7 @@ class Product(models.Model):
     list_date = models.DateTimeField(auto_now=True)
     seller = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     bought = models.BooleanField()
+    views = models.IntegerField()
 
 class Cart(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)

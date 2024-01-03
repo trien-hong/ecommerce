@@ -62,16 +62,25 @@
                       <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Sorry, this product is already sold out" disabled>
                     </div>
                   {% else %}
-                    <div class="add_to_cart_button pt-3">
-                      <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart">
-                    </div>
+                    {% if current_username == product.seller.username %}
+                      <div class="add_to_cart_button pt-3">
+                        <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart" disabled>
+                      </div>
+                    {% else %}
+                      <div class="add_to_cart_button pt-3">
+                        <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart">
+                      </div>
+                    {% endif %}
                   {% endif %}
                 </form>
               </div>
             </div>
-          </div>
+          </div>  
+          <div>
+            <h4 class="float-end pe-3 pt-3">Page Views: {{product.views}}</h4>
+          </div>        
         {% else %}
-          <div class="no_product py-3 my-2">
+          <div class="no_product py-3 px-3 my-5">
             <h1>The ID of this product does not match a record on our database.<br><br>Please ensure the ID is correct.</h1>
           </div>
         {% endif %}

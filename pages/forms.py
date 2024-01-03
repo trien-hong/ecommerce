@@ -1,7 +1,6 @@
 from django import forms
 # from django.core.files.images import get_image_dimensions
 from django.contrib.auth import get_user_model
-
 User = get_user_model()
 
 class Login(forms.Form):
@@ -46,30 +45,53 @@ class RestPassword(forms.Form):
 
 class AddProduct(forms.Form):
     # i'll add in more categories and possible more fields later
+
+    PLEASE_CHOOSE_CATEGORY = ""
+    KITCHEN = "kitchen"
+    LIVING_ROOM = "living room"
+    GARAGE = "garage"
+    BATHROOM = "bathroom"
+    BEDROOM = "bedroom"
+    OFFICE = "office"
+    OUTDOOR = "outdoor"
+    TOYS = "toys"
+    GAMES = "games"
+    CLOTHING = "clothing"
+    ELECTRONICS = "electronics"
+
     CHOICES_CATEGORY = [
-        ("", "Choose a category"),
-        ("kitchen", "kitchen"),
-        ("living room", "living room"),
-        ("garage", "garage"),
-        ("bathroom", "bathroom"),
-        ("bedroom", "bedroom"),
-        ("office", "office"),
-        ("outdoor", "outdoor"),
-        ("toys", "toys"),
-        ("games", "games"),
-        ("clothing", "clothing"),
-        ("electronics", "electronics")
+        (PLEASE_CHOOSE_CATEGORY, "Choose a category"),
+        (KITCHEN, "kitchen"),
+        (LIVING_ROOM, "living room"),
+        (GARAGE, "garage"),
+        (BATHROOM, "bathroom"),
+        (BEDROOM, "bedroom"),
+        (OFFICE, "office"),
+        (OUTDOOR, "outdoor"),
+        (TOYS, "toys"),
+        (GAMES, "games"),
+        (CLOTHING, "clothing"),
+        (ELECTRONICS, "electronics")
     ]
 
+    PLEASE_CHOOSE_CONDITION = ""
+    NEW = "new"
+    OPEN_BOX = "open box"
+    PREOWNED = "preowned"
+    USED_LIKE_NEW = "use (like new)"
+    USED_MODERATELY = "used (moderately)"
+    USED_HEAVILY = "used (heavily)"
+    BROKEN_UNUSABLE = "broken (unusable)"
+
     CHOICES_CONDITION = [
-        ("", "Choose a condition"),
-        ("new", "new"),
-        ("open box", "open box"),
-        ("preowned", "preowned"),
-        ("used (like new)", "used (like new)"),
-        ("used (moderately)", "used (moderately)"),
-        ("used (heavily)", "used (heavily)"),
-        ("broken (unusable)", "broken (unusable)")
+        (PLEASE_CHOOSE_CONDITION, "Choose a condition"),
+        (NEW, "new"),
+        (OPEN_BOX, "open box"),
+        (PREOWNED, "preowned"),
+        (USED_LIKE_NEW, "used (like new)"),
+        (USED_MODERATELY, "used (moderately)"),
+        (USED_HEAVILY, "used (heavily)"),
+        (BROKEN_UNUSABLE, "broken (unusable)")
     ]
 
     title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'placeholder': 'Enter the product title', 'size': '35'}))
