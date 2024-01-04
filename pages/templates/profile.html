@@ -79,7 +79,35 @@
             {% if option == None %}
               <h1 class="option_none">Please choose from 1 of the 5 options.</h1>
             {% elif option == 'settings' %}
-              <h3><u>Settings</u></h3>
+              <div class="settings">
+                <div class="change_username_form px-3 py-3">
+                  <h2 class="py-0 my-0">CHANGE USERNAME</h2>
+                  <hr>
+                  <form action="{% url 'change_username_view' %}" method="POST">
+                    {% csrf_token %}
+                    <table>
+                      {{change_username_form}}
+                    </table>
+                    <div class="change_username_button pt-3">
+                      <input class="btn btn-primary" type="submit" value="CHANGE USERNAME" title="Change username">
+                    </div>
+                  </form>
+                </div>
+                <hr>
+                <div class="change_password_form px-3 py-3">
+                  <h2 class="py-0 my-0">CHANGE PASSWORD</h2>
+                  <hr>
+                  <form action="{% url 'change_password_view' %}" method="POST">
+                    {% csrf_token %}
+                    <table>
+                      {{change_password_form}}
+                    </table>
+                    <div class="change_password_button pt-3">
+                      <input class="btn btn-primary" type="submit" value="CHANGE PASSWORD" title="Change password">
+                    </div>
+                  </form>
+                </div>
+              </div>
             {% elif option == 'wish-list' %}
               <h3><u>Wish List</u></h3>
             {% elif option == 'listing-history' %}
@@ -133,5 +161,46 @@
         </div>
       </div>
     </div>
+    {% if messages %}
+      {% for message in messages %}
+        <div class="modal" id="modal" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              {% if message.tags == 'error' %}
+                <div class="modal-header text-danger">
+                  <h4 class="modal-title"><b><u>ERROR</u></b></h4>
+                  <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="CLOSE" title="CLOSE ALERT"></button>
+                </div>
+                <div class="modal-body">
+                  <ul>
+                    {{message}}
+                  </ul>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" title="CLOSE ALERT">CLOSE</button>
+                </div>
+              {% endif %}
+              {% if message.tags == 'success' %}
+                <div class="modal-header text-success">
+                  <h4 class="modal-title"><b><u>SUCCESS</u></b></h4>
+                  <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="CLOSE" title="CLOSE ALERT"></button>
+                </div>
+                <div class="modal-body">
+                  <p class="py-0 my-0">{{message}}</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" title="CLOSE ALERT">CLOSE</button>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+      <script type="text/javascript">
+        $(document).ready(function(){
+            $("#modal").modal('show');
+        });
+      </script>
+    {% endif %}
   </body>
 </html>

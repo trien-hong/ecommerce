@@ -21,7 +21,7 @@ class Product(models.Model):
     CHOICES_CATEGORY = [
         # actual values are what's stores in the database
         # (actual values, human readable values)
-        # both are the same
+        # for this case, it's both are the same
         (PLEASE_CHOOSE_CATEGORY, "Choose a category"),
         (KITCHEN, "kitchen"),
         (LIVING_ROOM, "living room"),
@@ -48,7 +48,7 @@ class Product(models.Model):
     CHOICES_CONDITION = [
         # actual values are what's stores in the database
         # (actual values, human readable values)
-        # both are the same
+        # for this case, it's both are the same
         (PLEASE_CHOOSE_CONDITION, "Choose a condition"),
         (NEW, "new"),
         (OPEN_BOX, "open box"),
@@ -60,7 +60,7 @@ class Product(models.Model):
     ]
 
     title = models.CharField(max_length=50)
-    picture = ResizedImageField(size=[500, 500], crop=['middle', 'center'], quality=100, upload_to="product_picture", null=False, blank=False)
+    picture = ResizedImageField(size=[500, 500], crop=["middle", "center"], quality=100, upload_to="product_picture", null=False, blank=False)
     description = models.CharField(max_length=500)
     category = models.CharField(choices=CHOICES_CATEGORY)
     condition = models.CharField(choices=CHOICES_CONDITION)

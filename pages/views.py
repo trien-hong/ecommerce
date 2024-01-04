@@ -17,7 +17,7 @@ from . models import Sold
 def login_view(request):
     if request.method == "GET":
         login_form = forms.Login()
-        return render(request, 'login.html', { 'login_form': login_form })
+        return render(request, "login.html", { "login_form": login_form })
     if request.method == "POST":
         user_info = request.POST
         form = forms.Login(user_info)
@@ -37,7 +37,7 @@ def login_view(request):
 def signup_view(request):
     if request.method == "GET":
         signup_form = forms.Signup()
-        return render(request, 'signup.html', { 'signup_form': signup_form })
+        return render(request, "signup.html", { "signup_form": signup_form })
     if request.method == "POST":
         user_info = request.POST
         form = forms.Signup(user_info)
@@ -54,7 +54,7 @@ def signup_view(request):
 def reset_password_view(request):
     if request.method == "GET":
         reset_password_form = forms.RestPassword()
-        return render(request, 'reset_password.html', { 'reset_password_form': reset_password_form})
+        return render(request, "reset_password.html", { "reset_password_form": reset_password_form})
     if request.method == "POST":
         user_info = request.POST
         form = forms.RestPassword(user_info)
@@ -75,7 +75,7 @@ def index_view(request):
     if request.method == "GET":
         user = request.user
         products = Product.objects.all().exclude(bought=True)
-        return render(request, 'index.html', { 'products': products, 'current_username': user.username })
+        return render(request, "index.html", { "products": products, "current_username": user.username })
 
 @never_cache
 @login_required
@@ -89,17 +89,17 @@ def product_view(request, id):
                 product.save()
         except Product.DoesNotExist:
             product = None
-        return render(request, 'product.html', { 'product': product, 'current_username': user.username })
+        return render(request, "product.html", { "product": product, "current_username": user.username })
 
 @never_cache
 @login_required
 def add_product_view(request):
     if request.method == "GET":
         add_product_form = forms.AddProduct()
-        return render(request, 'add_product.html', { 'add_product_form': add_product_form })
+        return render(request, "add_product.html", { "add_product_form": add_product_form })
     if request.method == "POST":
         product_info = request.POST
-        picture = request.FILES['picture']
+        picture = request.FILES["picture"]
         user = request.user
         # i can't seem to validate the picture within the form. i'll try again later.
         if picture.size > 5*1024*1024:
@@ -108,7 +108,7 @@ def add_product_view(request):
         else:
             ext = picture.name.split(".")[-1]
             picture.name = "product_picture_id_" + str(uuid.uuid4())[:13] + "." + ext
-            product = Product(title=product_info['title'], picture=picture, description=product_info['description'], category=product_info['category'], condition=product_info['condition'], seller=user, bought=False, views=0)
+            product = Product(title=product_info["title"], picture=picture, description=product_info["description"], category=product_info["category"], condition=product_info["condition"], seller=user, bought=False, views=0)
             product.save()
             messages.add_message(request, messages.SUCCESS, "Your product, \"" + product.title + "\" has been successfully added. Image less than/greater than 500x500 have been upsized/downsized and cropped to the middle and center.")
             return redirect(add_product_view)
@@ -119,7 +119,7 @@ def cart_view(request):
     if request.method == "GET":
         user = request.user
         cart = Cart.objects.filter(user=user)
-        return render(request, 'cart.html', { 'cart': cart })
+        return render(request, "cart.html", { "cart": cart })
 
 @never_cache
 @login_required
@@ -130,21 +130,21 @@ def add_to_cart_view(request, id):
             user = request.user
             if product.bought == True:
                 messages.add_message(request, messages.ERROR, mark_safe("<li>Sorry, this product, \"" + product.title + "\" is now sold out.</li>"))
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+                return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
             elif product.seller == user:
                 messages.add_message(request, messages.ERROR, mark_safe("<li>You cannot add your own product to the cart.</li>"))
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+                return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
             elif Cart.objects.filter(product=product, user=user).exists():
                 messages.add_message(request, messages.ERROR, mark_safe("<li>This product, \"" + product.title + "\" already exist in your cart.</li>"))
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+                return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
             else:
                 cart = Cart(product=product, user=user)
                 cart.save()
                 messages.add_message(request, messages.SUCCESS, "You've successfully added, \"" + product.title + "\", to your cart.")
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+                return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
         except Product.DoesNotExist:
             messages.add_message(request, messages.ERROR, mark_safe("<li>There seems to be an error in adding this product to your cart.</li>"))
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 @never_cache
 @login_required
@@ -203,7 +203,7 @@ def check_out_view(request):
 def profile_view(request):
     if request.method == "GET":
         user = request.user
-        return render(request, 'profile.html', { 'user': user, 'option': None })
+        return render(request, "profile.html", { "user": user, "option": None })
 
 @never_cache
 @login_required
@@ -211,20 +211,62 @@ def profile_option_view(request, option):
     if request.method == "GET":
         user = request.user
         # will implement each option one at a time
-        if option == 'settings':
-            return render(request, 'profile.html', { 'user': user, 'option': 'settings' })
-        elif option == 'wish-list':
-            return render(request, 'profile.html', { 'user': user, 'option': 'wish-list' })
-        elif option == 'listing-history':
+        if option == "settings":
+            change_username_form = forms.ChangeUsername()
+            change_password_form = forms.ChangePassword()
+            return render(request, "profile.html", { "user": user, "option": "settings", "change_username_form": change_username_form, "change_password_form": change_password_form })
+        elif option == "wish-list":
+            return render(request, "profile.html", { "user": user, "option": "wish-list" })
+        elif option == "listing-history":
             listing_history = Product.objects.filter(seller=user)
-            return render(request, 'profile.html', { 'user': user, 'option': 'listing-history', 'listing_history': listing_history})
-        elif option == 'purchase-history':
+            return render(request, "profile.html", { "user": user, "option": "listing-history", "listing_history": listing_history})
+        elif option == "purchase-history":
             purchase_history = Sold.objects.filter(buyer=user)
-            return render(request, 'profile.html', { 'user': user, 'option': 'purchase-history', 'purchase_history': purchase_history })
-        elif option == 'delete-account':
-            return render(request, 'profile.html', { 'user': user, 'option': 'delete-account' })
+            return render(request, "profile.html", { "user": user, "option": "purchase-history", "purchase_history": purchase_history })
+        elif option == "delete-account":
+            return render(request, "profile.html", { "user": user, "option": "delete-account" })
         else:
-            return render(request, 'profile.html', { 'user': user, 'option': None })
+            return render(request, "profile.html", { "user": user, "option": None })
+
+@never_cache
+@login_required
+def change_username_view(request):
+    if request.method == "POST":
+        user_info = request.POST
+        form = forms.ChangeUsername(user_info)
+        if form.is_valid():
+            try:
+                user = User.objects.get(id=request.user.id)
+                user.username = form.cleaned_data["username"]
+                user.save()
+                messages.add_message(request, messages.SUCCESS, "Your username is now \"" + form.cleaned_data["username"] +"\". Everything associated with the username has now been updated.")
+                return redirect(profile_option_view, option="settings")
+            except User.DoesNotExist:
+                messages.add_message(request, messages.ERROR, mark_safe("<li>There seemed to be an error in updating your username. Please try again.</li>"))
+                return redirect(profile_option_view, option="settings")
+        else:
+            messages.add_message(request, messages.ERROR, mark_safe(get_form_errors(form)))
+            return redirect(profile_option_view, option="settings")
+
+@never_cache
+@login_required
+def change_password_view(request):
+    if request.method == "POST":
+        user_info = request.POST
+        form = forms.ChangePassword(user_info)
+        if form.is_valid():
+            try:
+                user = User.objects.get(id=request.user.id)
+                user.set_password(form.cleaned_data["password"])
+                user.save()
+                messages.add_message(request, messages.SUCCESS, "Your password has been successfully updated. You must login again with the new password.")
+                return redirect(profile_option_view, option="settings")
+            except User.DoesNotExist:
+                messages.add_message(request, messages.ERROR, mark_safe("<li>There seemed to be an error in updating your password. Please try again.</li>"))
+                return redirect(profile_option_view, option="settings")
+        else:
+            messages.add_message(request, messages.ERROR, mark_safe(get_form_errors(form)))
+            return redirect(profile_option_view, option="settings")
 
 @never_cache
 @login_required
