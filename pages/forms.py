@@ -14,6 +14,7 @@ class Signup(forms.Form):
 
     def clean_username(self):
         username = self.cleaned_data["username"]
+        
         if User.objects.filter(username=username).exists():
             raise forms.ValidationError("Username already exist. Please try using a different username.")
         return username
@@ -21,6 +22,7 @@ class Signup(forms.Form):
     def clean_confirm_password(self):
         password = self.cleaned_data["password"]
         confirm_password = self.cleaned_data["confirm_password"]
+
         if password != confirm_password:
             raise forms.ValidationError("Passwords do not match. Please ensure you are using the same password for both fields.")
         return confirm_password
@@ -32,6 +34,7 @@ class RestPassword(forms.Form):
 
     def clean_username(self):
         username = self.cleaned_data["username"]
+
         if User.objects.filter(username=username).exists() == False:
             raise forms.ValidationError("Username does not exist. Please try using a different username.")
         return username
@@ -39,6 +42,7 @@ class RestPassword(forms.Form):
     def clean_confirm_password(self):
         password = self.cleaned_data["password"]
         confirm_password = self.cleaned_data["confirm_password"]
+
         if password != confirm_password:
             raise forms.ValidationError("Passwords do not match. Please ensure you are using the same password for both fields.")
         return confirm_password
@@ -48,6 +52,7 @@ class ChangeUsername(forms.Form):
     
     def clean_username(self):
         username = self.cleaned_data["username"]
+
         if User.objects.filter(username=username).exists() == True:
             raise forms.ValidationError("Username already exist. Please try using a different username.")
         return username
@@ -59,6 +64,7 @@ class ChangePassword(forms.Form):
     def clean_confirm_password(self):
         password = self.cleaned_data["password"]
         confirm_password = self.cleaned_data["confirm_password"]
+
         if password != confirm_password:
             raise forms.ValidationError("Passwords do not match. Please ensure you are using the same password for both fields.")
         return confirm_password

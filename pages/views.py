@@ -15,7 +15,11 @@ from . models import Sold
 
 @never_cache
 def login_view(request):
+    """
+    URL: /login/
+    """
     if request.method == "GET":
+        print(login_view.__doc__)
         login_form = forms.Login()
         return render(request, "login.html", { "login_form": login_form })
     if request.method == "POST":
@@ -35,6 +39,9 @@ def login_view(request):
 
 @never_cache
 def signup_view(request):
+    """
+    URL: /signup/
+    """
     if request.method == "GET":
         signup_form = forms.Signup()
         return render(request, "signup.html", { "signup_form": signup_form })
@@ -52,6 +59,9 @@ def signup_view(request):
 
 @never_cache
 def reset_password_view(request):
+    """
+    URL: /reset-password/
+    """
     if request.method == "GET":
         # i hope to one day add verfication to this
         reset_password_form = forms.RestPassword()
@@ -73,6 +83,9 @@ def reset_password_view(request):
 @never_cache
 @login_required
 def index_view(request):
+    """
+    URL: /index/ OR /
+    """
     if request.method == "GET":
         user = request.user
         products = Product.objects.all().exclude(bought=True)
@@ -81,6 +94,10 @@ def index_view(request):
 @never_cache
 @login_required
 def product_view(request, id):
+    """
+    URL: /product/id/<int:id>/
+    Where <int:id> is the id of the product being viewed
+    """
     if request.method == "GET":
         try:
             user = request.user
@@ -95,6 +112,9 @@ def product_view(request, id):
 @never_cache
 @login_required
 def add_product_view(request):
+    """
+    URL: /add-product/
+    """
     if request.method == "GET":
         add_product_form = forms.AddProduct()
         return render(request, "add_product.html", { "add_product_form": add_product_form })
@@ -117,6 +137,9 @@ def add_product_view(request):
 @never_cache
 @login_required
 def cart_view(request):
+    """
+    URL: /cart/
+    """
     if request.method == "GET":
         user = request.user
         cart = Cart.objects.filter(user=user)
@@ -125,6 +148,10 @@ def cart_view(request):
 @never_cache
 @login_required
 def add_to_cart_view(request, id):
+    """
+    URL: /cart/add-to-cart/id/<int:id>/
+    where <int:id> is the id of product being added to cart
+    """
     if request.method == "POST":
         try:
             product = Product.objects.get(id=id)
@@ -150,6 +177,10 @@ def add_to_cart_view(request, id):
 @never_cache
 @login_required
 def delete_from_cart_view(request, id):
+    """
+    URL: /cart/delete-from-cart/id/<int:id>/
+    where <int:id> is the id of the item being removed from the cart
+    """
     if request.method == "POST":
         try:
             item = Cart.objects.get(id=id)
@@ -163,6 +194,9 @@ def delete_from_cart_view(request, id):
 @never_cache
 @login_required
 def delete_all_items_from_cart_view(request):
+    """
+    URL: /cart/delete-all-items-from-cart/
+    """
     if request.method == "POST":
         user = request.user
         cart = Cart.objects.filter(user=user)
@@ -173,6 +207,9 @@ def delete_all_items_from_cart_view(request):
 @never_cache
 @login_required
 def check_out_view(request):
+    """
+    URL: /cart/check-out/
+    """
     if request.method == "POST":
         already_bought = 0
         user = request.user
@@ -188,7 +225,7 @@ def check_out_view(request):
                     item.delete()
                 else:
                     already_bought = already_bought + 1
-            except (Product.DoesNotExist):
+            except Product.DoesNotExist:
                 messages.add_message(request, messages.ERROR, mark_safe("<li>There seemed to be an error with one, some, or all your items in your cart.</li><li>It's possible the seller delisted an item in your cart.</li>"))
                 return redirect(cart_view)
         if already_bought == 0:
@@ -212,6 +249,9 @@ def check_out_view(request):
 @never_cache
 @login_required
 def profile_view(request):
+    """
+    URL: /profile/
+    """
     if request.method == "GET":
         user = request.user
         return render(request, "profile.html", { "user": user, "option": None })
@@ -219,6 +259,10 @@ def profile_view(request):
 @never_cache
 @login_required
 def profile_option_view(request, option):
+    """
+    URL: /profile/<str:option>/
+    where <str:option> is either "settings", "wish-list", "listing-history", "purchase-history", or "login-history" and if not simply redirect to profile page
+    """
     if request.method == "GET":
         user = request.user
         # will implement each option one at a time
@@ -239,11 +283,14 @@ def profile_option_view(request, option):
         elif option == "login-history":
             return render(request, "profile.html", { "user": user, "option": "login-history" })
         else:
-            return render(request, "profile.html", { "user": user, "option": None })
+            return redirect(profile_view)
 
 @never_cache
 @login_required
 def change_username_view(request):
+    """
+    URL: /profile/settings/change-username/
+    """
     if request.method == "POST":
         user_info = request.POST
         form = forms.ChangeUsername(user_info)
@@ -264,6 +311,9 @@ def change_username_view(request):
 @never_cache
 @login_required
 def change_password_view(request):
+    """
+    URL: /profile/settings/change-password/
+    """
     if request.method == "POST":
         user_info = request.POST
         form = forms.ChangePassword(user_info)
@@ -284,6 +334,9 @@ def change_password_view(request):
 @never_cache
 @login_required
 def delete_account_view(request):
+    """
+    URL: /profile/settings/delete-account/
+    """
     if request.method == "POST":
         user_info = request.POST
         form = forms.DeleteAccount(user_info, user=request.user)
@@ -303,6 +356,9 @@ def delete_account_view(request):
 @never_cache
 @login_required
 def confirm_message(request, type):
+    """
+    URL: /confirm-message/type/<str:type>/
+    """
     if request.method == "GET":
         if type == "check-out":
             messages.add_message(request, messages.WARNING, "Are you sure you want to proceed with check out?", extra_tags="check-out")
@@ -314,6 +370,9 @@ def confirm_message(request, type):
 @never_cache
 @login_required
 def logout_user(request):
+    """
+    URL: /logout-user/
+    """
     logout(request)
     messages.add_message(request, messages.SUCCESS, "Logout successful!")
     return redirect(login_view)

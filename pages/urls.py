@@ -22,7 +22,7 @@ urlpatterns = [
     path("profile/settings/change-password/", views.change_password_view, name="change_password_view"),
     path("profile/settings/delete-account/", views.delete_account_view, name="delete_account_view"),
     path("confirm-message/type/<str:type>/", views.confirm_message, name="confirm_message_view"),
-    path("logout_user/", views.logout_user, name="logout_user"),
+    path("logout-user/", views.logout_user, name="logout_user"),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
