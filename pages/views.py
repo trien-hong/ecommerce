@@ -53,6 +53,7 @@ def signup_view(request):
 @never_cache
 def reset_password_view(request):
     if request.method == "GET":
+        # i hope to one day add verfication to this
         reset_password_form = forms.RestPassword()
         return render(request, "reset_password.html", { "reset_password_form": reset_password_form})
     if request.method == "POST":
@@ -148,16 +149,26 @@ def add_to_cart_view(request, id):
 
 @never_cache
 @login_required
-def remove_from_cart_view(request, id):
+def delete_from_cart_view(request, id):
     if request.method == "POST":
         try:
             item = Cart.objects.get(id=id)
             item.delete()
-            messages.add_message(request, messages.SUCCESS, "The item, \"" + item.product.title + "\", has been successfully removed from your cart.")
+            messages.add_message(request, messages.SUCCESS, "The product, \"" + item.product.title + "\", has been successfully removed from your cart.")
             return redirect(cart_view)
         except Cart.DoesNotExist:
-            messages.add_message(request, messages.ERROR, mark_safe("<li>There seems to be an error in remove this item from your cart.</li>"))
+            messages.add_message(request, messages.ERROR, mark_safe("<li>There seems to be an error in removing this product from your cart.</li>"))
             return redirect(cart_view)
+
+@never_cache
+@login_required
+def delete_all_items_from_cart_view(request):
+    if request.method == "POST":
+        user = request.user
+        cart = Cart.objects.filter(user=user)
+        cart.delete()
+        messages.add_message(request, messages.SUCCESS, "All products within your cart has been removed. Your cart is now empty.")
+        return redirect(cart_view)
 
 @never_cache
 @login_required
@@ -169,7 +180,7 @@ def check_out_view(request):
         for item in cart:
             try:
                 product = Product.objects.get(id=item.product.id)
-                if product.bought == False:    
+                if product.bought == False:
                     product.bought = True
                     product.save()
                     sold = Sold(product=product, buyer=user)
@@ -212,19 +223,21 @@ def profile_option_view(request, option):
         user = request.user
         # will implement each option one at a time
         if option == "settings":
+            # i hope to one day add verfication to these
             change_username_form = forms.ChangeUsername()
             change_password_form = forms.ChangePassword()
-            return render(request, "profile.html", { "user": user, "option": "settings", "change_username_form": change_username_form, "change_password_form": change_password_form })
+            delete_account_form = forms.DeleteAccount(user=user)
+            return render(request, "profile.html", { "user": user, "option": "settings", "change_username_form": change_username_form, "change_password_form": change_password_form, "delete_account_form": delete_account_form })
         elif option == "wish-list":
             return render(request, "profile.html", { "user": user, "option": "wish-list" })
         elif option == "listing-history":
             listing_history = Product.objects.filter(seller=user)
-            return render(request, "profile.html", { "user": user, "option": "listing-history", "listing_history": listing_history})
+            return render(request, "profile.html", { "user": user, "option": "listing-history", "listing_history": listing_history })
         elif option == "purchase-history":
             purchase_history = Sold.objects.filter(buyer=user)
             return render(request, "profile.html", { "user": user, "option": "purchase-history", "purchase_history": purchase_history })
-        elif option == "delete-account":
-            return render(request, "profile.html", { "user": user, "option": "delete-account" })
+        elif option == "login-history":
+            return render(request, "profile.html", { "user": user, "option": "login-history" })
         else:
             return render(request, "profile.html", { "user": user, "option": None })
 
@@ -267,13 +280,35 @@ def change_password_view(request):
         else:
             messages.add_message(request, messages.ERROR, mark_safe(get_form_errors(form)))
             return redirect(profile_option_view, option="settings")
+        
+@never_cache
+@login_required
+def delete_account_view(request):
+    if request.method == "POST":
+        user_info = request.POST
+        form = forms.DeleteAccount(user_info, user=request.user)
+        if form.is_valid():
+            try:
+                user = User.objects.get(id=request.user.id)
+                user.delete()
+                messages.add_message(request, messages.SUCCESS, "Your account has been deleted. Thank you for using our service!")
+                return redirect(login_view)
+            except User.DoesNotExist:
+                messages.add_message(request, messages.ERROR, mark_safe("<li>There seemed to be an error in deleting your account. Please try again.</li>"))
+                return redirect(profile_option_view, option="settings")
+        else:
+            messages.add_message(request, messages.ERROR, mark_safe(get_form_errors(form)))
+            return redirect(profile_option_view, option="settings")
 
 @never_cache
 @login_required
 def confirm_message(request, type):
     if request.method == "GET":
         if type == "check-out":
-            messages.add_message(request, messages.WARNING, "Are you sure you want to proceed with check out?")
+            messages.add_message(request, messages.WARNING, "Are you sure you want to proceed with check out?", extra_tags="check-out")
+            return redirect(cart_view)
+        elif type == "delete-all-items-from-cart":
+            messages.add_message(request, messages.WARNING, "Are you sure you want to delete all items in your cart?", extra_tags="delete-all-items-from-cart")
             return redirect(cart_view)
 
 @never_cache

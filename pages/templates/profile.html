@@ -67,10 +67,10 @@
               <a class="btn btn-primary my-5" href="{% url 'profile_option_view' option='purchase-history' %}" role="button" title="Purchase history">Purchase History</a>
             {% endif %}
             <hr>
-            {% if option == 'delete-account' %}
-              <a class="btn btn-success mt-5" href="{% url 'profile_option_view' option='delete-account' %}" role="button" title="Delete account"><u>Delete Account</u></a>
+            {% if option == 'login-history' %}
+              <a class="btn btn-success mt-5" href="{% url 'profile_option_view' option='login-history' %}" role="button" title="Login hisotry"><u>Login Hisotry</u></a>
             {% else %}
-              <a class="btn btn-primary mt-5" href="{% url 'profile_option_view' option='delete-account' %}" role="button" title="Delete account">Delete Account</a>
+              <a class="btn btn-primary mt-5" href="{% url 'profile_option_view' option='login-history' %}" role="button" title="Login hisotry">Login Hisotry</a>
             {% endif %}
           </div>
           <div class="vr"></div>
@@ -93,8 +93,7 @@
                     </div>
                   </form>
                 </div>
-                <hr>
-                <div class="change_password_form px-3 py-3">
+                <div class="change_password_form px-3 py-3 my-2">
                   <h2 class="py-0 my-0">CHANGE PASSWORD</h2>
                   <hr>
                   <form action="{% url 'change_password_view' %}" method="POST">
@@ -104,6 +103,19 @@
                     </table>
                     <div class="change_password_button pt-3">
                       <input class="btn btn-primary" type="submit" value="CHANGE PASSWORD" title="Change password">
+                    </div>
+                  </form>
+                </div>
+                <div class="delete_account_form px-3 py-3">
+                  <h2 class="py-0 my-0">DELETE ACCOUNT</h2>
+                  <hr>
+                  <form action="{% url 'delete_account_view' %}" method="POST">
+                    {% csrf_token %}
+                    <table>
+                      {{delete_account_form}}
+                    </table>
+                    <div class="delete_account_button pt-3">
+                      <input class="btn btn-primary" type="submit" value="DELETE ACCOUNT" title="Delete account">
                     </div>
                   </form>
                 </div>
@@ -154,8 +166,8 @@
                   <h1>Your history for purchases is empty.<br><br>You have not made any purcahses yet.</h1>
                 </div>
               {% endif %}
-            {% elif option == 'delete-account' %}
-              <h3><u>Delete Account</u></h3>
+            {% elif option == 'login-history' %}
+              <h3><u>Login Hisotry</u></h3>
             {% endif %}
           </div>
         </div>

@@ -55,9 +55,9 @@ li::marker {
     background-color: #EA868F;
 }
 
-.check_out_confirm {
+.cart-footer {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
 }
 
 .empty_cart {

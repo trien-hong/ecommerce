@@ -44,7 +44,7 @@ class RestPassword(forms.Form):
         return confirm_password
     
 class ChangeUsername(forms.Form):
-    username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your new username", "size": "30"}))
+    username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your new username", "size": "35"}))
     
     def clean_username(self):
         username = self.cleaned_data["username"]
@@ -53,8 +53,8 @@ class ChangeUsername(forms.Form):
         return username
 
 class ChangePassword(forms.Form):
-    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your new password", "size": "30"}))
-    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Confirm your new password", "size": "30"}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your new password", "size": "35"}))
+    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Confirm your new password", "size": "35"}))
 
     def clean_confirm_password(self):
         password = self.cleaned_data["password"]
@@ -62,6 +62,20 @@ class ChangePassword(forms.Form):
         if password != confirm_password:
             raise forms.ValidationError("Passwords do not match. Please ensure you are using the same password for both fields.")
         return confirm_password
+
+class DeleteAccount(forms.Form):
+    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your password to delete account", "size": "35"}))
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+
+    def clean_password(self):
+        password = self.cleaned_data["password"]
+
+        if self.user.check_password(password) == False:
+            raise forms.ValidationError("Password is incorrect. Please enter the correct password.")
+        return password
 
 class AddProduct(forms.Form):
     # i'll add in more categories and possible more fields later

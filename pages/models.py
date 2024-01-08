@@ -21,7 +21,7 @@ class Product(models.Model):
     CHOICES_CATEGORY = [
         # actual values are what's stores in the database
         # (actual values, human readable values)
-        # for this case, it's both are the same
+        # for this case, both are the same
         (PLEASE_CHOOSE_CATEGORY, "Choose a category"),
         (KITCHEN, "kitchen"),
         (LIVING_ROOM, "living room"),
@@ -48,7 +48,7 @@ class Product(models.Model):
     CHOICES_CONDITION = [
         # actual values are what's stores in the database
         # (actual values, human readable values)
-        # for this case, it's both are the same
+        # for this case, both are the same
         (PLEASE_CHOOSE_CONDITION, "Choose a condition"),
         (NEW, "new"),
         (OPEN_BOX, "open box"),
