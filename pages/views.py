@@ -112,25 +112,26 @@ def product_view(request, id):
 @login_required
 def add_product_view(request):
     """
-    URL: /add-product/
+    URL: /product/add-product/
     """
     if request.method == "GET":
         add_product_form = forms.AddProduct()
         return render(request, "add_product.html", { "add_product_form": add_product_form })
     if request.method == "POST":
         product_info = request.POST
-        picture = request.FILES["picture"]
+        picture = request.FILES
         user = request.user
-        # i can't seem to validate the picture within the form. i'll try again later.
-        if picture.size > 5*1024*1024:
-            messages.add_message(request, messages.ERROR, mark_safe("<li>Image is greater than 5MB. Please upload an image that is less than 5MB.</li>"))
-            return redirect(add_product_view)
-        else:
-            ext = picture.name.split(".")[-1]
-            picture.name = "product_picture_id_" + str(uuid.uuid4())[:13] + "." + ext
-            product = Product(title=product_info["title"], picture=picture, description=product_info["description"], category=product_info["category"], condition=product_info["condition"], seller=user, bought=False, views=0)
+        form = forms.AddProduct(product_info, picture)
+        if form.is_valid():
+            file_extension = form.cleaned_data["picture"].name.split(".")[-1]
+            form.cleaned_data["picture"].name = "product_picture_id_" + str(uuid.uuid4())[:13] + "." + file_extension
+            product = Product(title=product_info["title"], picture=form.cleaned_data["picture"], description=product_info["description"], category=product_info["category"], condition=product_info["condition"], seller=user, bought=False, views=0)
             product.save()
             messages.add_message(request, messages.SUCCESS, "Your product, \"" + product.title + "\" has been successfully added. Image less than/greater than 500x500 have been upsized/downsized and cropped to the middle and center.")
+            return redirect(add_product_view)
+        else:
+            error_string = get_form_errors(form)
+            messages.add_message(request, messages.ERROR, mark_safe(error_string))
             return redirect(add_product_view)
 
 @never_cache

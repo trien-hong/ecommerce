@@ -105,8 +105,7 @@
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" title="CLOSE ALERT">CLOSE</button>
                 </div>
-              {% endif %}
-              {% if message.tags == 'success' %}
+              {% elif message.tags == 'success' %}
                 <div class="modal-header text-success">
                   <h4 class="modal-title"><b><u>SUCCESS</u></b></h4>
                   <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="CLOSE" title="CLOSE ALERT"></button>
@@ -117,8 +116,7 @@
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" title="CLOSE ALERT">CLOSE</button>
                 </div>
-              {% endif %}
-              {% if message.extra_tags == 'check-out' %}
+              {% else %}
                 <div class="modal-header text-warning">
                   <h4 class="modal-title"><b><u>PLEASE CONFIRM</u></b></h4>
                   <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="CLOSE" title="CLOSE ALERT"></button>
@@ -128,32 +126,21 @@
                 </div>
                 <div class="modal-footer">
                   <div class="check_out_form">
-                    <form action="{% url 'check_out_view' %}" method="POST">
-                      {% csrf_token %}
-                      <div class="check_out_button">
-                        <input class="btn btn-success" type="submit" value="YES" title="YES">
-                      </div>
-                    </form>
-                  </div>
-                  <button type="button" class="btn btn-danger" data-bs-dismiss="modal" title="NO">NO</button>
-                </div>
-              {% endif %}
-              {% if message.extra_tags == 'delete-all-items-from-cart' %}
-                <div class="modal-header text-warning">
-                  <h4 class="modal-title"><b><u>PLEASE CONFIRM</u></b></h4>
-                  <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="CLOSE" title="CLOSE ALERT"></button>
-                </div>
-                <div class="modal-body">
-                  <p class="py-0 my-0">{{message}}</p>
-                </div>
-                <div class="modal-footer">
-                  <div class="check_out_form">
-                    <form action="{% url 'delete_all_items_from_cart_view' %}" method="POST">
-                      {% csrf_token %}
-                      <div class="check_out_button">
-                        <input class="btn btn-success" type="submit" value="YES" title="YES">
-                      </div>
-                    </form>
+                    {% if message.extra_tags == 'check-out' %}
+                      <form action="{% url 'check_out_view' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="check_out_button">
+                          <input class="btn btn-success" type="submit" value="YES" title="YES">
+                        </div>
+                      </form>
+                    {% elif message.extra_tags == 'delete-all-items-from-cart' %}
+                      <form action="{% url 'delete_all_items_from_cart_view' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="check_out_button">
+                          <input class="btn btn-success" type="submit" value="YES" title="YES">
+                        </div>
+                      </form>
+                    {% endif %}
                   </div>
                   <button type="button" class="btn btn-danger" data-bs-dismiss="modal" title="NO">NO</button>
                 </div>

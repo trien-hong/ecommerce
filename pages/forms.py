@@ -140,10 +140,9 @@ class AddProduct(forms.Form):
     category = forms.ChoiceField(choices=CHOICES_CATEGORY)
     condition = forms.ChoiceField(choices=CHOICES_CONDITION)
 
-    # i can't seem to validate the picture within the form. i'll try again later.
-    # def clean_picture(self):
-        # picture = self.cleaned_data["picture"]
-        # w, h = get_image_dimensions(picture)
-        # if picture.size > 5*1024*1024:
-        #     raise forms.ValidationError("Image is greater than 5MB. Please upload an image that is less than 5MB.")
-        # return picture
+    def clean_picture(self):
+        picture = self.cleaned_data["picture"]
+        
+        if picture.size > 5*1024*1024:
+            raise forms.ValidationError("Image is greater than 5MB. Please upload an image that is less than 5MB.")
+        return picture
