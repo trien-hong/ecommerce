@@ -19,7 +19,6 @@ def login_view(request):
     URL: /login/
     """
     if request.method == "GET":
-        print(login_view.__doc__)
         login_form = forms.Login()
         return render(request, "login.html", { "login_form": login_form })
     if request.method == "POST":
@@ -102,7 +101,7 @@ def product_view(request, id):
         try:
             user = request.user
             product = Product.objects.get(id=id)
-            if (product.seller != user):
+            if product.seller != user:
                 product.views = product.views + 1
                 product.save()
         except Product.DoesNotExist:
@@ -152,6 +151,8 @@ def add_to_cart_view(request, id):
     URL: /cart/add-to-cart/id/<int:id>/
     where <int:id> is the id of product being added to cart
     """
+    if request.method == "GET":
+        return redirect(product_view, id=id)
     if request.method == "POST":
         try:
             product = Product.objects.get(id=id)
@@ -181,6 +182,8 @@ def delete_from_cart_view(request, id):
     URL: /cart/delete-from-cart/id/<int:id>/
     where <int:id> is the id of the item being removed from the cart
     """
+    if request.method == "GET":
+        return redirect(cart_view)
     if request.method == "POST":
         try:
             item = Cart.objects.get(id=id)
@@ -197,6 +200,8 @@ def delete_all_items_from_cart_view(request):
     """
     URL: /cart/delete-all-items-from-cart/
     """
+    if request.method == "GET":
+        return redirect(cart_view)
     if request.method == "POST":
         user = request.user
         cart = Cart.objects.filter(user=user)
@@ -210,6 +215,8 @@ def check_out_view(request):
     """
     URL: /cart/check-out/
     """
+    if request.method == "GET":
+        return redirect(cart_view)
     if request.method == "POST":
         already_bought = 0
         user = request.user
@@ -232,14 +239,14 @@ def check_out_view(request):
             messages.add_message(request, messages.SUCCESS, "Checkout was successful. All the items in your cart have been bought by you.")
             return redirect(cart_view)
         elif already_bought == 1:
-            if (cart.count() == already_bought):
+            if cart.count() == already_bought:
                 messages.add_message(request, messages.ERROR, mark_safe("<li>Checkout was unsuccessful. The item you wanted to buy has been bought by another person.</li>"))
                 return redirect(cart_view)
             else:
                 messages.add_message(request, messages.SUCCESS, "Checkout was successful. However, there was 1 item that has been bought by another person and that item is now marked by \"SOLD OUT\". That 1 item will not be purchased.")
                 return redirect(cart_view)
         else:
-            if (cart.count() == already_bought):
+            if cart.count() == already_bought:
                 messages.add_message(request, messages.ERROR, mark_safe("<li>Checkout was unsuccessful. The item(s) you wanted to buy has been bought by another person.</li>"))
                 return redirect(cart_view)
             else:
@@ -265,12 +272,11 @@ def profile_option_view(request, option):
     """
     if request.method == "GET":
         user = request.user
-        # will implement each option one at a time
         if option == "settings":
             # i hope to one day add verfication to these
             change_username_form = forms.ChangeUsername()
             change_password_form = forms.ChangePassword()
-            delete_account_form = forms.DeleteAccount(user=user)
+            delete_account_form = forms.DeleteAccount()
             return render(request, "profile.html", { "user": user, "option": "settings", "change_username_form": change_username_form, "change_password_form": change_password_form, "delete_account_form": delete_account_form })
         elif option == "wish-list":
             return render(request, "profile.html", { "user": user, "option": "wish-list" })
@@ -291,6 +297,8 @@ def change_username_view(request):
     """
     URL: /profile/settings/change-username/
     """
+    if request.method == "GET":
+        return redirect(profile_option_view, option="settings")
     if request.method == "POST":
         user_info = request.POST
         form = forms.ChangeUsername(user_info)
@@ -314,6 +322,8 @@ def change_password_view(request):
     """
     URL: /profile/settings/change-password/
     """
+    if request.method == "GET":
+        return redirect(profile_option_view, option="settings")
     if request.method == "POST":
         user_info = request.POST
         form = forms.ChangePassword(user_info)
@@ -330,13 +340,15 @@ def change_password_view(request):
         else:
             messages.add_message(request, messages.ERROR, mark_safe(get_form_errors(form)))
             return redirect(profile_option_view, option="settings")
-        
+
 @never_cache
 @login_required
 def delete_account_view(request):
     """
     URL: /profile/settings/delete-account/
     """
+    if request.method == "GET":
+        return redirect(profile_option_view, option="settings")
     if request.method == "POST":
         user_info = request.POST
         form = forms.DeleteAccount(user_info, user=request.user)
@@ -358,6 +370,7 @@ def delete_account_view(request):
 def confirm_message(request, type):
     """
     URL: /confirm-message/type/<str:type>/
+    where <str:type> is any one of the following below
     """
     if request.method == "GET":
         if type == "check-out":
