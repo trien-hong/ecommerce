@@ -17,15 +17,21 @@ li::marker {
     background-color: lightgray;
 }
 
+.content {
+    display: flex;
+    justify-content: center;
+}
+
 .product {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    background-color: wheat;
+    background-color: white;
     border: 2px solid black;
+    width: 85%;
 }
 
-.product_main_identifiers {
+.current_product_information {
     display : flex;
     text-align: center;
     flex-direction: column;
@@ -36,8 +42,7 @@ li::marker {
     width: 100%;
 }
 
-.product_sub_identifiers {
-    text-align: center;
+.edit_product_form {
     display : flex;
     flex-direction: column;
     justify-content: center;
@@ -45,11 +50,19 @@ li::marker {
     width: 50%;
 }
 
-.bought {
-    background-color: #EA868F;
+.edit_product_form hr {
+    width: 100%;
 }
 
-.no_product {
+.edit_product_form th {
+    width: 15%;
+}
+
+.edit_product_form form, .edit_product_form table, .edit_product_form tbody, .edit_product_form tr, .edit_product_form textarea {
+    width: 100%;
+}
+
+.no_product, .not_owner {
     text-align: center;
     margin-left: auto;
     margin-right: auto;
@@ -57,4 +70,9 @@ li::marker {
     border: 2px solid black;
     border-radius: 15px;
     width: 65%
+}
+
+.edit_product_button {
+    display: flex;
+    justify-content: center;
 }

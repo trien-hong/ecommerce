@@ -87,7 +87,8 @@
                     <table>
                       {{change_username_form}}
                     </table>
-                    <div class="change_username_button pt-3">
+                    <hr>
+                    <div class="change_username_button pt-1">
                       <input class="btn btn-primary" type="submit" value="CHANGE USERNAME" title="Change username">
                     </div>
                   </form>
@@ -100,7 +101,8 @@
                     <table>
                       {{change_password_form}}
                     </table>
-                    <div class="change_password_button pt-3">
+                    <hr>
+                    <div class="change_password_button pt-1">
                       <input class="btn btn-primary" type="submit" value="CHANGE PASSWORD" title="Change password">
                     </div>
                   </form>
@@ -113,7 +115,8 @@
                     <table>
                       {{delete_account_form}}
                     </table>
-                    <div class="delete_account_button pt-3">
+                    <hr>
+                    <div class="delete_account_button pt-1">
                       <input class="btn btn-primary" type="submit" value="DELETE ACCOUNT" title="Delete account">
                     </div>
                   </form>
@@ -134,6 +137,13 @@
                         {% if item.bought == True %}
                           <div class="bought pb-1 mb-2">
                             <h4 class="py-0 my-0" title="This product was bought from a buyer"><b><u>SOLD</u></b></h4>
+                          </div>
+                        {% else %}
+                          <div class="edit_product pb-3">
+                            <a class="btn btn-secondary" href="{% url 'edit_product_view' id=item.id %}" title="Edit product">EDIT PRODUCT</a>
+                          </div>
+                          <div class="not_bought pb-1 mb-2">
+                            <h4 class="py-0 my-0" title="No one has bought this yet"><b><u>ACTIVE</b></u></h4>
                           </div>
                         {% endif %}
                       </div>

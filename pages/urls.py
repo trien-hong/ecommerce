@@ -11,6 +11,7 @@ urlpatterns = [
     path("reset-password/", views.reset_password_view, name="reset_password_view"),
     path("product/id/<int:id>/", views.product_view, name="product_view"),
     path("product/add-product/", views.add_product_view, name="add_product_view"),
+    path("product/edit/id/<int:id>/", views.edit_product_view, name="edit_product_view"),
     path("cart/", views.cart_view, name="cart_view"),
     path("cart/add-to-cart/id/<int:id>/", views.add_to_cart_view, name="add_to_cart_view"),
     path("cart/delete-from-cart/id/<int:id>/", views.delete_from_cart_view, name="delete_from_cart_view"),

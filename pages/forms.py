@@ -1,5 +1,4 @@
 from django import forms
-# from django.core.files.images import get_image_dimensions
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -136,7 +135,7 @@ class AddProduct(forms.Form):
 
     title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product title", "size": "35"}))
     picture = forms.ImageField()
-    description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"rows": "6"}))
+    description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"placeholder": "Description of the product", "rows": "6"}))
     category = forms.ChoiceField(choices=CHOICES_CATEGORY)
     condition = forms.ChoiceField(choices=CHOICES_CONDITION)
 
@@ -145,4 +144,69 @@ class AddProduct(forms.Form):
         
         if picture.size > 5*1024*1024:
             raise forms.ValidationError("Image is greater than 5MB. Please upload an image that is less than 5MB.")
+        return picture
+    
+class EditProduct(forms.Form):
+    # i'll add in more categories and possible more fields later
+
+    PLEASE_CHOOSE_CATEGORY = ""
+    KITCHEN = "kitchen"
+    LIVING_ROOM = "living room"
+    GARAGE = "garage"
+    BATHROOM = "bathroom"
+    BEDROOM = "bedroom"
+    OFFICE = "office"
+    OUTDOOR = "outdoor"
+    TOYS = "toys"
+    GAMES = "games"
+    CLOTHING = "clothing"
+    ELECTRONICS = "electronics"
+
+    CHOICES_CATEGORY = [
+        (PLEASE_CHOOSE_CATEGORY, "Choose a category"),
+        (KITCHEN, "kitchen"),
+        (LIVING_ROOM, "living room"),
+        (GARAGE, "garage"),
+        (BATHROOM, "bathroom"),
+        (BEDROOM, "bedroom"),
+        (OFFICE, "office"),
+        (OUTDOOR, "outdoor"),
+        (TOYS, "toys"),
+        (GAMES, "games"),
+        (CLOTHING, "clothing"),
+        (ELECTRONICS, "electronics")
+    ]
+
+    PLEASE_CHOOSE_CONDITION = ""
+    NEW = "new"
+    OPEN_BOX = "open box"
+    PREOWNED = "preowned"
+    USED_LIKE_NEW = "use (like new)"
+    USED_MODERATELY = "used (moderately)"
+    USED_HEAVILY = "used (heavily)"
+    BROKEN_UNUSABLE = "broken (unusable)"
+
+    CHOICES_CONDITION = [
+        (PLEASE_CHOOSE_CONDITION, "Choose a condition"),
+        (NEW, "new"),
+        (OPEN_BOX, "open box"),
+        (PREOWNED, "preowned"),
+        (USED_LIKE_NEW, "used (like new)"),
+        (USED_MODERATELY, "used (moderately)"),
+        (USED_HEAVILY, "used (heavily)"),
+        (BROKEN_UNUSABLE, "broken (unusable)")
+    ]
+
+    title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product title", "size": "35", "title": "Only edit what you need to"}), required=False)
+    picture = forms.ImageField(widget=forms.FileInput(attrs={"title": "Only edit what you need to"}), required=False)
+    description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"placeholder": "Description of the product", "rows": "6", "title": "Only edit what you need to"}), required=False)
+    category = forms.ChoiceField(choices=CHOICES_CATEGORY, widget=forms.Select(attrs={"title": "Only edit what you need to"}), required=False)
+    condition = forms.ChoiceField(choices=CHOICES_CONDITION, widget=forms.Select(attrs={"title": "Only edit what you need to"}), required=False)
+
+    def clean_picture(self):
+        picture = self.cleaned_data["picture"]
+        
+        if picture is not None:
+            if picture.size > 5*1024*1024:
+                raise forms.ValidationError("Image is greater than 5MB. Please upload an image that is less than 5MB.")
         return picture

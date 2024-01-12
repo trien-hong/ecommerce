@@ -2,11 +2,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>E-commerce | Add Product</title>
+    <title>E-commerce | Edit Product</title>
     <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}"/>
     <script type="text/javascript" src="{% static 'bootstrap/bootstrap.bundle.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'jquery/jquery.min.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'add_product.css' %}"/>
+    <link rel="stylesheet" href="{% static 'edit_product.css' %}"/>
   </head>
   <body>
     <div class="container min-vh-100 px-0">
@@ -25,7 +25,7 @@
                 <a class="nav-link" href="{% url 'profile_view' %}" title="View profile">Profile</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="{% url 'add_product_view' %}" title="Add product"><u>Add product</u></a>
+                <a class="nav-link" href="{% url 'add_product_view' %}" title="Add product">Add product</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'cart_view' %}" title="View cart">Cart</a>
@@ -38,20 +38,36 @@
         </div>
       </nav>
       <div class="content py-4">
-        <div class="add_product_form px-3 py-3">
-          <h2 class="py-0 my-0">ADD PRODUCT</h2>
-          <hr>
-          <form action="{% url 'add_product_view' %}" enctype="multipart/form-data" method="POST">
-            {% csrf_token %}
-            <table>
-              {{add_product_form}}
-            </table>
-            <hr>
-            <div class="add_product_button pt-1">
-              <input class="btn btn-primary" type="submit" value="ADD PRODUCT" title="Add product">
+        {% if product %}
+          <div class="product">
+            <div class="current_product_information px-3">
+              <h2 class="pt-2">Title: {{product.title}}</h2>
+              <a href="{% url 'product_view' id=product.id %}" title="Click to view more details of this product"><img class="product_image" src="{{product.picture.url}}" alt="product picture"></a>
+              <h3>Description: {{product.description}}</h3>
+              <h3>Category: {{product.category}}</h3>
+              <h3>Condition: {{product.condition}}</h3>
             </div>
-          </form>
-        </div>
+            <div class="vr"></div>
+            <div class="edit_product_form px-3">
+              <h2 class="py-0 my-0">EDIT PRODUCT</h2>
+              <hr>
+              <form action="{% url 'edit_product_view' id=product.id %}" enctype="multipart/form-data" method="POST">
+                {% csrf_token %}
+                <table>
+                  {{edit_product_form}}
+                </table>
+                <hr>
+                <div class="edit_product_button pt-1">
+                  <input class="btn btn-primary" type="submit" value="EDIT PRODUCT" title="Edit product">
+                </div>
+              </form>
+            </div>
+          </div>
+        {% else %}
+          <div class="no_product py-3 px-3 my-5">
+            <h1>You cannot edit this product or the ID of this product does not match a record on our database.<br><br>Please ensure the ID is correct in order to edit the product.</h1>
+          </div>
+        {% endif %}
       </div>
     </div>
     {% if messages %}

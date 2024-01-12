@@ -23,9 +23,9 @@ def login_view(request):
         return render(request, "login.html", { "login_form": login_form })
     if request.method == "POST":
         user_info = request.POST
-        form = forms.Login(user_info)
-        if form.is_valid():
-            user = authenticate(request, username=user_info["username"], password=user_info["password"])
+        login_form = forms.Login(user_info)
+        if login_form.is_valid():
+            user = authenticate(request, username=login_form.cleaned_data["username"], password=login_form.cleaned_data["password"])
             if user is not None:
                 login(request, user)
                 return redirect(index_view)
@@ -46,13 +46,13 @@ def signup_view(request):
         return render(request, "signup.html", { "signup_form": signup_form })
     if request.method == "POST":
         user_info = request.POST
-        form = forms.Signup(user_info)
-        if form.is_valid():
-            user = User.objects.create_user(username=form.cleaned_data["username"], password=form.cleaned_data["password"])
+        signup_form = forms.Signup(user_info)
+        if signup_form.is_valid():
+            user = User.objects.create_user(username=signup_form.cleaned_data["username"], password=signup_form.cleaned_data["password"])
             messages.add_message(request, messages.SUCCESS, "User has been successfully created. You may now login.")
             return redirect(signup_view)
         else:
-            error_string = get_form_errors(form)
+            error_string = get_form_errors(signup_form)
             messages.add_message(request, messages.ERROR, mark_safe(error_string))
             return redirect(signup_view)
 
@@ -67,15 +67,15 @@ def reset_password_view(request):
         return render(request, "reset_password.html", { "reset_password_form": reset_password_form})
     if request.method == "POST":
         user_info = request.POST
-        form = forms.RestPassword(user_info)
-        if form.is_valid():
-            user = User.objects.get(username=form.cleaned_data["username"])
-            user.set_password(form.cleaned_data["confirm_password"])
+        reset_password_form = forms.RestPassword(user_info)
+        if reset_password_form.is_valid():
+            user = User.objects.get(username=reset_password_form.cleaned_data["username"])
+            user.set_password(reset_password_form.cleaned_data["confirm_password"])
             user.save()
             messages.add_message(request, messages.SUCCESS, "The password associated with the username has been reset. You may now login.")
             return redirect(reset_password_view)
         else:
-            error_string = get_form_errors(form)
+            error_string = get_form_errors(reset_password_form)
             messages.add_message(request, messages.ERROR, mark_safe(error_string))
             return redirect(reset_password_view)
 
@@ -88,7 +88,7 @@ def index_view(request):
     if request.method == "GET":
         user = request.user
         products = Product.objects.all().exclude(bought=True)
-        return render(request, "index.html", { "products": products, "current_username": user.username })
+        return render(request, "index.html", { "current_username": user.username, "products": products })
 
 @never_cache
 @login_required
@@ -106,7 +106,7 @@ def product_view(request, id):
                 product.save()
         except Product.DoesNotExist:
             product = None
-        return render(request, "product.html", { "product": product, "current_username": user.username })
+        return render(request, "product.html", { "current_username": user.username, "product": product })
 
 @never_cache
 @login_required
@@ -118,21 +118,72 @@ def add_product_view(request):
         add_product_form = forms.AddProduct()
         return render(request, "add_product.html", { "add_product_form": add_product_form })
     if request.method == "POST":
+        user = request.user
         product_info = request.POST
         picture = request.FILES
-        user = request.user
-        form = forms.AddProduct(product_info, picture)
-        if form.is_valid():
-            file_extension = form.cleaned_data["picture"].name.split(".")[-1]
-            form.cleaned_data["picture"].name = "product_picture_id_" + str(uuid.uuid4())[:13] + "." + file_extension
-            product = Product(title=product_info["title"], picture=form.cleaned_data["picture"], description=product_info["description"], category=product_info["category"], condition=product_info["condition"], seller=user, bought=False, views=0)
+        add_product_form = forms.AddProduct(product_info, picture)
+        if add_product_form.is_valid():
+            file_extension = add_product_form.cleaned_data["picture"].name.split(".")[-1]
+            add_product_form.cleaned_data["picture"].name = "product_picture_id_" + str(uuid.uuid4())[:13] + "." + file_extension
+            product = Product(title=product_info["title"], picture=add_product_form.cleaned_data["picture"], description=product_info["description"], category=product_info["category"], condition=product_info["condition"], seller=user, bought=False, views=0)
             product.save()
             messages.add_message(request, messages.SUCCESS, "Your product, \"" + product.title + "\" has been successfully added. Image less than/greater than 500x500 have been upsized/downsized and cropped to the middle and center.")
             return redirect(add_product_view)
         else:
-            error_string = get_form_errors(form)
+            error_string = get_form_errors(add_product_form)
             messages.add_message(request, messages.ERROR, mark_safe(error_string))
             return redirect(add_product_view)
+        
+@never_cache
+@login_required
+def edit_product_view(request, id):
+    """
+    URL: /product/edit/id/<int:id>/
+    where <int:id> is the id of the product that you want to edit
+    """
+    if request.method == "GET":
+        user = request.user
+        edit_product_form = forms.EditProduct()
+        try:
+            product = Product.objects.get(id=id)
+            if product.seller != user:
+                product = None
+        except Product.DoesNotExist:
+            product = None
+        return render(request, "edit_product.html", { "product": product, "edit_product_form": edit_product_form })
+    if request.method == "POST":
+        product_info = request.POST
+        picture = request.FILES
+        edit_product_form = forms.EditProduct(product_info, picture)
+        if edit_product_form.is_valid():
+            try:
+                product = Product.objects.get(id=id)
+                if edit_product_form.cleaned_data["title"] == "" and edit_product_form.cleaned_data["picture"] is None and edit_product_form.cleaned_data["description"] == "" and edit_product_form.cleaned_data["category"] == "" and edit_product_form.cleaned_data["condition"] == "":
+                    messages.add_message(request, messages.ERROR, mark_safe("<li>Seems like you submitted an empty form.</li><li>If you have nothing to edit on the product, please don't edit the it.</li>"))
+                    return redirect(edit_product_view, id)
+                else:
+                    if edit_product_form.cleaned_data["title"] != "":
+                        product.title = edit_product_form.cleaned_data["title"]
+                    if edit_product_form.cleaned_data["picture"] is not None:
+                        file_extension = edit_product_form.cleaned_data["picture"].name.split(".")[-1]
+                        edit_product_form.cleaned_data["picture"].name = "product_picture_id_" + str(uuid.uuid4())[:13] + "." + file_extension
+                        product.picture = edit_product_form.cleaned_data["picture"]
+                    if edit_product_form.cleaned_data["description"] != "":
+                        product.description = edit_product_form.cleaned_data["description"]
+                    if edit_product_form.cleaned_data["category"] != "":
+                        product.category = edit_product_form.cleaned_data["category"]
+                    if edit_product_form.cleaned_data["condition"] != "":
+                        product.condition = edit_product_form.cleaned_data["condition"]
+                    product.save()
+                    messages.add_message(request, messages.SUCCESS, "Your product have been successfully updated.")
+                    return redirect(edit_product_view, id)
+            except Product.DoesNotExist:
+                messages.add_message(request, messages.ERROR, mark_safe("<li>There seems to be an error in editing your product. Please try again.</li>"))
+                return redirect(edit_product_view, id)
+        else:
+            error_string = get_form_errors(edit_product_form)
+            messages.add_message(request, messages.ERROR, mark_safe(error_string))
+            return redirect(edit_product_view, id)
 
 @never_cache
 @login_required
@@ -302,19 +353,19 @@ def change_username_view(request):
         return redirect(profile_option_view, option="settings")
     if request.method == "POST":
         user_info = request.POST
-        form = forms.ChangeUsername(user_info)
-        if form.is_valid():
+        change_username_form = forms.ChangeUsername(user_info)
+        if change_username_form.is_valid():
             try:
                 user = User.objects.get(id=request.user.id)
-                user.username = form.cleaned_data["username"]
+                user.username = change_username_form.cleaned_data["username"]
                 user.save()
-                messages.add_message(request, messages.SUCCESS, "Your username is now \"" + form.cleaned_data["username"] +"\". Everything associated with the username has now been updated.")
+                messages.add_message(request, messages.SUCCESS, "Your username is now \"" + change_username_form.cleaned_data["username"] +"\". Everything associated with the username has now been updated.")
                 return redirect(profile_option_view, option="settings")
             except User.DoesNotExist:
                 messages.add_message(request, messages.ERROR, mark_safe("<li>There seemed to be an error in updating your username. Please try again.</li>"))
                 return redirect(profile_option_view, option="settings")
         else:
-            messages.add_message(request, messages.ERROR, mark_safe(get_form_errors(form)))
+            messages.add_message(request, messages.ERROR, mark_safe(get_form_errors(change_username_form)))
             return redirect(profile_option_view, option="settings")
 
 @never_cache
@@ -327,11 +378,11 @@ def change_password_view(request):
         return redirect(profile_option_view, option="settings")
     if request.method == "POST":
         user_info = request.POST
-        form = forms.ChangePassword(user_info)
-        if form.is_valid():
+        change_password_form = forms.ChangePassword(user_info)
+        if change_password_form.is_valid():
             try:
                 user = User.objects.get(id=request.user.id)
-                user.set_password(form.cleaned_data["password"])
+                user.set_password(change_password_form.cleaned_data["password"])
                 user.save()
                 messages.add_message(request, messages.SUCCESS, "Your password has been successfully updated. You must login again with the new password.")
                 return redirect(profile_option_view, option="settings")
@@ -339,7 +390,7 @@ def change_password_view(request):
                 messages.add_message(request, messages.ERROR, mark_safe("<li>There seemed to be an error in updating your password. Please try again.</li>"))
                 return redirect(profile_option_view, option="settings")
         else:
-            messages.add_message(request, messages.ERROR, mark_safe(get_form_errors(form)))
+            messages.add_message(request, messages.ERROR, mark_safe(get_form_errors(change_password_form)))
             return redirect(profile_option_view, option="settings")
 
 @never_cache
@@ -352,8 +403,8 @@ def delete_account_view(request):
         return redirect(profile_option_view, option="settings")
     if request.method == "POST":
         user_info = request.POST
-        form = forms.DeleteAccount(user_info, user=request.user)
-        if form.is_valid():
+        delete_account_form = forms.DeleteAccount(user_info, user=request.user)
+        if delete_account_form.is_valid():
             try:
                 user = User.objects.get(id=request.user.id)
                 user.delete()
@@ -363,7 +414,7 @@ def delete_account_view(request):
                 messages.add_message(request, messages.ERROR, mark_safe("<li>There seemed to be an error in deleting your account. Please try again.</li>"))
                 return redirect(profile_option_view, option="settings")
         else:
-            messages.add_message(request, messages.ERROR, mark_safe(get_form_errors(form)))
+            messages.add_message(request, messages.ERROR, mark_safe(get_form_errors(delete_account_form)))
             return redirect(profile_option_view, option="settings")
 
 @never_cache

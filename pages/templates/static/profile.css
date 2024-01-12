@@ -86,3 +86,7 @@ li::marker {
 .bought {
     background-color: #EA868F;
 }
+
+.not_bought {
+    background-color: lightgreen;
+}
