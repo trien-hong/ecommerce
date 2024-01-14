@@ -133,9 +133,9 @@ class AddProduct(forms.Form):
         (BROKEN_UNUSABLE, "broken (unusable)")
     ]
 
-    title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product title", "size": "35"}))
+    title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product's title", "size": "35"}))
     picture = forms.ImageField()
-    description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"placeholder": "Description of the product", "rows": "6"}))
+    description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"placeholder": "Enter the product's description", "rows": "6"}))
     category = forms.ChoiceField(choices=CHOICES_CATEGORY)
     condition = forms.ChoiceField(choices=CHOICES_CONDITION)
 
@@ -163,7 +163,7 @@ class EditProduct(forms.Form):
     ELECTRONICS = "electronics"
 
     CHOICES_CATEGORY = [
-        (PLEASE_CHOOSE_CATEGORY, "Choose a category"),
+        (PLEASE_CHOOSE_CATEGORY, "Choose a new category"),
         (KITCHEN, "kitchen"),
         (LIVING_ROOM, "living room"),
         (GARAGE, "garage"),
@@ -187,7 +187,7 @@ class EditProduct(forms.Form):
     BROKEN_UNUSABLE = "broken (unusable)"
 
     CHOICES_CONDITION = [
-        (PLEASE_CHOOSE_CONDITION, "Choose a condition"),
+        (PLEASE_CHOOSE_CONDITION, "Choose a new condition"),
         (NEW, "new"),
         (OPEN_BOX, "open box"),
         (PREOWNED, "preowned"),
@@ -197,9 +197,9 @@ class EditProduct(forms.Form):
         (BROKEN_UNUSABLE, "broken (unusable)")
     ]
 
-    title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product title", "size": "35", "title": "Only edit what you need to"}), required=False)
+    title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product's new title", "size": "35", "title": "Only edit what you need to"}), required=False)
     picture = forms.ImageField(widget=forms.FileInput(attrs={"title": "Only edit what you need to"}), required=False)
-    description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"placeholder": "Description of the product", "rows": "6", "title": "Only edit what you need to"}), required=False)
+    description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"placeholder": "Enter the product's new description", "rows": "6", "title": "Only edit what you need to"}), required=False)
     category = forms.ChoiceField(choices=CHOICES_CATEGORY, widget=forms.Select(attrs={"title": "Only edit what you need to"}), required=False)
     condition = forms.ChoiceField(choices=CHOICES_CONDITION, widget=forms.Select(attrs={"title": "Only edit what you need to"}), required=False)
 

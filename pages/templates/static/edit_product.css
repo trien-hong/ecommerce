@@ -62,7 +62,12 @@ li::marker {
     width: 100%;
 }
 
-.no_product, .not_owner {
+.edit_product_button {
+    display: flex;
+    justify-content: center;
+}
+
+.edit_unavailable {
     text-align: center;
     margin-left: auto;
     margin-right: auto;
@@ -70,9 +75,4 @@ li::marker {
     border: 2px solid black;
     border-radius: 15px;
     width: 65%
-}
-
-.edit_product_button {
-    display: flex;
-    justify-content: center;
 }

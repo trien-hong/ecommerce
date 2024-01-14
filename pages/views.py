@@ -1,3 +1,4 @@
+import os
 import uuid
 from django.http import HttpResponseRedirect
 from django.views.decorators.cache import never_cache
@@ -159,12 +160,14 @@ def edit_product_view(request, id):
             try:
                 product = Product.objects.get(id=id)
                 if edit_product_form.cleaned_data["title"] == "" and edit_product_form.cleaned_data["picture"] is None and edit_product_form.cleaned_data["description"] == "" and edit_product_form.cleaned_data["category"] == "" and edit_product_form.cleaned_data["condition"] == "":
-                    messages.add_message(request, messages.ERROR, mark_safe("<li>Seems like you submitted an empty form.</li><li>If you have nothing to edit on the product, please don't edit the it.</li>"))
+                    messages.add_message(request, messages.ERROR, mark_safe("<li>Seems like you submitted an empty form.</li><li>If you have nothing to edit on the product, please don't edit it.</li>"))
                     return redirect(edit_product_view, id)
                 else:
                     if edit_product_form.cleaned_data["title"] != "":
                         product.title = edit_product_form.cleaned_data["title"]
                     if edit_product_form.cleaned_data["picture"] is not None:
+                        if os.path.exists(product.picture.path):
+                            os.remove(product.picture.path)
                         file_extension = edit_product_form.cleaned_data["picture"].name.split(".")[-1]
                         edit_product_form.cleaned_data["picture"].name = "product_picture_id_" + str(uuid.uuid4())[:13] + "." + file_extension
                         product.picture = edit_product_form.cleaned_data["picture"]
