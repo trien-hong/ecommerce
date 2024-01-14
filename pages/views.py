@@ -31,10 +31,10 @@ def login_view(request):
                 login(request, user)
                 return redirect(index_view)
             else:
-                messages.add_message(request, messages.ERROR, mark_safe("<li>The username and/or password seem to be incorrect. Please try agian.</li>"))
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>The username and/or password seem to be incorrect. Please try agian.</li></ul>"))
                 return redirect(login_view)
         else:
-            messages.add_message(request, messages.ERROR, mark_safe("<li>The username and/or password seem to be incorrect. Please try agian.</li>"))
+            messages.add_message(request, messages.ERROR, mark_safe("<ul><li>The username and/or password seem to be incorrect. Please try agian.</li></ul>"))
             return redirect(login_view)
 
 @never_cache
@@ -160,7 +160,7 @@ def edit_product_view(request, id):
             try:
                 product = Product.objects.get(id=id)
                 if edit_product_form.cleaned_data["title"] == "" and edit_product_form.cleaned_data["picture"] is None and edit_product_form.cleaned_data["description"] == "" and edit_product_form.cleaned_data["category"] == "" and edit_product_form.cleaned_data["condition"] == "":
-                    messages.add_message(request, messages.ERROR, mark_safe("<li>Seems like you submitted an empty form.</li><li>If you have nothing to edit on the product, please don't edit it.</li>"))
+                    messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Seems like you submitted an empty form.</li><li>If you have nothing to edit on the product, please don't edit it.</li></ul>"))
                     return redirect(edit_product_view, id)
                 else:
                     if edit_product_form.cleaned_data["title"] != "":
@@ -181,7 +181,7 @@ def edit_product_view(request, id):
                     messages.add_message(request, messages.SUCCESS, "Your product have been successfully updated.")
                     return redirect(edit_product_view, id)
             except Product.DoesNotExist:
-                messages.add_message(request, messages.ERROR, mark_safe("<li>There seems to be an error in editing your product. Please try again.</li>"))
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in editing your product. Please try again.</li></ul>"))
                 return redirect(edit_product_view, id)
         else:
             error_string = get_form_errors(edit_product_form)
@@ -210,16 +210,16 @@ def add_to_cart_view(request, id):
         return redirect(product_view, id=id)
     if request.method == "POST":
         try:
-            product = Product.objects.get(id=id)
             user = request.user
+            product = Product.objects.get(id=id)
             if product.bought == True:
-                messages.add_message(request, messages.ERROR, mark_safe("<li>Sorry, this product, \"" + product.title + "\" is now sold out.</li>"))
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Sorry, this product, \"" + product.title + "\" is now sold out.</li></ul>"))
                 return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
             elif product.seller == user:
-                messages.add_message(request, messages.ERROR, mark_safe("<li>You cannot add your own product to the cart.</li>"))
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>You cannot add your own product to the cart.</li></ul>"))
                 return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
             elif Cart.objects.filter(product=product, user=user).exists():
-                messages.add_message(request, messages.ERROR, mark_safe("<li>This product, \"" + product.title + "\" already exist in your cart.</li>"))
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>This product, \"" + product.title + "\" already exist in your cart.</li></ul>"))
                 return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
             else:
                 cart = Cart(product=product, user=user)
@@ -227,7 +227,7 @@ def add_to_cart_view(request, id):
                 messages.add_message(request, messages.SUCCESS, "You've successfully added, \"" + product.title + "\", to your cart.")
                 return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
         except Product.DoesNotExist:
-            messages.add_message(request, messages.ERROR, mark_safe("<li>There seems to be an error in adding this product to your cart.</li>"))
+            messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in adding this product to your cart.</li></ul>"))
             return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 @never_cache
@@ -246,7 +246,7 @@ def delete_from_cart_view(request, id):
             messages.add_message(request, messages.SUCCESS, "The product, \"" + item.product.title + "\", has been successfully removed from your cart.")
             return redirect(cart_view)
         except Cart.DoesNotExist:
-            messages.add_message(request, messages.ERROR, mark_safe("<li>There seems to be an error in removing this product from your cart.</li>"))
+            messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in removing this product from your cart.</li></ul>"))
             return redirect(cart_view)
 
 @never_cache
@@ -288,21 +288,21 @@ def check_out_view(request):
                 else:
                     already_bought = already_bought + 1
             except Product.DoesNotExist:
-                messages.add_message(request, messages.ERROR, mark_safe("<li>There seemed to be an error with one, some, or all your items in your cart.</li><li>It's possible the seller delisted an item in your cart.</li>"))
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seemed to be an error with one, some, or all your items in your cart.</li><li>It's possible the seller delisted an item in your cart.</li></ul>"))
                 return redirect(cart_view)
         if already_bought == 0:
             messages.add_message(request, messages.SUCCESS, "Checkout was successful. All the items in your cart have been bought by you.")
             return redirect(cart_view)
         elif already_bought == 1:
             if cart.count() == already_bought:
-                messages.add_message(request, messages.ERROR, mark_safe("<li>Checkout was unsuccessful. The item you wanted to buy has been bought by another person.</li>"))
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Checkout was unsuccessful. The item you wanted to buy has been bought by another person.</li></ul>"))
                 return redirect(cart_view)
             else:
                 messages.add_message(request, messages.SUCCESS, "Checkout was successful. However, there was 1 item that has been bought by another person and that item is now marked by \"SOLD OUT\". That 1 item will not be purchased.")
                 return redirect(cart_view)
         else:
             if cart.count() == already_bought:
-                messages.add_message(request, messages.ERROR, mark_safe("<li>Checkout was unsuccessful. The item(s) you wanted to buy has been bought by another person.</li>"))
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Checkout was unsuccessful. The item(s) you wanted to buy has been bought by another person.</li></ul>"))
                 return redirect(cart_view)
             else:
                 messages.add_message(request, messages.SUCCESS, "Checkout was successful. However, some item(s) has been bought by another person and those item(s) are now marked by \"SOLD OUT\". There was a total of " + str(already_bought) + " item(s) bought already. Those item(s) will not be purchased.")
@@ -365,10 +365,11 @@ def change_username_view(request):
                 messages.add_message(request, messages.SUCCESS, "Your username is now \"" + change_username_form.cleaned_data["username"] +"\". Everything associated with the username has now been updated.")
                 return redirect(profile_option_view, option="settings")
             except User.DoesNotExist:
-                messages.add_message(request, messages.ERROR, mark_safe("<li>There seemed to be an error in updating your username. Please try again.</li>"))
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seemed to be an error in updating your username. Please try again.</li></ul>"))
                 return redirect(profile_option_view, option="settings")
         else:
-            messages.add_message(request, messages.ERROR, mark_safe(get_form_errors(change_username_form)))
+            error_string = get_form_errors(change_username_form)
+            messages.add_message(request, messages.ERROR, mark_safe(error_string))
             return redirect(profile_option_view, option="settings")
 
 @never_cache
@@ -390,10 +391,11 @@ def change_password_view(request):
                 messages.add_message(request, messages.SUCCESS, "Your password has been successfully updated. You must login again with the new password.")
                 return redirect(profile_option_view, option="settings")
             except User.DoesNotExist:
-                messages.add_message(request, messages.ERROR, mark_safe("<li>There seemed to be an error in updating your password. Please try again.</li>"))
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seemed to be an error in updating your password. Please try again.</li></ul>"))
                 return redirect(profile_option_view, option="settings")
         else:
-            messages.add_message(request, messages.ERROR, mark_safe(get_form_errors(change_password_form)))
+            error_string = get_form_errors(change_password_form)
+            messages.add_message(request, messages.ERROR, mark_safe(error_string))
             return redirect(profile_option_view, option="settings")
 
 @never_cache
@@ -414,10 +416,11 @@ def delete_account_view(request):
                 messages.add_message(request, messages.SUCCESS, "Your account has been deleted. Thank you for using our service!")
                 return redirect(login_view)
             except User.DoesNotExist:
-                messages.add_message(request, messages.ERROR, mark_safe("<li>There seemed to be an error in deleting your account. Please try again.</li>"))
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seemed to be an error in deleting your account. Please try again.</li></ul>"))
                 return redirect(profile_option_view, option="settings")
         else:
-            messages.add_message(request, messages.ERROR, mark_safe(get_form_errors(delete_account_form)))
+            error_string = get_form_errors(delete_account_form)
+            messages.add_message(request, messages.ERROR, mark_safe(error_string))
             return redirect(profile_option_view, option="settings")
 
 @never_cache
@@ -447,7 +450,7 @@ def logout_user(request):
 
 def get_form_errors(form):
     errors = list(form.errors.values())
-    error_string = ""
+    error_string = "<ul>"
     for i in range(len(errors)):
         error_string = error_string + "<li>" + str(list(form.errors.values())[i][0]) + "</li>"
-    return error_string
+    return error_string + "</ul>"

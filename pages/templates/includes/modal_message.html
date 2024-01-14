@@ -1,0 +1,45 @@
+{% if messages %}
+	{% for message in messages %}
+		<div class="modal" id="modal" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						{% if message.tags == 'error' %}
+							<h4 class="modal-title text-danger"><b><u>ERROR</u></b></h4>
+						{% elif message.tags == 'success' %}
+							<h4 class="modal-title text-success"><b><u>SUCCESS</u></b></h4>
+						{% elif message.extra_tags == 'check-out' or message.extra_tags == 'delete-all-items-from-cart' %}
+							<h4 class="modal-title text-warning"><b><u>PLEASE CONFIRM</u></b></h4>
+						{% endif %}
+						<button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="CLOSE" title="CLOSE ALERT"></button>
+					</div>
+						<div class="modal-body">
+							<p class="py-0 my-0">{{message}}</p>
+						</div>
+					<div class="modal-footer">
+						{% if message.extra_tags == 'check-out' %}
+							<form action="{% url 'check_out_view' %}" method="POST">
+								{% csrf_token %}
+								<input class="btn btn-success" type="submit" value="YES" title="YES">
+							</form>
+							<button type="button" class="btn btn-danger" data-bs-dismiss="modal" title="NO">NO</button>
+						{% elif message.extra_tags == 'delete-all-items-from-cart' %}
+							<form action="{% url 'delete_all_items_from_cart_view' %}" method="POST">
+								{% csrf_token %}
+								<input class="btn btn-success" type="submit" value="YES" title="YES">
+							</form>
+							<button type="button" class="btn btn-danger" data-bs-dismiss="modal" title="NO">NO</button>
+						{% else %}
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" title="CLOSE ALERT">CLOSE</button>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endfor %}
+	<script type="text/javascript">
+		$(document).ready(function(){
+				$("#modal").modal('show');
+		});
+	</script>
+{% endif %}
