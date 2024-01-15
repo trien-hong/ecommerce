@@ -1,0 +1,67 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+	<div class="container-fluid">
+		<a class="navbar-brand">E-commerce</a>
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+				{% if main == False %}
+					<li class="nav-item">
+						{% if location == "login" %}
+							<a class="nav-link active" aria-current="page" href="{% url 'login_view' %}" title="Login page"><u>Login</u></a>
+						{% else %}
+							<a class="nav-link" href="{% url 'login_view' %}" title="Login page">Login</a>
+						{% endif %}
+					</li>
+					<li class="nav-item">
+						{% if location == "signup" %}
+							<a class="nav-link active" aria-current="page" href="{% url 'signup_view' %}" title="Signup page"><u>Signup</u></a>
+						{% else %}
+							<a class="nav-link" href="{% url 'signup_view' %}" title="Signup page">Signup</a>
+						{% endif %}
+					</li>
+					<li class="nav-item">
+						{% if location == "reset_password" %}
+							<a class="nav-link active" aria-current="page" href="{% url 'reset_password_view' %}" title="Reset password page"><u>Reset password</u></a>
+						{% else %}
+							<a class="nav-link" href="{% url 'reset_password_view' %}" title="Reset password page">Reset password</a>
+						{% endif %}
+					</li>
+				{% else %}
+					<li class="nav-item">
+						{% if location == "index" %}
+							<a class="nav-link active" aria-current="page" href="{% url 'index_view' %}" title="Homepage"><u>Home</u></a>
+						{% else %}
+							<a class="nav-link" href="{% url 'index_view' %}" title="Homepage">Home</a>
+						{% endif %}
+					</li>
+					<li class="nav-item">
+						{% if location == "profile" %}
+							<a class="nav-link active" aria-current="page" href="{% url 'profile_view' %}" title="View profile"><u>Profile</u></a>
+						{% else %}
+							<a class="nav-link" href="{% url 'profile_view' %}" title="View profile">Profile</a>
+						{% endif %}
+					</li>
+					<li class="nav-item">
+						{% if location == "add_product" %}
+							<a class="nav-link active" aria-current="page" href="{% url 'add_product_view' %}" title="Add product"><u>Add product</u></a>
+						{% else %}
+							<a class="nav-link" href="{% url 'add_product_view' %}" title="Add product">Add product</a>
+						{% endif %}
+					</li>
+					<li class="nav-item">
+						{% if location == "cart" %}
+							<a class="nav-link active" aria-current="page" href="{% url 'cart_view' %}" title="View cart"><u>Cart</u></a>
+						{% else %}
+							<a class="nav-link" href="{% url 'cart_view' %}" title="View cart">Cart</a>
+						{% endif %}
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="{% url 'logout_user' %}" title="Logout user">Logout</a>
+					</li>
+				{% endif %}
+			</ul>
+		</div>
+	</div>
+</nav>
