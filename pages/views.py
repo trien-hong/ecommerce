@@ -134,7 +134,7 @@ def add_product_view(request):
             error_string = get_form_errors(add_product_form)
             messages.add_message(request, messages.ERROR, mark_safe(error_string))
             return redirect(add_product_view)
-        
+
 @never_cache
 @login_required
 def edit_product_view(request, id):
@@ -147,7 +147,7 @@ def edit_product_view(request, id):
         edit_product_form = forms.EditProduct()
         try:
             product = Product.objects.get(id=id)
-            if product.seller != user:
+            if product.seller != user or product.bought == True:
                 product = None
         except Product.DoesNotExist:
             product = None
