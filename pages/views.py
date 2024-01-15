@@ -4,15 +4,14 @@ from django.http import HttpResponseRedirect
 from django.views.decorators.cache import never_cache
 from django.utils.safestring import mark_safe
 from django.shortcuts import render, redirect
-from django.contrib.auth import get_user_model
-User = get_user_model()
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib import messages
 from . import forms
 from . models import Product
 from . models import Cart
 from . models import Sold
+User = get_user_model()
 
 @never_cache
 def login_view(request):
@@ -125,7 +124,7 @@ def add_product_view(request):
         add_product_form = forms.AddProduct(product_info, picture)
         if add_product_form.is_valid():
             file_extension = add_product_form.cleaned_data["picture"].name.split(".")[-1]
-            add_product_form.cleaned_data["picture"].name = "product_picture_id_" + str(uuid.uuid4())[:13] + "." + file_extension
+            add_product_form.cleaned_data["picture"].name = "product_picture_id_" + str(uuid.uuid4()) + "." + file_extension
             product = Product(title=product_info["title"], picture=add_product_form.cleaned_data["picture"], description=product_info["description"], category=product_info["category"], condition=product_info["condition"], seller=user, bought=False, views=0)
             product.save()
             messages.add_message(request, messages.SUCCESS, "Your product, \"" + product.title + "\" has been successfully added. Image less than/greater than 500x500 have been upsized/downsized and cropped to the middle and center.")
@@ -137,9 +136,33 @@ def add_product_view(request):
 
 @never_cache
 @login_required
+def delete_product_view(request, id):
+    """
+    URL: /product/delete-product/id/<int:id>/
+    where <int:id> is the id of the product that you want to delete
+    """
+    if request.method == "GET":
+        return redirect(profile_option_view, option="listing-history")
+    if request.method == "POST":
+        user = request.user
+        try:
+            product = Product.objects.get(id=id)
+            if product.seller != user or product.bought == True:
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in deleting this product from your profile. Please try again.</li></ul>"))
+                return redirect(profile_option_view, option="listing-history")
+            else:
+                product.delete()
+                messages.add_message(request, messages.SUCCESS, "You successfully deleted the product, \"" + product.title + "\", from your profile.")
+                return redirect(profile_option_view, option="listing-history")
+        except Product.DoesNotExist:
+            messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in deleting this product from your profile. Please try again.</li></ul>"))
+            return redirect(profile_option_view, option="listing-history")
+
+@never_cache
+@login_required
 def edit_product_view(request, id):
     """
-    URL: /product/edit/id/<int:id>/
+    URL: /product/edit-product/id/<int:id>/
     where <int:id> is the id of the product that you want to edit
     """
     if request.method == "GET":
@@ -169,7 +192,7 @@ def edit_product_view(request, id):
                         if os.path.exists(product.picture.path):
                             os.remove(product.picture.path)
                         file_extension = edit_product_form.cleaned_data["picture"].name.split(".")[-1]
-                        edit_product_form.cleaned_data["picture"].name = "product_picture_id_" + str(uuid.uuid4())[:13] + "." + file_extension
+                        edit_product_form.cleaned_data["picture"].name = "product_picture_id_" + str(uuid.uuid4()) + "." + file_extension
                         product.picture = edit_product_form.cleaned_data["picture"]
                     if edit_product_form.cleaned_data["description"] != "":
                         product.description = edit_product_form.cleaned_data["description"]
@@ -425,7 +448,7 @@ def delete_account_view(request):
 
 @never_cache
 @login_required
-def confirm_message(request, type):
+def confirm_message_view(request, type):
     """
     URL: /confirm-message/type/<str:type>/
     where <str:type> is any one of the following below
@@ -437,6 +460,9 @@ def confirm_message(request, type):
         elif type == "delete-all-items-from-cart":
             messages.add_message(request, messages.WARNING, "Are you sure you want to delete all items in your cart?", extra_tags="delete-all-items-from-cart")
             return redirect(cart_view)
+        elif type == "delete-product":
+            messages.add_message(request, messages.WARNING, "Are you sure you want to delete this product from your profile?", extra_tags="delete-product")
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 @never_cache
 @login_required

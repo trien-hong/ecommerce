@@ -30,11 +30,12 @@
                 <table>
                   {{edit_product_form}}
                 </table>
-                <hr>
-                <div class="edit_product_button pt-1">
+                <div class="edit_product_button pt-3">
                   <input class="btn btn-primary" type="submit" value="EDIT PRODUCT" title="Edit product">
                 </div>
               </form>
+              <hr>
+              <a class="btn btn-danger" href="{% url 'confirm_message_view' type='delete-product' %}" role="button" title="Delete product">DELETE PRODUCT</a>
             </div>
           </div>
         {% else %}
