@@ -16,7 +16,7 @@
           <div class="product">
             <div class="current_product_information px-3">
               <h2 class="pt-2">Title: {{product.title}}</h2>
-              <a href="{% url 'product_view' id=product.id %}" title="Click to view more details of this product"><img class="product_image" src="{{product.picture.url}}" alt="product picture"></a>
+              <a href="{% url 'product_view' uuid=product.uuid %}" title="Click to view more details of this product"><img class="product_image" src="{{product.picture.url}}" alt="product picture"></a>
               <h4 class="pt-2">Description: {{product.description}}</h4>
               <h4 class="py-1">Category: {{product.category}}</h4>
               <h4 class="pt-1">Condition: {{product.condition}}</h4>
@@ -25,7 +25,7 @@
             <div class="edit_product_form px-3">
               <h2 class="py-0 my-0">EDIT PRODUCT</h2>
               <hr>
-              <form action="{% url 'edit_product_view' id=product.id %}" enctype="multipart/form-data" method="POST">
+              <form action="{% url 'edit_product_view' uuid=product.uuid %}" enctype="multipart/form-data" method="POST">
                 {% csrf_token %}
                 <table>
                   {{edit_product_form}}

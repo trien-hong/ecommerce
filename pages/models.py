@@ -1,3 +1,4 @@
+import uuid
 from django_resized import ResizedImageField
 from django.db import models
 from django.contrib.auth import get_user_model
@@ -59,6 +60,7 @@ class Product(models.Model):
         (BROKEN_UNUSABLE, "broken (unusable)")
     ]
 
+    uuid = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False, unique=True)
     title = models.CharField(max_length=50)
     picture = ResizedImageField(size=[500, 500], crop=["middle", "center"], quality=100, upload_to="product_picture", null=False, blank=False)
     description = models.CharField(max_length=500)

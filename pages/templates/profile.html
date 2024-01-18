@@ -103,9 +103,9 @@
                 <div class="listing_history">
                   <div class="products text-break">
                     {% for item in listing_history %}
-                      <div class="product px-3 py-2 mx-2 my-2" id="id_{{item.id}}">
+                      <div class="product px-3 py-2 mx-2 my-2">
                         <h4><b>{{item.title}}</b></h4>
-                        <a class="pt-2" href="{% url 'product_view' id=item.id %}" title="Click to view more details of this product"><img src="{{item.picture.url}}" alt="product picture" style="width: 100%;"></a>
+                        <a class="pt-2" href="{% url 'product_view' uuid=item.uuid %}" title="Click to view more details of this product"><img src="{{item.picture.url}}" alt="product picture" style="width: 100%;"></a>
                         <p class="pt-3"><b>{{item.description}}</b></p>
                         <p><b>Category: {{item.category}}</b></p>
                         {% if item.bought == True %}
@@ -114,7 +114,7 @@
                           </div>
                         {% else %}
                           <div class="edit_product pb-3">
-                            <a class="btn btn-secondary" href="{% url 'edit_product_view' id=item.id %}" title="Edit product">EDIT PRODUCT</a>
+                            <a class="btn btn-secondary" href="{% url 'edit_product_view' uuid=item.uuid %}" title="Edit product">EDIT PRODUCT</a>
                           </div>
                           <div class="not_bought pb-1 mb-2">
                             <h4 class="py-0 my-0" title="No one has bought this yet"><b><u>ACTIVE</b></u></h4>

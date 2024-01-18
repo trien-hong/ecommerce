@@ -102,15 +102,16 @@ def index_view(request):
 
 @never_cache
 @login_required
-def product_view(request, id):
+def product_view(request, uuid):
     """
-    URL: /product/id/<int:id>/
-    Where <int:id> is the id of the product being viewed
+    URL: /product/id/<uuid:uuid>/
+    where <uuid:uuid> is the uuid (NOT ID despite the URL) of the product being viewed
+    uuid is exposed to the user and not the ID/PK
     """
     if request.method == "GET":
         try:
             user = request.user
-            product = Product.objects.get(id=id)
+            product = Product.objects.get(uuid=uuid)
             if product.seller != user:
                 product.views = product.views + 1
                 product.save()
@@ -146,17 +147,18 @@ def add_product_view(request):
 
 @never_cache
 @login_required
-def delete_product_view(request, id):
+def delete_product_view(request, uuid):
     """
-    URL: /product/delete-product/id/<int:id>/
-    where <int:id> is the id of the product that you want to delete
+    URL: /product/delete-product/id/<uuid:uuid>/
+    where <uuid:uuid> is the uuid (NOT ID despite the URL) of the product that you want to delete
+    uuid is exposed to the user and not the ID/PK
     """
     if request.method == "GET":
         return redirect(profile_option_view, option="listing-history")
     if request.method == "POST":
         user = request.user
         try:
-            product = Product.objects.get(id=id)
+            product = Product.objects.get(uuid=uuid)
             if product.seller != user or product.bought == True:
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in deleting this product from your profile. Please try again.</li></ul>"))
                 return redirect(profile_option_view, option="listing-history")
@@ -172,16 +174,17 @@ def delete_product_view(request, id):
 
 @never_cache
 @login_required
-def edit_product_view(request, id):
+def edit_product_view(request, uuid):
     """
-    URL: /product/edit-product/id/<int:id>/
-    where <int:id> is the id of the product that you want to edit
+    URL: /product/edit-product/id/<uuid:uuid>/
+    where <uuid:uuid> is the uuid (NOT ID despite the URL) of the product that you want to edit
+    uuid is exposed to the user and not the ID/PK
     """
     if request.method == "GET":
         user = request.user
         edit_product_form = forms.EditProduct()
         try:
-            product = Product.objects.get(id=id)
+            product = Product.objects.get(uuid=uuid)
             if product.seller != user or product.bought == True:
                 product = None
         except Product.DoesNotExist:
@@ -193,10 +196,10 @@ def edit_product_view(request, id):
         edit_product_form = forms.EditProduct(product_info, picture)
         if edit_product_form.is_valid():
             try:
-                product = Product.objects.get(id=id)
+                product = Product.objects.get(uuid=uuid)
                 if edit_product_form.cleaned_data["title"] == "" and edit_product_form.cleaned_data["picture"] is None and edit_product_form.cleaned_data["description"] == "" and edit_product_form.cleaned_data["category"] == "" and edit_product_form.cleaned_data["condition"] == "":
                     messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Seems like you submitted an empty form.</li><li>If you have nothing to edit on the product, please don't edit it.</li></ul>"))
-                    return redirect(edit_product_view, id)
+                    return redirect(edit_product_view, uuid)
                 else:
                     if edit_product_form.cleaned_data["title"] != "":
                         product.title = edit_product_form.cleaned_data["title"]
@@ -214,20 +217,20 @@ def edit_product_view(request, id):
                         product.condition = edit_product_form.cleaned_data["condition"]
                     product.save()
                     messages.add_message(request, messages.SUCCESS, "Your product have been successfully updated.")
-                    return redirect(edit_product_view, id)
+                    return redirect(edit_product_view, uuid)
             except Product.DoesNotExist:
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in editing your product. Please try again.</li></ul>"))
-                return redirect(edit_product_view, id)
+                return redirect(edit_product_view, uuid)
         else:
             error_string = get_form_errors(edit_product_form)
             messages.add_message(request, messages.ERROR, mark_safe(error_string))
-            return redirect(edit_product_view, id)
-        
+            return redirect(edit_product_view, uuid)
+
 @never_cache
 @login_required
 def search_view(request):
     """
-    URL: /products/search/search?title=
+    URL: /products/search?title=
     where ?title=search-term is the query string
     """
     if request.method == "GET":
@@ -258,17 +261,18 @@ def cart_view(request):
 
 @never_cache
 @login_required
-def add_to_cart_view(request, id):
+def add_to_cart_view(request, uuid):
     """
-    URL: /cart/add-to-cart/id/<int:id>/
-    where <int:id> is the id of product being added to cart
+    URL: /cart/add-to-cart/id/<uuid:uuid>/
+    where <uuid:uuid> is the uuid (NOT ID/PK despite the URL) of product being added to cart
+    uuid is exposed to the user and not the ID/PK
     """
     if request.method == "GET":
-        return redirect(product_view, id=id)
+        return redirect(product_view, uuid=uuid)
     if request.method == "POST":
         try:
             user = request.user
-            product = Product.objects.get(id=id)
+            product = Product.objects.get(uuid=uuid)
             if product.bought == True:
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Sorry, this product, \"" + product.title + "\" is now sold out.</li></ul>"))
                 return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
@@ -292,7 +296,7 @@ def add_to_cart_view(request, id):
 def delete_from_cart_view(request, id):
     """
     URL: /cart/delete-from-cart/id/<int:id>/
-    where <int:id> is the id of the item being removed from the cart
+    where <int:id> is the id of the item within the cart you're trying to removed
     """
     if request.method == "GET":
         return redirect(cart_view)
