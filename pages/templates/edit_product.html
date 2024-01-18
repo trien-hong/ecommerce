@@ -9,8 +9,8 @@
     <link rel="stylesheet" href="{% static 'edit_product.css' %}"/>
   </head>
   <body>
-    <div class="container min-vh-100 px-0">
-      {% include "includes/navbar.html" %}
+    {% include "includes/navbar.html" %}
+    <div class="container px-0">
       <div class="content py-4">
         {% if product %}
           <div class="product">

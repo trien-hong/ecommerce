@@ -37,13 +37,6 @@
 						{% endif %}
 					</li>
 					<li class="nav-item">
-						{% if location == "profile" %}
-							<a class="nav-link active" aria-current="page" href="{% url 'profile_view' %}" title="View profile"><u>Profile</u></a>
-						{% else %}
-							<a class="nav-link" href="{% url 'profile_view' %}" title="View profile">Profile</a>
-						{% endif %}
-					</li>
-					<li class="nav-item">
 						{% if location == "add_product" %}
 							<a class="nav-link active" aria-current="page" href="{% url 'add_product_view' %}" title="Add product"><u>Add product</u></a>
 						{% else %}
@@ -58,10 +51,23 @@
 						{% endif %}
 					</li>
 					<li class="nav-item">
+						{% if location == "profile" %}
+							<a class="nav-link active" aria-current="page" href="{% url 'profile_view' %}" title="View profile"><u>Profile</u></a>
+						{% else %}
+							<a class="nav-link" href="{% url 'profile_view' %}" title="View profile">Profile</a>
+						{% endif %}
+					</li>
+					<li class="nav-item">
 						<a class="nav-link" href="{% url 'logout_user' %}" title="Logout user">Logout</a>
 					</li>
 				{% endif %}
 			</ul>
+			{% if search == True %}
+				<form action="{% url 'search_view' %}" class="d-flex" role="search" method="GET">
+					{{search_product_form}}
+					<button class="btn btn-success" type="submit">Search</button>
+				</form>
+			{% endif %}
 		</div>
 	</div>
 </nav>

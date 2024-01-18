@@ -13,6 +13,7 @@ urlpatterns = [
     path("product/add-product/", views.add_product_view, name="add_product_view"),
     path("product/delete-product/id/<int:id>/", views.delete_product_view, name="delete_product_view"),
     path("product/edit-product/id/<int:id>/", views.edit_product_view, name="edit_product_view"),
+    path("products/search", views.search_view, name="search_view"),
     path("cart/", views.cart_view, name="cart_view"),
     path("cart/add-to-cart/id/<int:id>/", views.add_to_cart_view, name="add_to_cart_view"),
     path("cart/delete-from-cart/id/<int:id>/", views.delete_from_cart_view, name="delete_from_cart_view"),

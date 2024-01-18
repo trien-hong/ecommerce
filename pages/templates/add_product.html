@@ -9,8 +9,8 @@
     <link rel="stylesheet" href="{% static 'add_product.css' %}"/>
   </head>
   <body>
-    <div class="container min-vh-100 px-0">
-      {% include "includes/navbar.html" with location="add_product" %}
+    {% include "includes/navbar.html" with location="add_product" %}
+    <div class="container px-0">
       <div class="content py-4">
         <div class="add_product_form px-3 py-3">
           <h2 class="py-0 my-0">ADD PRODUCT</h2>

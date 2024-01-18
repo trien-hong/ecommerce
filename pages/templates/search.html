@@ -2,14 +2,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>E-commerce | Homepage</title>
+    <title>E-commerce | {% if products %}Search - &quot;{{search_term}}&quot;{% else %}Search{% endif %}</title>
     <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}"/>
     <script type="text/javascript" src="{% static 'bootstrap/bootstrap.bundle.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'jquery/jquery.min.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'index.css' %}"/>
+    <link rel="stylesheet" href="{% static 'search.css' %}"/>
   </head>
   <body>
-    {% include "includes/navbar.html" with location="index" search=True %}
+    {% include "includes/navbar.html" with search=True %}
     <div class="container px-0">
       <div class="content mx-2 py-2">
         {% if products %}
@@ -36,8 +36,8 @@
             {% endfor %}
           </div>
         {% else %}
-          <div class="no_products py-3 my-5">
-            <h1>There are currently no products to show.<br><br>Why not be the first? <a href="{% url 'add_product_view' %}" title="Add product">Add product</a></h1>
+          <div class="no_products py-3 px-3 my-5">
+            <h1>Sorry, your search of, &quot;{{search_term}}&quot;, came back empty.<br><br>Please try again.</h1>
           </div>
         {% endif %}
       </div>

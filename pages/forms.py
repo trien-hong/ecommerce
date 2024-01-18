@@ -210,3 +210,6 @@ class EditProduct(forms.Form):
             if picture.size > 5*1024*1024:
                 raise forms.ValidationError("Image is greater than 5MB. Please upload an image that is less than 5MB.")
         return picture
+    
+class SearchProduct(forms.Form):
+    title = forms.CharField(max_length=50, label="", widget=forms.TextInput(attrs={"class": "form-control me-2", "id": "product_search", "type": "search", "label": "", "placeholder": "Search...", "title": "Search for specific products (by title)", "size": "35"}), required=False)

@@ -19,8 +19,11 @@ def login_view(request):
     URL: /login/
     """
     if request.method == "GET":
-        login_form = forms.Login()
-        return render(request, "login.html", { "login_form": login_form })
+        if request.user.is_authenticated:
+            return redirect(index_view)
+        else:
+            login_form = forms.Login()
+            return render(request, "login.html", { "login_form": login_form })
     if request.method == "POST":
         user_info = request.POST
         login_form = forms.Login(user_info)
@@ -42,8 +45,11 @@ def signup_view(request):
     URL: /signup/
     """
     if request.method == "GET":
-        signup_form = forms.Signup()
-        return render(request, "signup.html", { "signup_form": signup_form })
+        if request.user.is_authenticated:
+            return redirect(index_view)
+        else:
+            signup_form = forms.Signup()
+            return render(request, "signup.html", { "signup_form": signup_form })
     if request.method == "POST":
         user_info = request.POST
         signup_form = forms.Signup(user_info)
@@ -62,9 +68,12 @@ def reset_password_view(request):
     URL: /reset-password/
     """
     if request.method == "GET":
-        # i hope to one day add verfication to this
-        reset_password_form = forms.RestPassword()
-        return render(request, "reset_password.html", { "reset_password_form": reset_password_form})
+        if request.user.is_authenticated:
+            return redirect(index_view)
+        else:
+            # i hope to one day add verfication to this
+            reset_password_form = forms.RestPassword()
+            return render(request, "reset_password.html", { "reset_password_form": reset_password_form})
     if request.method == "POST":
         user_info = request.POST
         reset_password_form = forms.RestPassword(user_info)
@@ -88,7 +97,8 @@ def index_view(request):
     if request.method == "GET":
         user = request.user
         products = Product.objects.all().exclude(bought=True)
-        return render(request, "index.html", { "current_username": user.username, "products": products })
+        search_product_form = forms.SearchProduct()
+        return render(request, "index.html", { "current_username": user.username, "products": products, "search_product_form": search_product_form })
 
 @never_cache
 @login_required
@@ -151,6 +161,8 @@ def delete_product_view(request, id):
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in deleting this product from your profile. Please try again.</li></ul>"))
                 return redirect(profile_option_view, option="listing-history")
             else:
+                if os.path.exists(product.picture.path):
+                    os.remove(product.picture.path)
                 product.delete()
                 messages.add_message(request, messages.SUCCESS, "You successfully deleted the product, \"" + product.title + "\", from your profile.")
                 return redirect(profile_option_view, option="listing-history")
@@ -210,6 +222,28 @@ def edit_product_view(request, id):
             error_string = get_form_errors(edit_product_form)
             messages.add_message(request, messages.ERROR, mark_safe(error_string))
             return redirect(edit_product_view, id)
+        
+@never_cache
+@login_required
+def search_view(request):
+    """
+    URL: /products/search/search?title=
+    where ?title=search-term is the query string
+    """
+    if request.method == "GET":
+        user = request.user
+        search = request.GET
+        search_product_form = forms.SearchProduct(search)
+        if search_product_form.is_valid():
+            if search_product_form.cleaned_data["title"] == "":
+                products = None
+            else:
+                products = Product.objects.filter(title__startswith=search_product_form.cleaned_data["title"]).exclude(bought=True)
+            return render(request, "search.html", { "current_user": user.username, "products": products, "search_product_form": search_product_form, "search_term": search_product_form.cleaned_data["title"] })
+        else:
+            error_string = get_form_errors(search_product_form)
+            messages.add_message(request, messages.ERROR, mark_safe(error_string))
+            return redirect(index_view)
 
 @never_cache
 @login_required

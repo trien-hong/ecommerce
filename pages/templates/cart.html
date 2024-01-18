@@ -9,11 +9,11 @@
     <link rel="stylesheet" href="{% static 'cart.css' %}"/>
   </head>
   <body>
-    <div class="container min-vh-100 px-0">
-      {% include "includes/navbar.html" with location="cart" %}
-      <div class="content">
+    {% include "includes/navbar.html" with location="cart" %}
+    <div class="container px-0">
+      <div class="content py-2">
         {% if cart %}
-          <h1 class="title pt-3">Your Cart</h1>
+          <h1 class="title">Your Cart</h1>
           <div class="cart">
             <div class="items mx-3 my-3">
               {% for item in cart %}

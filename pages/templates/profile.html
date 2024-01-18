@@ -9,8 +9,8 @@
     <link rel="stylesheet" href="{% static 'profile.css' %}"/>
   </head>
   <body>
-    <div class="container min-vh-100 px-0">
-      {% include "includes/navbar.html" with location="profile" %}
+    {% include "includes/navbar.html" with location="profile" %}
+    <div class="container px-0">
       <div class="content px-2 py-2">
         <div class="welcome pb-2">
           <h1>Welcome, {{user.username}}!</h1>
