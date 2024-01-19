@@ -13,7 +13,7 @@
     <div class="container px-0">
       <div class="content py-2 px-1">
         {% if product %}
-          <div class="product text-break my-3 mx-3">
+          <div class="product text-break my-3 mx-3" id="id_{{product.id}}">
             <div class="product_main_identifiers ms-4 me-4">
               <h2 class="py-3"><b>{{product.title}}</b></h2>
               <img class="product_image pb-4" src="{{product.picture.url}}" alt="product picture">
@@ -28,23 +28,25 @@
               <div class="add_to_cart_form pt-3">
                 <form action="{% url 'add_to_cart_view' uuid=product.uuid %}" method="POST">
                   {% csrf_token %}
-                  {% if product.bought == True %}
+                  {% if current_username == product.seller.username %}
+                    <div class="edit_product pt-3">
+                      <a class="btn btn-secondary" href="{% url 'edit_product_view' uuid=product.uuid %}" title="Edit product">EDIT PRODUCT</a>
+                    </div>
+                  {% elif product.bought == True %}
                     <div class="bought mb-2">
                       <h4 title="Sorry, this product is already sold out"><b><u>SOLD OUT</u></b></h4>
                     </div>
                     <div class="add_to_cart_button pt-3">
                       <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Sorry, this product is already sold out" disabled>
                     </div>
+                  {% elif in_cart == True %}
+                    <div class="add_to_cart_button pt-3">
+                      <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Sorry, this product is already sold out" disabled>
+                    </div>
                   {% else %}
-                    {% if current_username == product.seller.username %}
-                      <div class="edit_product pt-3">
-                        <a class="btn btn-secondary" href="{% url 'edit_product_view' uuid=product.uuid %}" title="Edit product">EDIT PRODUCT</a>
-                      </div>
-                    {% else %}
-                      <div class="add_to_cart_button pt-3">
-                        <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart">
-                      </div>
-                    {% endif %}
+                    <div class="add_to_cart_button pt-3">
+                      <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart">
+                    </div>
                   {% endif %}
                 </form>
               </div>

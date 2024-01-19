@@ -112,12 +112,16 @@ def product_view(request, uuid):
         try:
             user = request.user
             product = Product.objects.get(uuid=uuid)
+            if Cart.objects.filter(product=product, user=user).exists():
+                in_cart = True
+            else:
+                in_cart = False
             if product.seller != user:
                 product.views = product.views + 1
                 product.save()
         except Product.DoesNotExist:
             product = None
-        return render(request, "product.html", { "current_username": user.username, "product": product })
+        return render(request, "product.html", { "current_username": user.username, "product": product, "in_cart": in_cart })
 
 @never_cache
 @login_required
@@ -136,7 +140,7 @@ def add_product_view(request):
         if add_product_form.is_valid():
             file_extension = add_product_form.cleaned_data["picture"].name.split(".")[-1]
             add_product_form.cleaned_data["picture"].name = "product_picture_id_" + str(uuid.uuid4()) + "." + file_extension
-            product = Product(title=product_info["title"], picture=add_product_form.cleaned_data["picture"], description=product_info["description"], category=product_info["category"], condition=product_info["condition"], seller=user, bought=False, views=0)
+            product = Product(title=add_product_form.cleaned_data["title"], picture=add_product_form.cleaned_data["picture"], description=add_product_form.cleaned_data["description"], category=add_product_form.cleaned_data["category"], condition=add_product_form.cleaned_data["condition"], seller=user)
             product.save()
             messages.add_message(request, messages.SUCCESS, "Your product, \"" + product.title + "\" has been successfully added. Image less than/greater than 500x500 have been upsized/downsized and cropped to the middle and center.")
             return redirect(add_product_view)
@@ -241,7 +245,11 @@ def search_view(request):
             if search_product_form.cleaned_data["title"] == "":
                 products = None
             else:
-                products = Product.objects.filter(title__startswith=search_product_form.cleaned_data["title"]).exclude(bought=True)
+                products = Product.objects.filter(title__istartswith=search_product_form.cleaned_data["title"]).exclude(bought=True)
+                if products.exists() == False:  
+                    products = Product.objects.filter(title__icontains=search_product_form.cleaned_data["title"]).exclude(bought=True)
+            if products.exists() == False:
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Sorry, your search of, \"" + search_product_form.cleaned_data["title"] + "\", came by empty.</li><li>Please note that you are searching by title.</li></ul>"))
             return render(request, "search.html", { "current_user": user.username, "products": products, "search_product_form": search_product_form, "search_term": search_product_form.cleaned_data["title"] })
         else:
             error_string = get_form_errors(search_product_form)

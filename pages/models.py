@@ -66,10 +66,10 @@ class Product(models.Model):
     description = models.CharField(max_length=500)
     category = models.CharField(choices=CHOICES_CATEGORY)
     condition = models.CharField(choices=CHOICES_CONDITION)
-    list_date = models.DateTimeField(auto_now=True)
+    list_date = models.DateTimeField(auto_now_add=True)
     seller = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    bought = models.BooleanField()
-    views = models.IntegerField()
+    bought = models.BooleanField(default=False)
+    views = models.IntegerField(default=0)
 
 class Cart(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -77,5 +77,5 @@ class Cart(models.Model):
 
 class Sold(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    buy_date = models.DateTimeField(auto_now=True)
+    buy_date = models.DateTimeField(auto_now_add=True)
     buyer = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)

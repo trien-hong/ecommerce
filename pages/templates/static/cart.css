@@ -17,11 +17,6 @@ li::marker {
     color: #EA868F;
 }
 
-.title {
-    display: flex;
-    justify-content: center;
-}
-
 .items {
     background-color: wheat;
     border: 2px solid black;

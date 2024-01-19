@@ -13,19 +13,19 @@
     <div class="container px-0">
       <div class="content py-2">
         {% if cart %}
-          <h1 class="title">Your Cart</h1>
+          <h1 class="text-center">Your Cart</h1>
           <div class="cart">
             <div class="items mx-3 my-3">
               {% for item in cart %}
-                <div class="item" id="id_{{item.product.id}}">
+                <div class="item">
                   <div class="item_details">
                     <div class="px-5">
                       <h4 class="item_number">{{forloop.counter}}.&#41;</h4>
                     </div>
                     <div>
-                      <h4 class="item_title py-2 text-break">{{item.product.title}}</h4>
-                      <a class="item_image" href="{% url 'product_view' uuid=item.product.uuid %}" title="Click to view more details of this product"><img src="{{item.product.picture.url}}" alt="product picture" width="150" height="150"></a>
-                      <p class="item_seller pt-2"><b>Seller: {{item.product.seller}}</b></p>
+                      <h4 class="py-2 text-break">Title: {{item.product.title}}</h4>
+                      <a href="{% url 'product_view' uuid=item.product.uuid %}" title="Click to view more details of this product"><img src="{{item.product.picture.url}}" alt="product picture" width="150" height="150"></a>
+                      <p class="pt-2"><b>Seller: {{item.product.seller}}</b></p>
                     </div>
                   </div>
                   <div class="remove_from_cart_form px-5">
