@@ -106,7 +106,7 @@ def product_view(request, uuid):
     """
     URL: /product/id/<uuid:uuid>/
     where <uuid:uuid> is the uuid (NOT ID despite the URL) of the product being viewed
-    uuid is exposed to the user and not the ID/PK
+    if exposed the uuid is shown to the user and not the ID/PK
     """
     if request.method == "GET":
         try:
@@ -155,7 +155,7 @@ def delete_product_view(request, uuid):
     """
     URL: /product/delete-product/id/<uuid:uuid>/
     where <uuid:uuid> is the uuid (NOT ID despite the URL) of the product that you want to delete
-    uuid is exposed to the user and not the ID/PK
+    if exposed the uuid is shown to the user and not the ID/PK
     """
     if request.method == "GET":
         return redirect(profile_option_view, option="listing-history")
@@ -182,7 +182,7 @@ def edit_product_view(request, uuid):
     """
     URL: /product/edit-product/id/<uuid:uuid>/
     where <uuid:uuid> is the uuid (NOT ID despite the URL) of the product that you want to edit
-    uuid is exposed to the user and not the ID/PK
+    if exposed the uuid is shown to the user and not the ID/PK
     """
     if request.method == "GET":
         user = request.user
@@ -244,12 +244,13 @@ def search_view(request):
         if search_product_form.is_valid():
             if search_product_form.cleaned_data["title"] == "":
                 products = None
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Sorry, your search of, \"" + search_product_form.cleaned_data["title"] + "\", came by empty.</li><li>Please note that you are searching by title.</li></ul>"))
             else:
                 products = Product.objects.filter(title__istartswith=search_product_form.cleaned_data["title"]).exclude(bought=True)
                 if products.exists() == False:  
                     products = Product.objects.filter(title__icontains=search_product_form.cleaned_data["title"]).exclude(bought=True)
-            if products.exists() == False:
-                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Sorry, your search of, \"" + search_product_form.cleaned_data["title"] + "\", came by empty.</li><li>Please note that you are searching by title.</li></ul>"))
+                if products.exists() == False:
+                    messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Sorry, your search of, \"" + search_product_form.cleaned_data["title"] + "\", came by empty.</li><li>Please note that you are searching by title.</li></ul>"))
             return render(request, "search.html", { "current_user": user.username, "products": products, "search_product_form": search_product_form, "search_term": search_product_form.cleaned_data["title"] })
         else:
             error_string = get_form_errors(search_product_form)
@@ -272,8 +273,8 @@ def cart_view(request):
 def add_to_cart_view(request, uuid):
     """
     URL: /cart/add-to-cart/id/<uuid:uuid>/
-    where <uuid:uuid> is the uuid (NOT ID/PK despite the URL) of product being added to cart
-    uuid is exposed to the user and not the ID/PK
+    where <uuid:uuid> is the uuid (NOT ID/PK despite the URL) of product being added to the cart
+    if exposed the uuid is shown to the user and not the ID/PK
     """
     if request.method == "GET":
         return redirect(product_view, uuid=uuid)
@@ -301,16 +302,17 @@ def add_to_cart_view(request, uuid):
 
 @never_cache
 @login_required
-def delete_from_cart_view(request, id):
+def delete_from_cart_view(request, uuid):
     """
-    URL: /cart/delete-from-cart/id/<int:id>/
-    where <int:id> is the id of the item within the cart you're trying to removed
+    URL: /cart/delete-from-cart/id/<uuid:uuid>/
+    where <uuid:uuid> is the uuid (NOT ID/PK despite the URL) of item being removed from the cart
+    if exposed the uuid is shown to the user and not the ID/PK
     """
     if request.method == "GET":
         return redirect(cart_view)
     if request.method == "POST":
         try:
-            item = Cart.objects.get(id=id)
+            item = Cart.objects.get(uuid=uuid)
             item.delete()
             messages.add_message(request, messages.SUCCESS, "The product, \"" + item.product.title + "\", has been successfully removed from your cart.")
             return redirect(cart_view)

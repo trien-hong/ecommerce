@@ -13,9 +13,15 @@
 						{% endif %}
 						<button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="CLOSE" title="CLOSE ALERT"></button>
 					</div>
-						<div class="modal-body text-break">
-							<p class="py-0 my-0">{{message}}</p>
-						</div>
+						{% if message.tags == 'error' %}
+							<div class="modal-body text-break pb-0">
+								<p class="py-0 my-0">{{message}}</p>
+							</div>
+						{% else %}
+							<div class="modal-body text-break">
+								<p class="py-0 my-0">{{message}}</p>
+							</div>
+						{% endif %}
 					<div class="modal-footer">
 						{% if message.extra_tags == 'check-out' %}
 							<form action="{% url 'check_out_view' %}" method="POST">

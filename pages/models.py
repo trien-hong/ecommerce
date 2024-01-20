@@ -72,6 +72,7 @@ class Product(models.Model):
     views = models.IntegerField(default=0)
 
 class Cart(models.Model):
+    uuid = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False, unique=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 

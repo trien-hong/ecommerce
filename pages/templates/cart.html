@@ -23,13 +23,13 @@
                       <h4 class="item_number">{{forloop.counter}}.&#41;</h4>
                     </div>
                     <div>
-                      <h4 class="py-2 text-break">Title: {{item.product.title}}</h4>
+                      <h4 class="text-break py-2 pt-3">Title: {{item.product.title}}</h4>
                       <a href="{% url 'product_view' uuid=item.product.uuid %}" title="Click to view more details of this product"><img src="{{item.product.picture.url}}" alt="product picture" width="150" height="150"></a>
                       <p class="pt-2"><b>Seller: {{item.product.seller}}</b></p>
                     </div>
                   </div>
                   <div class="remove_from_cart_form px-5">
-                    <form action="{% url 'delete_from_cart_view' id=item.id %}" method="POST">
+                    <form action="{% url 'delete_from_cart_view' uuid=item.uuid %}" method="POST">
                       {% csrf_token %}
                       {% if item.product.bought == True %}
                         <div class="already_bought mb-2">
