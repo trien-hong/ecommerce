@@ -14,47 +14,51 @@
       <div class="content py-2 px-1">
         {% if product %}
           <div class="product text-break my-3 mx-3">
-            <div class="product_main_identifiers ms-4 me-4">
-              <h2 class="py-3"><b>{{product.title}}</b></h2>
-              <img class="product_image pb-4" src="{{product.picture.url}}" alt="product picture">
+            <div class="product_main_identifiers mx-3 my-3">
+              <h2 class="pb-3"><b>{{product.title}}</b></h2>
+              <img class="product_image" src="{{product.picture.url}}" alt="product picture">
             </div>
             <div class="vr"></div>
             <div class="product_sub_identifiers mx-3 text-wrap">
-              <h3 class="pb-5">{{product.description}}</h3>
-              <h3>Category: {{product.category}}</h3>
-              <h3>Condition: {{product.condition}}</h3>
-              <h3>List Date: {{product.list_date}}</h3>
-              <h3>Seller: {{product.seller}}</h3>
-              <div class="add_to_cart_form pt-3">
+              <h3>{{product.description}}</h3>
+              <hr>
+              <div class="non_form">
+                <h3>Category: {{product.category}}</h3>
+                <h3>Condition: {{product.condition}}</h3>
+                <h3>List Date: {{product.list_date}}</h3>
+                <h3>Seller: {{product.seller}}</h3>
+              </div>
+              <hr>
+              <div class="add_to_cart_form">
                 <form action="{% url 'add_to_cart_view' uuid=product.uuid %}" method="POST">
                   {% csrf_token %}
-                  {% if current_username == product.seller.username %}
-                    <div class="edit_product pt-3">
-                      <a class="btn btn-secondary" href="{% url 'edit_product_view' uuid=product.uuid %}" title="Edit product">EDIT PRODUCT</a>
-                    </div>
-                  {% elif product.bought == True %}
-                    <div class="bought mb-2">
-                      <h4 title="Sorry, this product is already sold out"><b><u>SOLD OUT</u></b></h4>
-                    </div>
-                    <div class="add_to_cart_button pt-3">
+                  {% if product.bought == True %}
+                    <div class="add_to_cart_button">
                       <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Sorry, this product is already sold out" disabled>
                     </div>
+                    <div class="bought">
+                      <h4 title="Sorry, this product is already sold out"><b><u>SOLD OUT</u></b></h4>
+                    </div>
+                  {% elif current_username == product.seller.username %}
+                    <div class="edit_product">
+                      <a class="btn btn-secondary" href="{% url 'edit_product_view' uuid=product.uuid %}" title="Edit product">EDIT PRODUCT</a>
+                    </div>
                   {% elif in_cart == True %}
-                    <div class="add_to_cart_button pt-3">
+                    <div class="add_to_cart_button">
                       <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Sorry, this product is already sold out" disabled>
                     </div>
                   {% else %}
-                    <div class="add_to_cart_button pt-3">
+                    <div class="add_to_cart_button">
                       <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart">
                     </div>
                   {% endif %}
                 </form>
               </div>
             </div>
-          </div>  
+          </div>
           <div>
             <h4 class="float-end pe-3 pt-4">Page Views: <u>{{product.views}}</u></h4>
-          </div>        
+          </div>      
         {% else %}
           <div class="no_product py-3 px-3 my-5">
             <h1>The ID of this product does not match a record on our database.<br><br>Please ensure the ID is correct.</h1>

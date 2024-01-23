@@ -255,7 +255,49 @@ def search_view(request):
         else:
             error_string = get_form_errors(search_product_form)
             messages.add_message(request, messages.ERROR, mark_safe(error_string))
-            return redirect(index_view)
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+        
+@never_cache
+@login_required
+def advanced_search_view(request):
+    """
+    URL: /products/advance-search
+    where everything after advanced-search is the query string
+    """
+    if request.method == "GET":
+        user = request.user
+        advanced_search_product_form = forms.AdvancedSearchProduct(request.GET)
+        if advanced_search_product_form.is_valid():
+            try:
+                if advanced_search_product_form.cleaned_data["title"] == "" or advanced_search_product_form.cleaned_data["title"] is None:
+                    products_title = Product.objects.none()
+                else:
+                    products_title = Product.objects.filter(title__istartswith=advanced_search_product_form.cleaned_data["title"]).exclude(bought=True)
+                if advanced_search_product_form.cleaned_data["category"] == "" or advanced_search_product_form.cleaned_data["category"] is None:
+                    products_category = Product.objects.none()
+                else:
+                    products_category = Product.objects.filter(category=advanced_search_product_form.cleaned_data["category"]).exclude(bought=True)
+                if advanced_search_product_form.cleaned_data["condition"] == "" or advanced_search_product_form.cleaned_data["condition"] is None:
+                    products_condition = Product.objects.none()
+                else:
+                    products_condition = Product.objects.filter(condition=advanced_search_product_form.cleaned_data["condition"]).exclude(bought=True)
+                if advanced_search_product_form.cleaned_data["username"] == "" or advanced_search_product_form.cleaned_data["username"] is None:
+                    products_seller = Product.objects.none()
+                else:
+                    if User.objects.filter(username=advanced_search_product_form.cleaned_data["username"]).exists():
+                        seller = User.objects.get(username=advanced_search_product_form.cleaned_data["username"])
+                        products_seller = Product.objects.filter(seller=seller).exclude(bought=True)
+                    else:
+                        products_seller = Product.objects.none()
+                products = products_title.union(products_category, products_condition, products_seller)
+            except:
+                products = None
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with your advanced search. Please try again.</li></ul>"))
+        else:
+            products = None
+            error_string = get_form_errors(advanced_search_product_form)
+            messages.add_message(request, messages.ERROR, mark_safe(error_string))
+        return render (request, "advanced_search.html", { "advanced_search_product_form": advanced_search_product_form, "products": products })
 
 @never_cache
 @login_required

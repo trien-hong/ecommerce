@@ -1,0 +1,71 @@
+/* I'll eventually try to combine all CSS into one file */
+
+body {
+    background-color: darkgray;
+}
+
+ul {
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
+
+li::marker {
+    color: #EA868F;
+}
+
+.container {
+    background-color: lightgray;
+}
+
+.products {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+    justify-content: center;
+}
+
+.product {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    background-color: wheat;
+    border: 2px solid black;
+}
+
+#product_search {
+    border-color: #6C6C6C;
+}
+
+.advanced_search_form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #EEEEEE;
+    border: 2px solid black;
+    width: 50%;
+}
+
+.advanced_search_button {
+    display: flex;
+    justify-content: center;
+}
+
+.advanced_search_form hr {
+    width: 100%;
+}
+
+.advanced_search_form th {
+    padding-right: 8px;
+}
+
+.no_products {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: wheat;
+    border: 2px solid black;
+    border-radius: 15px;
+    width: 65%
+}

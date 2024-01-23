@@ -28,11 +28,12 @@ li::marker {
     justify-content: space-between;
     background-color: white;
     border: 2px solid black;
-    width: 95%;
+    width: 97%;
 }
 
 .current_product_information {
     display : flex;
+    justify-content: center;
     text-align: center;
     flex-direction: column;
     width: 50%;
@@ -45,8 +46,8 @@ li::marker {
 .edit_product_form {
     display : flex;
     flex-direction: column;
-    justify-content: center;
-    align-items : center;
+    justify-content: space-around;
+    align-items: center;
     width: 50%;
 }
 

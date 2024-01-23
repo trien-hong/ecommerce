@@ -36,7 +36,7 @@
 							</form>
 							<button type="button" class="btn btn-danger" data-bs-dismiss="modal" title="NO">NO</button>
 						{% elif message.extra_tags == 'delete-product' %}
-							<form action="{% url 'delete_product_view' id=product.id %}" method="POST">
+							<form action="{% url 'delete_product_view' uuid=product.uuid %}" method="POST">
 								{% csrf_token %}
 								<input class="btn btn-success" type="submit" value="YES" title="YES">
 							</form>
