@@ -6,36 +6,49 @@
     <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}"/>
     <script type="text/javascript" src="{% static 'bootstrap/bootstrap.bundle.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'jquery/jquery.min.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'edit_product.css' %}"/>
+    <link rel="stylesheet" href="{% static 'style.css' %}"/>
   </head>
   <body>
     {% include "includes/navbar.html" %}
-    <div class="container px-0">
-      <div class="content py-4">
+    <div class="container text-break px-0">
+      <div class="content px-3 py-3">
         {% if product %}
-          <div class="product">
-            <div class="current_product_information px-3">
-              <h2 class="pt-2">Title: {{product.title}}</h2>
-              <a href="{% url 'product_view' uuid=product.uuid %}" title="Click to view more details of this product"><img class="product_image" src="{{product.picture.url}}" alt="product picture"></a>
-              <h4 class="pt-2">Description: {{product.description}}</h4>
-              <h4 class="py-1">Category: {{product.category}}</h4>
-              <h4 class="pt-1">Condition: {{product.condition}}</h4>
+          <div class="edit_product py-3">
+            <div class="current_product_information ps-3">
+              <h2>Title: {{product.title}}</h2>
+              <a href="{% url 'product_view' uuid=product.uuid %}" title="Click to view more details of this product"><img src="{{product.picture.url}}" alt="product picture"></a>
+              <h4>Description: {{product.description}}</h4>
+              <h4>Category: {{product.category}}</h4>
+              <h4>Condition: {{product.condition}}</h4>
             </div>
-            <div class="vr"></div>
-            <div class="edit_product_form px-3">
-              <h2 class="py-0 my-0">EDIT PRODUCT</h2>
+            <div class="vr mx-3"></div>
+            <div class="edit_product_form pe-3">
+              <div>
+                <legend class="display-5 text-center"><b>EDIT PRODUCT</b></legend>
+              </div>
               <hr>
-              <form action="{% url 'edit_product_view' uuid=product.uuid %}" enctype="multipart/form-data" method="POST">
-                {% csrf_token %}
-                <table>
-                  {{edit_product_form}}
-                </table>
-                <div class="edit_product_button pt-5">
-                  <input class="btn btn-primary" type="submit" value="EDIT PRODUCT" title="Edit product">
-                </div>
-              </form>
+              <div>
+                <form action="{% url 'edit_product_view' uuid=product.uuid %}" enctype="multipart/form-data" method="POST">
+                  <fieldset>
+                    {% csrf_token %}
+                    {% for field in edit_product_form %}
+                      <div class="control-group pb-3">
+                        <label class="control-label">{{field.label}}</label> 
+                        <div class="controls">
+                          {{field}}
+                        </div>
+                      </div>
+                    {% endfor %}
+                    <div class="text-center pt-3">
+                      <input class="btn btn-primary" type="submit" value="EDIT PRODUCT" title="Edit product">
+                    </div>
+                  </fieldset>
+                </form>
+              </div>
               <hr>
-              <a class="btn btn-danger" href="{% url 'confirm_message_view' type='delete-product' %}" role="button" title="Delete product">DELETE PRODUCT</a>
+              <div class="text-center">
+                <a class="btn btn-danger" href="{% url 'confirm_message_view' type='delete-product' %}" role="button" title="Delete product">DELETE PRODUCT</a>
+              </div>
             </div>
           </div>
         {% else %}

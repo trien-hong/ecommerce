@@ -6,35 +6,35 @@
     <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}"/>
     <script type="text/javascript" src="{% static 'bootstrap/bootstrap.bundle.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'jquery/jquery.min.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'cart.css' %}"/>
+    <link rel="stylesheet" href="{% static 'style.css' %}"/>
   </head>
   <body>
     {% include "includes/navbar.html" with location="cart" %}
-    <div class="container px-0">
-      <div class="content py-2">
+    <div class="container text-break px-0">
+      <div class="content px-3 py-3">
         {% if cart %}
-          <h1 class="text-center">Your Cart</h1>
           <div class="cart">
-            <div class="items mx-3 my-3">
+            <h1 class="display-3 text-center">Your Cart</h1>
+            <hr>
+            <div class="items">
               {% for item in cart %}
-                <div class="item">
+                <div class="item px-5">
                   <div class="item_details">
-                    <div class="px-5">
-                      <h4 class="item_number">{{forloop.counter}}.&#41;</h4>
-                    </div>
                     <div>
-                      <h4 class="text-break py-2 pt-3">Title: {{item.product.title}}</h4>
+                      <p class="item_number">{{forloop.counter}}</p>
+                    </div>
+                    <div class="vr mx-5"></div>
+                    <div class="ms-1">
+                      <h4>Title: {{item.product.title}}</h4>
                       <a href="{% url 'product_view' uuid=item.product.uuid %}" title="Click to view more details of this product"><img src="{{item.product.picture.url}}" alt="product picture" width="150" height="150"></a>
-                      <p class="pt-2"><b>Seller: {{item.product.seller}}</b></p>
+                      <p class="mb-0 pt-2"><b>Seller: {{item.product.seller}}</b></p>
                     </div>
                   </div>
-                  <div class="remove_from_cart_form px-5">
+                  <div class="remove_from_cart_form">
                     <form action="{% url 'delete_from_cart_view' uuid=item.uuid %}" method="POST">
                       {% csrf_token %}
                       {% if item.product.bought == True %}
-                        <div class="already_bought mb-2">
-                          <h4 title="Sorry, this product is sold out"><b><u>SOLD OUT</u></b></h4>
-                        </div>
+                        <h4 class="bought text-center" title="Sorry, this product is sold out"><b><u>SOLD OUT</u></b></h4>
                       {% endif %}
                       <div class="remove_from_cart_button">
                         <input class="btn btn-danger" type="submit" value="REMOVE ITEM" title="Remove item">
@@ -44,18 +44,18 @@
                 </div>
                 <hr>
               {% endfor %}
-              <div class="cart-footer pb-3 px-5"> 
+              <div class="cart-footer px-5 pb-3"> 
                 <div class="check_out_confirm">
-                  <a class="btn btn-danger btn-lg" href="{% url 'confirm_message_view' type='delete-all-items-from-cart' %}" role="button" title="Delete all items">DELETE ALL ITEMS</a>
+                  <a class="btn btn-danger" href="{% url 'confirm_message_view' type='delete-all-items-from-cart' %}" role="button" title="Delete all items">DELETE ALL ITEMS</a>
                 </div>
                 <div class="check_out_confirm">
-                  <a class="btn btn-primary btn-lg" href="{% url 'confirm_message_view' type='check-out' %}" role="button" title="Check out">CHECK OUT</a>
+                  <a class="btn btn-primary" href="{% url 'confirm_message_view' type='check-out' %}" role="button" title="Check out">CHECK OUT</a>
                 </div>
               </div>
             </div>
           </div>
         {% else %}
-          <div class="empty_cart py-3 my-5">
+          <div class="empty_or_error text-center px-3 py-3">
             <h1>Your cart seems to be empty.<br><br>Why not try adding some items to your cart from the homepage first? <a href="{% url 'index_view' %}" title="Homepage">Homepage</a></h1>
           </div>
         {% endif %}

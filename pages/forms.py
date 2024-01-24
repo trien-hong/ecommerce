@@ -3,13 +3,13 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class Login(forms.Form):
-    username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your username", "size": "30"}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your password", "size": "30"}))
+    username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your username", "class": "field"}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your password", "class": "field"}))
 
 class Signup(forms.Form):
-    username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your username", "size": "30"}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your password", "size": "30"}))
-    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Confirm your password", "size": "30"}))
+    username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your username", "class": "field"}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your password", "class": "field"}))
+    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Confirm your password", "class": "field"}))
 
     def clean_username(self):
         username = self.cleaned_data["username"]
@@ -27,9 +27,9 @@ class Signup(forms.Form):
         return confirm_password
 
 class RestPassword(forms.Form):
-    username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your username", "size": "30"}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your password", "size": "30"}))
-    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Confirm your password", "size": "30"}))
+    username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your username", "class": "field"}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your new password", "class": "field"}))
+    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Confirm your new password", "class": "field"}))
 
     def clean_username(self):
         username = self.cleaned_data["username"]
@@ -133,9 +133,9 @@ class AddProduct(forms.Form):
         (BROKEN_UNUSABLE, "broken (unusable)")
     ]
 
-    title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product's title", "size": "35"}))
+    title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product's title", "class": "field"}))
     picture = forms.ImageField()
-    description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"placeholder": "Enter the product's description", "rows": "6"}))
+    description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"placeholder": "Enter the product's description", "rows": "5", "class": "field"}))
     category = forms.ChoiceField(choices=CHOICES_CATEGORY)
     condition = forms.ChoiceField(choices=CHOICES_CONDITION)
 
@@ -197,9 +197,9 @@ class EditProduct(forms.Form):
         (BROKEN_UNUSABLE, "broken (unusable)")
     ]
 
-    title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product's new title", "title": "Only edit what you need to", "size": "35"}), required=False)
+    title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product's new title", "title": "Only edit what you need to", "class": "field"}), required=False)
     picture = forms.ImageField(widget=forms.FileInput(attrs={"title": "Only edit what you need to"}), required=False)
-    description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"placeholder": "Enter the product's new description", "title": "Only edit what you need to", "rows": "6"}), required=False)
+    description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"placeholder": "Enter the product's new description", "title": "Only edit what you need to", "rows": "6", "class": "field"}), required=False)
     category = forms.ChoiceField(choices=CHOICES_CATEGORY, widget=forms.Select(attrs={"title": "Only edit what you need to"}), required=False)
     condition = forms.ChoiceField(choices=CHOICES_CONDITION, widget=forms.Select(attrs={"title": "Only edit what you need to"}), required=False)
 
@@ -265,7 +265,7 @@ class AdvancedSearchProduct(forms.Form):
         (BROKEN_UNUSABLE, "broken (unusable)")
     ]
 
-    title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product's title", "title": "Enter the product's title", "size": "30"}), required=False)
+    title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product's title", "title": "Enter the product's title", "class": "field"}), required=False)
     category = forms.ChoiceField(choices=CHOICES_CATEGORY, widget=forms.Select(attrs={"title": "Choose the product's category"}), required=False)
     condition = forms.ChoiceField(choices=CHOICES_CONDITION, widget=forms.Select(attrs={"title": "Choose the product's condition"}), required=False)
-    username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter the seller's username", "title": "Enter the seller's username", "size": "30"}), required=False)
+    username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter the seller's username", "title": "Enter the seller's username", "class": "field"}), required=False)

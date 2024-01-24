@@ -6,31 +6,36 @@
     <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}"/>
     <script type="text/javascript" src="{% static 'bootstrap/bootstrap.bundle.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'jquery/jquery.min.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'signup.css' %}"/>
+    <link rel="stylesheet" href="{% static 'style.css' %}"/>
   </head>
   <body>
     {% include "includes/navbar.html" with location="signup" main=False %}
-    <div class="container px-0">
-      <div class="content py-4">
-        <div class="signup_form px-3 py-3">
-          <h2 class="py-0 my-0">SIGNUP</h2>
-          <hr>
-          <form action="{% url 'signup_view' %}" method="POST">
+    <div class="container text-break px-0">
+      <div class="content py-3 px-3">
+        <form class="signup_form px-3 py-3" action="{% url 'signup_view' %}" method="POST">
+          <fieldset>
             {% csrf_token %}
-            <table>
-              {{signup_form}}
-            </table>
-            <div class="signup_button pt-3">
+            <legend class="display-5 text-center"><b>SIGNUP</b></legend>
+            <hr>
+            {% for field in signup_form %}
+              <div class="control-group pb-3">
+                <label class="control-label">{{field.label}}</label> 
+                <div class="controls">
+                  {{field}}
+                </div>
+              </div>
+            {% endfor %}
+            <div class="text-center py-3">
               <input class="btn btn-primary" type="submit" value="SIGNUP" title="Signup">
             </div>
-          </form>
-          <div class="footer">
-            <hr>
-            <a class="nav-link" href="{% url 'login_view' %}" title="Login page">Already have an account?<b><u class="ps-2">Login here</u></b></a>
-            <hr>
-            <a class="nav-link" href="{% url 'reset_password_view' %}" title="Reset password page">Forgot your password?<b><u class="ps-2">Reset here</u></b></a>
-          </div>
-        </div>
+            <div class="footer text-center">
+              <hr>
+              <a class="nav-link" href="{% url 'login_view' %}" title="Login page">Already have an account?<b><u class="ps-2">Login here</u></b></a>
+              <hr>
+              <a class="nav-link" href="{% url 'reset_password_view' %}" title="Reset password page">Forgot your password?<b><u class="ps-2">Reset here</u></b></a>
+            </div>
+          </fieldset>
+        </form>
       </div>
     </div>
     {% include "includes/modal_message.html" %}

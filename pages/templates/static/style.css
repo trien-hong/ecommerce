@@ -1,0 +1,188 @@
+/* base CSS for all pages */
+
+body {
+    background-color: #27374D;
+}
+
+ul {
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
+
+li::marker {
+    color: #EA868F;
+}
+
+.container {
+    background-color: #9DB2BF;
+}
+
+.login_form, .signup_form, .reset_password_form, .add_product_form, .advanced_search_product_form {
+    background-color: #DDE6ED;
+    border: 2px solid black;
+}
+
+.field {
+    width: 100%;
+}
+
+.footer hr {
+    width: 100%;
+}
+
+#product_search {
+    border-color: #6C6C6C;
+}
+
+.products {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.product {
+    background-color: #DDE6ED;
+    border: 2px solid black;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.product_view {
+    background-color: #DDE6ED;
+    border: 2px solid black;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.product_main_identifiers {
+    display : flex;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    width: 50%;
+}
+
+.product_sub_identifiers {
+    display : flex;
+    flex-direction: column;
+    justify-content: space-around;
+    text-align: center;
+    width: 50%;
+}
+
+.edit_product {
+    background-color: #DDE6ED;
+    border: 2px solid black;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.current_product_information {
+    display : flex;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    width: 50%;
+}
+
+.edit_product_form {
+    display : flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 50%;
+}
+
+.edit_product_form hr {
+    width: 100%;
+}
+
+.bought {
+    background-color: #EA868F;
+}
+
+.not_bought {
+    background-color: lightgreen;
+}
+
+.empty_or_error {
+    background-color: #F3F3F3;
+    border: 2px solid black;
+}
+
+.cart {
+    background-color: #DDE6ED;
+    border: 2px solid black;
+}
+
+.item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.item_details {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.item_number {
+    display: flex;
+    justify-content: center;
+    font-size: 1.75em;
+}
+
+.remove_from_cart_form {
+    display: flex;
+    align-items: center;
+}
+
+.cart-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.options {
+    background-color: #DDE6ED;
+    border: 2px solid black;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.profile_buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 20%;
+    overflow-y: auto;
+}
+
+.option_view {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 80%;
+}
+
+.change_username_form, .change_password_form, .delete_account_form {
+    background-color: white;
+    border: 2px solid black;
+}
+
+.listing_history, .purchase_history {
+    height: 77vh;
+    overflow-y: auto;
+}
+
+.profile_items {
+    background-color: white;
+    border: 2px solid black;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}

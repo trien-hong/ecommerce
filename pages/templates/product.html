@@ -6,21 +6,21 @@
     <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}"/>
     <script type="text/javascript" src="{% static 'bootstrap/bootstrap.bundle.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'jquery/jquery.min.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'product.css' %}"/>
+    <link rel="stylesheet" href="{% static 'style.css' %}"/>
   </head>
   <body>
     {% include "includes/navbar.html" %}
-    <div class="container px-0">
-      <div class="content py-2 px-1">
+    <div class="container text-break px-0">
+      <div class="content px-3 py-3">
         {% if product %}
-          <div class="product text-break my-3 mx-3">
-            <div class="product_main_identifiers mx-3 my-3">
-              <h2 class="pb-3"><b>{{product.title}}</b></h2>
+          <div class="product_view px-3 py-3">
+            <div class="product_main_identifiers">
+              <h2><b>{{product.title}}</b></h2>
               <img class="product_image" src="{{product.picture.url}}" alt="product picture">
             </div>
-            <div class="vr"></div>
-            <div class="product_sub_identifiers mx-3 text-wrap">
-              <h3>{{product.description}}</h3>
+            <div class="vr mx-3"></div>
+            <div class="product_sub_identifiers">
+              <h3>Description: {{product.description}}</h3>
               <hr>
               <div class="non_form">
                 <h3>Category: {{product.category}}</h3>
@@ -33,38 +33,30 @@
                 <form action="{% url 'add_to_cart_view' uuid=product.uuid %}" method="POST">
                   {% csrf_token %}
                   {% if product.bought == True %}
-                    <div class="add_to_cart_button">
-                      <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Sorry, this product is already sold out" disabled>
-                    </div>
-                    <div class="bought">
-                      <h4 title="Sorry, this product is already sold out"><b><u>SOLD OUT</u></b></h4>
-                    </div>
+                    <input class="btn btn-danger" type="submit" value="ADD TO CART" disabled>
+                    <h4 class="bought mt-3" title="Sorry, this product is already sold out"><b><u>SOLD OUT</u></b></h4>
                   {% elif current_username == product.seller.username %}
-                    <div class="edit_product">
-                      <a class="btn btn-secondary" href="{% url 'edit_product_view' uuid=product.uuid %}" title="Edit product">EDIT PRODUCT</a>
-                    </div>
+                    <a class="btn btn-secondary" href="{% url 'edit_product_view' uuid=product.uuid %}" title="Edit product">EDIT PRODUCT</a>
                   {% elif in_cart == True %}
-                    <div class="add_to_cart_button">
-                      <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Sorry, this product is already sold out" disabled>
-                    </div>
+                    <input class="btn btn-danger" type="submit" value="ADD TO CART" disabled>
                   {% else %}
-                    <div class="add_to_cart_button">
-                      <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart">
-                    </div>
+                    <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart">
                   {% endif %}
                 </form>
               </div>
             </div>
-          </div>
-          <div>
-            <h4 class="float-end pe-3 pt-4">Page Views: <u>{{product.views}}</u></h4>
-          </div>      
+          </div>    
         {% else %}
-          <div class="no_product py-3 px-3 my-5">
+          <div class="no_product">
             <h1>The ID of this product does not match a record on our database.<br><br>Please ensure the ID is correct.</h1>
           </div>
         {% endif %}
       </div>
+      {% if product %}
+        <div>
+          <h4 class="text-light float-end pt-2">Page Views: <u>{{product.views}}</u></h4>
+        </div>
+      {% endif %}
     </div>
     {% include "includes/modal_message.html" %}
   </body>

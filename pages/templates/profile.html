@@ -6,16 +6,16 @@
     <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}"/>
     <script type="text/javascript" src="{% static 'bootstrap/bootstrap.bundle.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'jquery/jquery.min.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'profile.css' %}"/>
+    <link rel="stylesheet" href="{% static 'style.css' %}"/>
   </head>
   <body>
     {% include "includes/navbar.html" with location="profile" %}
-    <div class="container px-0">
-      <div class="content px-2 py-2">
-        <div class="welcome pb-2">
+    <div class="container text-break px-0">
+      <div class="content px-3 py-3">
+        <div class="welcome text-center pb-2">
           <h1>Welcome, {{user.username}}!</h1>
         </div>
-        <div class="options mh-100">
+        <div class="options">
           <div class="profile_buttons px-2 py-2">
             {% if option == 'settings' %}
               <a class="btn btn-success mb-5" href="{% url 'profile_option_view' option='settings' %}" role="button" title="Settings"><u>Settings</u></a>
@@ -48,7 +48,7 @@
             {% endif %}
           </div>
           <div class="vr"></div>
-          <div class="view">
+          <div class="option_view">
             {% if option == None %}
               <h1 class="option_none">Please choose from 1 of the 5 options.</h1>
             {% elif option == 'settings' %}
@@ -61,8 +61,7 @@
                     <table>
                       {{change_username_form}}
                     </table>
-                    <hr>
-                    <div class="change_username_button pt-1">
+                    <div class="change_username_button pt-3">
                       <input class="btn btn-primary" type="submit" value="CHANGE USERNAME" title="Change username">
                     </div>
                   </form>
@@ -75,8 +74,7 @@
                     <table>
                       {{change_password_form}}
                     </table>
-                    <hr>
-                    <div class="change_password_button pt-1">
+                    <div class="change_password_button pt-3">
                       <input class="btn btn-primary" type="submit" value="CHANGE PASSWORD" title="Change password">
                     </div>
                   </form>
@@ -89,8 +87,7 @@
                     <table>
                       {{delete_account_form}}
                     </table>
-                    <hr>
-                    <div class="delete_account_button pt-1">
+                    <div class="delete_account_button pt-3">
                       <input class="btn btn-primary" type="submit" value="DELETE ACCOUNT" title="Delete account">
                     </div>
                   </form>
@@ -101,52 +98,54 @@
             {% elif option == 'listing-history' %}
               {% if listing_history %}
                 <div class="listing_history">
-                  <div class="products text-break">
+                  <div class="products">
                     {% for item in listing_history %}
-                      <div class="product px-3 py-2 mx-2 my-2">
+                      <div class="profile_items mx-2 my-2 px-3 py-2">
                         <h4><b>{{item.title}}</b></h4>
-                        <a class="pt-2" href="{% url 'product_view' uuid=item.uuid %}" title="Click to view more details of this product"><img src="{{item.picture.url}}" alt="product picture" style="width: 100%;"></a>
-                        <p class="pt-3"><b>{{item.description}}</b></p>
-                        <p class="mb-0"><b>Category: {{item.category}}</b></p>
-                        {% if item.bought == True %}
-                          <div class="bought pb-1 mb-2">
-                            <h4 class="py-0 my-0" title="This product was bought from a buyer"><b><u>SOLD</u></b></h4>
-                          </div>
-                        {% else %}
-                          <hr>
-                          <div class="edit_product pb-3">
-                            <a class="btn btn-secondary" href="{% url 'edit_product_view' uuid=item.uuid %}" title="Edit product">EDIT PRODUCT</a>
-                          </div>
-                          <div class="not_bought pb-1 mb-2">
-                            <h4 class="py-0 my-0" title="No one has bought this yet"><b><u>ACTIVE</b></u></h4>
-                          </div>
-                        {% endif %}
+                        <a href="{% url 'product_view' uuid=item.uuid %}" title="Click to view more details of this product"><img src="{{item.picture.url}}" alt="product picture" style="width: 100%;"></a>
+                        <p class="my-0 pt-2"><b>{{item.description}}</b></p>
+                        <p class="my-0 pt-2"><b>Category: {{item.category}}</b></p>
+                        <div class="add_to_cart_form pb-2">
+                          <form action="{% url 'add_to_cart_view' uuid=item.uuid %}" method="POST">
+                            <fieldset>
+                              {% csrf_token %}
+                              <hr>
+                              {% if item.bought == True %}
+                                <a class="btn btn-danger disabled" href="{% url 'edit_product_view' uuid=item.uuid %}">EDIT PRODUCT</a>
+                                <h4 class="bought mt-3 mb-0" title="This product was bought from a buyer"><b><u>SOLD</u></b></h4>
+                              {% else %}
+                                <a class="btn btn-secondary" href="{% url 'edit_product_view' uuid=item.uuid %}" title="Edit product">EDIT PRODUCT</a>
+                                <h4 class="not_bought mt-3 mb-0" title="No one has bought this yet"><b><u>ACTIVE</b></u></h4>
+                              {% endif %}
+                            </fieldset>
+                          </form>
+                        </div>
                       </div>
                     {% endfor %}
                   </div>
                 </div>
               {% else %}
-                <div class="no_listing_history py-4 px-4">
+                <div class="empty_or_error py-3 px-3">
                   <h1>Your history for listing is empty.<br><br>You have not added any products yet.</h1>
                 </div>
               {% endif %}
             {% elif option == 'purchase-history' %}
               {% if purchase_history %}
                 <div class="purchase_history">
-                  <div class="products text-break">
+                  <div class="products">
                     {% for item in purchase_history %}
-                      <div class="product px-3 py-2 mx-2 my-2">
+                      <div class="profile_items mx-2 my-2 px-3 py-2">
                         <h4><b>{{item.product.title}}</b></h4>
                         <a class="pt-2" href="{% url 'product_view' uuid=item.product.uuid %}" title="Click to view more details of this product"><img src="{{item.product.picture.url}}" alt="product picture" style="width: 100%;"></a>
-                        <p class="pt-3"><b>{{item.product.description}}</b></p>
-                        <p><b>Category: {{item.product.category}}</b></p>
-                        <p><b>Seller: {{item.product.seller}}</b></p>
+                        <p class="my-0 pt-2"><b>{{item.product.description}}</b></p>
+                        <p class="my-0 pt-2"><b>Category: {{item.product.category}}</b></p>
+                        <p class="my-0 pt-2"><b>Bought @ {{item.buy_date}}</b></p>
                       </div>
                     {% endfor %}
                   </div>
                 </div>
               {% else %}
-                <div class="no_purchase_history py-4 px-4">
+                <div class="empty_or_error py-4 px-4">
                   <h1>Your history for purchases is empty.<br><br>You have not made any purcahses yet.</h1>
                 </div>
               {% endif %}

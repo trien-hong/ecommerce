@@ -37,6 +37,13 @@
 						{% endif %}
 					</li>
 					<li class="nav-item">
+						{% if location == "advanced_search" %}
+							<a class="nav-link active" aria-current="page" href="{% url 'advanced_search_view' %}" title="Advanced search products"><u>Advanced Search</u></a>
+						{% else %}
+							<a class="nav-link" href="{% url 'advanced_search_view' %}" title="Advanced search products">Advanced Search</a>
+						{% endif %}
+					</li>
+					<li class="nav-item">
 						{% if location == "add_product" %}
 							<a class="nav-link active" aria-current="page" href="{% url 'add_product_view' %}" title="Add product"><u>Add product</u></a>
 						{% else %}
@@ -55,13 +62,6 @@
 							<a class="nav-link active" aria-current="page" href="{% url 'profile_view' %}" title="View profile"><u>Profile</u></a>
 						{% else %}
 							<a class="nav-link" href="{% url 'profile_view' %}" title="View profile">Profile</a>
-						{% endif %}
-					</li>
-					<li class="nav-item">
-						{% if location == "advanced_search" %}
-							<a class="nav-link active" aria-current="page" href="{% url 'advanced_search_view' %}" title="Advanced search products"><u>Advanced Search</u></a>
-						{% else %}
-							<a class="nav-link" href="{% url 'advanced_search_view' %}" title="Advanced search products">Advanced Search</a>
 						{% endif %}
 					</li>
 					<li class="nav-item">
