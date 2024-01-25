@@ -112,15 +112,16 @@ def product_view(request, uuid):
         try:
             user = request.user
             product = Product.objects.get(uuid=uuid)
+            if product.seller != user:
+                product.views = product.views + 1
+                product.save()
             if Cart.objects.filter(product=product, user=user).exists():
                 in_cart = True
             else:
                 in_cart = False
-            if product.seller != user:
-                product.views = product.views + 1
-                product.save()
         except Product.DoesNotExist:
             product = None
+            in_cart = False
         return render(request, "product.html", { "current_username": user.username, "product": product, "in_cart": in_cart })
 
 @never_cache
@@ -234,8 +235,8 @@ def edit_product_view(request, uuid):
 @login_required
 def search_view(request):
     """
-    URL: /products/search?title=
-    where ?title=search-term is the query string
+    URL: /products/search?title=...
+    where title=... is the query string
     """
     if request.method == "GET":
         user = request.user
@@ -251,7 +252,9 @@ def search_view(request):
                     products = Product.objects.filter(title__icontains=search_product_form.cleaned_data["title"]).exclude(bought=True)
                 if products.exists() == False:
                     messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Sorry, your search of, \"" + search_product_form.cleaned_data["title"] + "\", came by empty.</li><li>Please note that you are searching by title.</li></ul>"))
-            return render(request, "search.html", { "current_user": user.username, "products": products, "search_product_form": search_product_form, "search_term": search_product_form.cleaned_data["title"] })
+                else:
+                    messages.add_message(request, messages.SUCCESS, "Your search resulted in " + str(products.count()) + " products.")
+            return render(request, "search.html", { "current_username": user.username, "products": products, "search_product_form": search_product_form, "search_term": search_product_form.cleaned_data["title"] })
         else:
             error_string = get_form_errors(search_product_form)
             messages.add_message(request, messages.ERROR, mark_safe(error_string))
@@ -261,35 +264,36 @@ def search_view(request):
 @login_required
 def advanced_search_view(request):
     """
-    URL: /products/advance-search
-    where everything after advanced-search is the query string
+    URL: /products/advance-search?title=...&category=...&condition=...&seller=...
+    where title=...&category=...&condition=...&seller=... is the query string
     """
     if request.method == "GET":
         user = request.user
         advanced_search_product_form = forms.AdvancedSearchProduct(request.GET)
         if advanced_search_product_form.is_valid():
             try:
-                if advanced_search_product_form.cleaned_data["title"] == "" or advanced_search_product_form.cleaned_data["title"] is None:
-                    products_title = Product.objects.none()
+                if (advanced_search_product_form.cleaned_data["title"] == "" or advanced_search_product_form.cleaned_data["title"] is None) and (advanced_search_product_form.cleaned_data["category"] == "" or advanced_search_product_form.cleaned_data["category"] is None) and (advanced_search_product_form.cleaned_data["condition"] == "" or advanced_search_product_form.cleaned_data["condition"] is None) and (advanced_search_product_form.cleaned_data["username"] == "" or advanced_search_product_form.cleaned_data["username"] is None):
+                    products = None
                 else:
-                    products_title = Product.objects.filter(title__istartswith=advanced_search_product_form.cleaned_data["title"]).exclude(bought=True)
-                if advanced_search_product_form.cleaned_data["category"] == "" or advanced_search_product_form.cleaned_data["category"] is None:
-                    products_category = Product.objects.none()
-                else:
-                    products_category = Product.objects.filter(category=advanced_search_product_form.cleaned_data["category"]).exclude(bought=True)
-                if advanced_search_product_form.cleaned_data["condition"] == "" or advanced_search_product_form.cleaned_data["condition"] is None:
-                    products_condition = Product.objects.none()
-                else:
-                    products_condition = Product.objects.filter(condition=advanced_search_product_form.cleaned_data["condition"]).exclude(bought=True)
-                if advanced_search_product_form.cleaned_data["username"] == "" or advanced_search_product_form.cleaned_data["username"] is None:
-                    products_seller = Product.objects.none()
-                else:
-                    if User.objects.filter(username=advanced_search_product_form.cleaned_data["username"]).exists():
-                        seller = User.objects.get(username=advanced_search_product_form.cleaned_data["username"])
-                        products_seller = Product.objects.filter(seller=seller).exclude(bought=True)
+                    # products = Product.objects.filter(title=..., category=..., condition=..., seller=...).exclude(bought=True)
+                    # does not work with empty strings or None filters
+                    products = Product.objects.all().exclude(bought=True)
+                    if advanced_search_product_form.cleaned_data["title"] != "" and advanced_search_product_form.cleaned_data["title"] is not None:
+                        products = products.filter(title__istartswith=advanced_search_product_form.cleaned_data["title"])
+                    if advanced_search_product_form.cleaned_data["category"] != "" and advanced_search_product_form.cleaned_data["category"] is not None:
+                        products = products.filter(category=advanced_search_product_form.cleaned_data["category"])
+                    if advanced_search_product_form.cleaned_data["condition"] != "" and advanced_search_product_form.cleaned_data["condition"] is not None:
+                        products = products.filter(condition=advanced_search_product_form.cleaned_data["condition"])
+                    if advanced_search_product_form.cleaned_data["username"] != "" and advanced_search_product_form.cleaned_data["username"] is not None:
+                        if User.objects.filter(username=advanced_search_product_form.cleaned_data["username"]).exists():
+                            seller = User.objects.get(username=advanced_search_product_form.cleaned_data["username"])
+                            products = products.filter(seller=seller)
+                        else:
+                            products = None
+                    if products == None or products.count() == 0:
+                        messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Your advanced search resulted in 0 products. Please try again.</li></ul>"))
                     else:
-                        products_seller = Product.objects.none()
-                products = products_title.union(products_category, products_condition, products_seller)
+                        messages.add_message(request, messages.SUCCESS, "Your search resulted in " + str(products.count()) + " products.")
             except:
                 products = None
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with your advanced search. Please try again.</li></ul>"))
@@ -297,7 +301,7 @@ def advanced_search_view(request):
             products = None
             error_string = get_form_errors(advanced_search_product_form)
             messages.add_message(request, messages.ERROR, mark_safe(error_string))
-        return render (request, "advanced_search.html", { "advanced_search_product_form": advanced_search_product_form, "products": products })
+        return render (request, "advanced_search.html", { "current_username": user.username, "advanced_search_product_form": advanced_search_product_form, "products": products })
 
 @never_cache
 @login_required
