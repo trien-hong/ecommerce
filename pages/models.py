@@ -66,6 +66,8 @@ class Product(models.Model):
     description = models.CharField(max_length=500)
     category = models.CharField(choices=CHOICES_CATEGORY)
     condition = models.CharField(choices=CHOICES_CONDITION)
+    upc = models.CharField(max_length=12, blank=True)
+    ean = models.CharField(max_length=13, blank=True)
     list_date = models.DateTimeField(auto_now_add=True)
     seller = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     bought = models.BooleanField(default=False)

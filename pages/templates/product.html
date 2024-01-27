@@ -16,19 +16,32 @@
           <div class="product_view px-3 py-3">
             <div class="product_main_identifiers">
               <h2><b>{{product.title}}</b></h2>
-              <img class="product_image" src="{{product.picture.url}}" alt="product picture">
+              <img src="{{product.picture.url}}" alt="product picture">
             </div>
             <div class="vr mx-3"></div>
             <div class="product_sub_identifiers">
               <h3>Description: {{product.description}}</h3>
               <hr>
-              <div class="non_form">
+              <div>
                 <h3>Category: {{product.category}}</h3>
                 <h3>Condition: {{product.condition}}</h3>
                 <h3>List Date: {{product.list_date}}</h3>
                 <h3>Seller: {{product.seller}}</h3>
               </div>
-              <hr>
+              {% if product.upc != "" or product.ean != "" %}
+                <hr>
+                <div>
+                  {% if product.upc != "" %}
+                    <h3>UPC: {{product.upc}}</h3>
+                  {% endif %}
+                  {% if product.ean != "" %}
+                    <h3>EAN: {{product.ean}}</h3>
+                  {% endif %}
+                </div>
+                <hr>
+              {% else %}
+                <hr>
+              {% endif %}
               <div class="add_to_cart_form">
                 <form action="{% url 'add_to_cart_view' uuid=product.uuid %}" method="POST">
                   {% csrf_token %}

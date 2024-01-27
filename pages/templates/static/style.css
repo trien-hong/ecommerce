@@ -56,15 +56,15 @@ li::marker {
 }
 
 .product_main_identifiers {
-    display : flex;
-    justify-content: center;
+    display: flex;
     flex-direction: column;
+    justify-content: center;
     text-align: center;
     width: 50%;
 }
 
 .product_sub_identifiers {
-    display : flex;
+    display: flex;
     flex-direction: column;
     justify-content: space-around;
     text-align: center;
@@ -80,10 +80,10 @@ li::marker {
 }
 
 .current_product_information {
-    display : flex;
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     text-align: center;
-    flex-direction: column;
     width: 50%;
 }
 
