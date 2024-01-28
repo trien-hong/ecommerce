@@ -230,6 +230,39 @@ def edit_product_view(request, uuid):
         else:
             messages.add_message(request, messages.ERROR, edit_product_form.errors)
             return redirect(edit_product_view, uuid)
+        
+@never_cache
+@login_required
+def edit_product_delete_upc_ean_view(request, uuid, type):
+    """
+    URL: product/edit-product/id/<uuid:uuid>/delete-<str:type>/
+    where <uuid:uuid> is the uuid (NOT ID despite the URL) of the product that you want to delete it's UPC/EAN from and where <str:type> is either upc or ean
+    if exposed the uuid is shown to the user and not the ID/PK
+    """
+    if request.method == "POST":
+        user = request.user
+        try:
+            product = Product.objects.get(uuid=uuid)
+            if product.seller != user or product.bought == True:
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in deleting the product's UPC/EAN.</li><li>Please try again.</li></ul>"))
+                return redirect(edit_product_view, uuid)
+            else:
+                if type == "upc":
+                    product.upc = ""
+                    product.save()
+                    messages.add_message(request, messages.SUCCESS, "You successfully deleted the product's UPC.")
+                    return redirect(edit_product_view, uuid)
+                elif type == "ean":
+                    product.ean = ""
+                    product.save()
+                    messages.add_message(request, messages.SUCCESS, "You successfully deleted the product's EAN.")
+                    return redirect(edit_product_view, uuid)
+                else:
+                    messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in deleting the product's UPC/EAN.</li><li>Please try again.</li></ul>"))
+                    return redirect(edit_product_view, uuid)
+        except Product.DoesNotExist:
+            messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in deleting the product's UPC/EAN.</li><li>Please try again.</li></ul>"))
+            return redirect(edit_product_view, uuid)
 
 @never_cache
 @login_required
@@ -257,24 +290,24 @@ def search_view(request):
             return render(request, "search.html", { "current_username": user.username, "products": products, "search_product_form": search_product_form, "search_term": search_product_form.cleaned_data["title"] })
         else:
             messages.add_message(request, messages.ERROR, search_product_form.errors)
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+            return render(request, "search.html", { "search_product_form", search_product_form })
 
 @never_cache
 @login_required
 def advanced_search_view(request):
     """
-    URL: /products/advance-search?title=...&category=...&condition=...&seller=...
-    where title=...&category=...&condition=...&seller=... is the query string
+    URL: /products/advance-search?title=...&category=...&condition=...&upc=...&ean=...&seller=...
+    where title=...&category=...&condition=...&upc=...&ean=...&seller=... is the query string
     """
     if request.method == "GET":
         user = request.user
         advanced_search_product_form = forms.AdvancedSearchProduct(request.GET)
         if advanced_search_product_form.is_valid():
             try:
-                if (advanced_search_product_form.cleaned_data["title"] == "" or advanced_search_product_form.cleaned_data["title"] is None) and (advanced_search_product_form.cleaned_data["category"] == "" or advanced_search_product_form.cleaned_data["category"] is None) and (advanced_search_product_form.cleaned_data["condition"] == "" or advanced_search_product_form.cleaned_data["condition"] is None) and (advanced_search_product_form.cleaned_data["username"] == "" or advanced_search_product_form.cleaned_data["username"] is None):
+                if (advanced_search_product_form.cleaned_data["title"] == "" or advanced_search_product_form.cleaned_data["title"] is None) and (advanced_search_product_form.cleaned_data["category"] == "" or advanced_search_product_form.cleaned_data["category"] is None) and (advanced_search_product_form.cleaned_data["condition"] == "" or advanced_search_product_form.cleaned_data["condition"] is None) and (advanced_search_product_form.cleaned_data["upc"] == "" or advanced_search_product_form.cleaned_data["upc"] is None) and (advanced_search_product_form.cleaned_data["ean"] == "" or advanced_search_product_form.cleaned_data["ean"] is None) and (advanced_search_product_form.cleaned_data["username"] == "" or advanced_search_product_form.cleaned_data["username"] is None):
                     products = None
                 else:
-                    # products = Product.objects.filter(title=..., category=..., condition=..., seller=...).exclude(bought=True)
+                    # products = Product.objects.filter(title=..., category=..., condition=..., upc=..., ean=..., seller=...).exclude(bought=True)
                     # where ... does not work with "" (empty string) or None
                     products = Product.objects.all().exclude(bought=True)
                     if advanced_search_product_form.cleaned_data["title"] != "" and advanced_search_product_form.cleaned_data["title"] is not None:
@@ -283,6 +316,10 @@ def advanced_search_view(request):
                         products = products.filter(category=advanced_search_product_form.cleaned_data["category"])
                     if advanced_search_product_form.cleaned_data["condition"] != "" and advanced_search_product_form.cleaned_data["condition"] is not None:
                         products = products.filter(condition=advanced_search_product_form.cleaned_data["condition"])
+                    if advanced_search_product_form.cleaned_data["upc"] != "" and advanced_search_product_form.cleaned_data["upc"] is not None:
+                        products = products.filter(upc=advanced_search_product_form.cleaned_data["upc"])
+                    if advanced_search_product_form.cleaned_data["ean"] != "" and advanced_search_product_form.cleaned_data["ean"] is not None:
+                        products = products.filter(ean=advanced_search_product_form.cleaned_data["ean"])
                     if advanced_search_product_form.cleaned_data["username"] != "" and advanced_search_product_form.cleaned_data["username"] is not None:
                         if User.objects.filter(username=advanced_search_product_form.cleaned_data["username"]).exists():
                             seller = User.objects.get(username=advanced_search_product_form.cleaned_data["username"])
@@ -552,6 +589,14 @@ def confirm_message_view(request, type):
         elif type == "delete-product":
             messages.add_message(request, messages.WARNING, "Are you sure you want to delete this product from your profile?", extra_tags="delete-product")
             return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+        elif type == "delete-upc":
+            messages.add_message(request, messages.WARNING, "Are you sure you want to delete the UPC tied to this product?", extra_tags="delete-upc")
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+        elif type == "delete-ean":
+            messages.add_message(request, messages.WARNING, "Are you sure you want to delete the EAN tied to this product?", extra_tags="delete-ean")
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+        else:
+            return redirect(index_view)
 
 @never_cache
 @login_required

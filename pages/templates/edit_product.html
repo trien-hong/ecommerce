@@ -46,6 +46,21 @@
                 </form>
               </div>
               <hr>
+              {% if product.upc or product.ean %}
+                <div class="delete_upc_ean">
+                  {% if product.upc %}
+                    <div>
+                      <a class="btn btn-warning me-1" href="{% url 'confirm_message_view' type='delete-upc' %}" role="button" title="Delete product's UPC">DELETE UPC</a>
+                    </div>
+                  {% endif %}
+                  {% if product.ean %}
+                    <div>
+                      <a class="btn btn-warning ms-1" href="{% url 'confirm_message_view' type='delete-ean' %}" role="button" title="Delete product's EAN">DELETE EAN</a>
+                    </div>
+                  {% endif %}
+                </div>
+                <hr>
+              {% endif %}
               <div class="text-center">
                 <a class="btn btn-danger" href="{% url 'confirm_message_view' type='delete-product' %}" role="button" title="Delete product">DELETE PRODUCT</a>
               </div>

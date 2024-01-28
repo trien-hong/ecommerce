@@ -8,7 +8,7 @@
 							<h4 class="modal-title text-danger"><b><u>ERROR</u></b></h4>
 						{% elif message.tags == 'success' %}
 							<h4 class="modal-title text-success"><b><u>SUCCESS</u></b></h4>
-						{% elif message.extra_tags == 'check-out' or message.extra_tags == 'delete-all-items-from-cart' or message.extra_tags == 'delete-product' %}
+						{% elif message.extra_tags == 'check-out' or message.extra_tags == 'delete-all-items-from-cart' or message.extra_tags == 'delete-product' or message.extra_tags == 'delete-upc' or message.extra_tags == 'delete-ean'%}
 							<h4 class="modal-title text-warning"><b><u>PLEASE CONFIRM</u></b></h4>
 						{% endif %}
 						<button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="CLOSE" title="CLOSE ALERT"></button>
@@ -37,6 +37,18 @@
 							<button type="button" class="btn btn-danger" data-bs-dismiss="modal" title="NO">NO</button>
 						{% elif message.extra_tags == 'delete-product' %}
 							<form action="{% url 'delete_product_view' uuid=product.uuid %}" method="POST">
+								{% csrf_token %}
+								<input class="btn btn-success" type="submit" value="YES" title="YES">
+							</form>
+							<button type="button" class="btn btn-danger" data-bs-dismiss="modal" title="NO">NO</button>
+						{% elif message.extra_tags == 'delete-upc' %}
+							<form action="{% url 'edit_product_delete_upc_ean_view' uuid=product.uuid type='upc' %}" method="POST">
+								{% csrf_token %}
+								<input class="btn btn-success" type="submit" value="YES" title="YES">
+							</form>
+							<button type="button" class="btn btn-danger" data-bs-dismiss="modal" title="NO">NO</button>
+						{% elif message.extra_tags == 'delete-ean' %}
+							<form action="{% url 'edit_product_delete_upc_ean_view' uuid=product.uuid type='ean' %}" method="POST">
 								{% csrf_token %}
 								<input class="btn btn-success" type="submit" value="YES" title="YES">
 							</form>

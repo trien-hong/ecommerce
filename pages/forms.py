@@ -1,11 +1,20 @@
 from django import forms
 from django.core.validators import validate_integer
 from django.contrib.auth import get_user_model
+from .choices import ChoicesCategory, ChoicesCondition # to change the choices edit choices.py
 User = get_user_model()
 
 class Login(forms.Form):
     username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your username", "class": "field"}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your password", "class": "field"}))
+
+    def clean_username(self):
+        username = self.cleaned_data["username"]
+
+        if len(username) > 30:
+            raise forms.ValidationError("Username length is greater than 30.")
+
+        return username
 
 class Signup(forms.Form):
     username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your username", "class": "field"}))
@@ -14,6 +23,9 @@ class Signup(forms.Form):
 
     def clean_username(self):
         username = self.cleaned_data["username"]
+
+        if len(username) > 30:
+            raise forms.ValidationError("Username length is greater than 30.")
         
         if User.objects.filter(username=username).exists():
             raise forms.ValidationError("Username already exist. Please try using a different username.")
@@ -37,6 +49,9 @@ class RestPassword(forms.Form):
     def clean_username(self):
         username = self.cleaned_data["username"]
 
+        if len(username) > 30:
+            raise forms.ValidationError("Username length is greater than 30.")
+        
         if User.objects.filter(username=username).exists() == False:
             raise forms.ValidationError("Username does not exist. Please try using a different username.")
         
@@ -56,6 +71,9 @@ class ChangeUsername(forms.Form):
     
     def clean_username(self):
         username = self.cleaned_data["username"]
+
+        if len(username) > 30:
+            raise forms.ValidationError("Username length is greater than 30.")
 
         if User.objects.filter(username=username).exists() == True:
             raise forms.ValidationError("Username already exist. Please try using a different username.")
@@ -91,63 +109,21 @@ class DeleteAccount(forms.Form):
         return password
 
 class AddProduct(forms.Form):
-    # i'll add in more categories and possible more fields later
-
-    PLEASE_CHOOSE_CATEGORY = ""
-    KITCHEN = "kitchen"
-    LIVING_ROOM = "living room"
-    GARAGE = "garage"
-    BATHROOM = "bathroom"
-    BEDROOM = "bedroom"
-    OFFICE = "office"
-    OUTDOOR = "outdoor"
-    TOYS = "toys"
-    GAMES = "games"
-    CLOTHING = "clothing"
-    ELECTRONICS = "electronics"
-
-    CHOICES_CATEGORY = [
-        (PLEASE_CHOOSE_CATEGORY, "Choose a category"),
-        (KITCHEN, "kitchen"),
-        (LIVING_ROOM, "living room"),
-        (GARAGE, "garage"),
-        (BATHROOM, "bathroom"),
-        (BEDROOM, "bedroom"),
-        (OFFICE, "office"),
-        (OUTDOOR, "outdoor"),
-        (TOYS, "toys"),
-        (GAMES, "games"),
-        (CLOTHING, "clothing"),
-        (ELECTRONICS, "electronics")
-    ]
-
-    PLEASE_CHOOSE_CONDITION = ""
-    NEW = "new"
-    OPEN_BOX = "open box"
-    PREOWNED = "preowned"
-    USED_LIKE_NEW = "use (like new)"
-    USED_MODERATELY = "used (moderately)"
-    USED_HEAVILY = "used (heavily)"
-    BROKEN_UNUSABLE = "broken (unusable)"
-
-    CHOICES_CONDITION = [
-        (PLEASE_CHOOSE_CONDITION, "Choose a condition"),
-        (NEW, "new"),
-        (OPEN_BOX, "open box"),
-        (PREOWNED, "preowned"),
-        (USED_LIKE_NEW, "used (like new)"),
-        (USED_MODERATELY, "used (moderately)"),
-        (USED_HEAVILY, "used (heavily)"),
-        (BROKEN_UNUSABLE, "broken (unusable)")
-    ]
-
     title = forms.CharField(max_length=50, label="Title*",widget=forms.TextInput(attrs={"placeholder": "Enter the product's title", "class": "field"}))
     picture = forms.ImageField(label="Picture*")
     description = forms.CharField(max_length=500, label="Description*", widget=forms.Textarea(attrs={"placeholder": "Enter the product's description", "rows": "5", "class": "field"}))
-    category = forms.ChoiceField(label="Category*", choices=CHOICES_CATEGORY)
-    condition = forms.ChoiceField(label="Condition*", choices=CHOICES_CONDITION)
+    category = forms.ChoiceField(label="Category*", choices=ChoicesCategory.CHOICES_CATEGORY) # to change the choices edit choices.py
+    condition = forms.ChoiceField(label="Condition*", choices=ChoicesCondition.CHOICES_CONDITION) # to change the choices edit choices.py
     upc = forms.CharField(min_length=12, max_length=12, label="UPC", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "class": "field"}), required=False)
     ean = forms.CharField(min_length=13, max_length=13, label="EAN", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "class": "field"}), required=False)
+
+    def clean_title(self):
+        title = self.cleaned_data["title"]
+
+        if len(title) > 50:
+            raise forms.ValidationError("Title length is greater than 50.")
+        
+        return title
 
     def clean_picture(self):
         picture = self.cleaned_data["picture"]
@@ -157,14 +133,28 @@ class AddProduct(forms.Form):
         
         return picture
     
+    def clean_description(self):
+        description = self.cleaned_data["description"]
+
+        if len(description) > 500:
+            raise forms.ValidationError("Description length is greater than 500.")
+        
+        return description
+    
     def clean_upc(self):
         upc = self.cleaned_data["upc"]
 
         if upc != "":
             validate_integer(upc)
 
+            if len(upc) < 12:
+                raise forms.ValidationError("The UPC length is less than 12.")
+
+            if len(upc) > 30:
+                raise forms.ValidationError("The UPC length is greater than 12.")
+
             upc_list = [int(i) for i in upc]
-            check_digit = len(upc_list) - 1
+            check_digit = upc_list[len(upc_list) - 1]
             total = 0
             odd_total = 0
             even_total = 0
@@ -186,8 +176,14 @@ class AddProduct(forms.Form):
         if ean != "":
             validate_integer(ean)
 
+            if len(ean) < 13:
+                raise forms.ValidationError("The EAN length is less than 13")
+            
+            if len(ean) > 13:
+                raise forms.ValidationError("The EAN length is greater than 13")
+
             ean_list = [int(i) for i in ean]
-            check_digit = len(ean_list) - 1
+            check_digit = ean_list[len(ean_list) - 1]
             total = 0
             odd_total = 0
             even_total = 0
@@ -204,63 +200,22 @@ class AddProduct(forms.Form):
         return ean
     
 class EditProduct(forms.Form):
-    # i'll add in more categories and possible more fields later
-
-    PLEASE_CHOOSE_CATEGORY = ""
-    KITCHEN = "kitchen"
-    LIVING_ROOM = "living room"
-    GARAGE = "garage"
-    BATHROOM = "bathroom"
-    BEDROOM = "bedroom"
-    OFFICE = "office"
-    OUTDOOR = "outdoor"
-    TOYS = "toys"
-    GAMES = "games"
-    CLOTHING = "clothing"
-    ELECTRONICS = "electronics"
-
-    CHOICES_CATEGORY = [
-        (PLEASE_CHOOSE_CATEGORY, "Choose a new category"),
-        (KITCHEN, "kitchen"),
-        (LIVING_ROOM, "living room"),
-        (GARAGE, "garage"),
-        (BATHROOM, "bathroom"),
-        (BEDROOM, "bedroom"),
-        (OFFICE, "office"),
-        (OUTDOOR, "outdoor"),
-        (TOYS, "toys"),
-        (GAMES, "games"),
-        (CLOTHING, "clothing"),
-        (ELECTRONICS, "electronics")
-    ]
-
-    PLEASE_CHOOSE_CONDITION = ""
-    NEW = "new"
-    OPEN_BOX = "open box"
-    PREOWNED = "preowned"
-    USED_LIKE_NEW = "use (like new)"
-    USED_MODERATELY = "used (moderately)"
-    USED_HEAVILY = "used (heavily)"
-    BROKEN_UNUSABLE = "broken (unusable)"
-
-    CHOICES_CONDITION = [
-        (PLEASE_CHOOSE_CONDITION, "Choose a new condition"),
-        (NEW, "new"),
-        (OPEN_BOX, "open box"),
-        (PREOWNED, "preowned"),
-        (USED_LIKE_NEW, "used (like new)"),
-        (USED_MODERATELY, "used (moderately)"),
-        (USED_HEAVILY, "used (heavily)"),
-        (BROKEN_UNUSABLE, "broken (unusable)")
-    ]
-
     title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product's new title", "title": "Only edit a field if you need to", "class": "field"}), required=False)
     picture = forms.ImageField(widget=forms.FileInput(attrs={"title": "Only edit a field if you need to"}), required=False)
     description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"placeholder": "Enter the product's new description", "title": "Only edit a field if you need to", "rows": "6", "class": "field"}), required=False)
-    category = forms.ChoiceField(choices=CHOICES_CATEGORY, widget=forms.Select(attrs={"title": "Only edit a field if you need to"}), required=False)
-    condition = forms.ChoiceField(choices=CHOICES_CONDITION, widget=forms.Select(attrs={"title": "Only edit a field if you need to"}), required=False)
+    category = forms.ChoiceField(choices=ChoicesCategory.CHOICES_CATEGORY, widget=forms.Select(attrs={"title": "Only edit a field if you need to"}), required=False) # to change the choices edit choices.py
+    condition = forms.ChoiceField(choices=ChoicesCondition.CHOICES_CONDITION, widget=forms.Select(attrs={"title": "Only edit a field if you need to"}), required=False) # to change the choices edit choices.py
     upc = forms.CharField(min_length=12, max_length=12, label="UPC", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "title": "Only edit a field if you need to", "class": "field"}), required=False)
     ean = forms.CharField(min_length=13, max_length=13, label="EAN", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "title": "Only edit a field if you need to", "class": "field"}), required=False)
+
+    def clean_title(self):
+        title = self.cleaned_data["title"]
+
+        if title != "":
+            if len(title) > 50:
+                raise forms.ValidationError("Title length is greater than 50.")
+        
+        return title
 
     def clean_picture(self):
         picture = self.cleaned_data["picture"]
@@ -271,14 +226,29 @@ class EditProduct(forms.Form):
         
         return picture
     
+    def clean_description(self):
+        description = self.cleaned_data["description"]
+
+        if description != "":
+            if len(description) > 500:
+                raise forms.ValidationError("Description length is greater than 500.")
+        
+        return description
+    
     def clean_upc(self):
         upc = self.cleaned_data["upc"]
 
         if upc != "":
             validate_integer(upc)
 
+            if len(upc) < 12:
+                raise forms.ValidationError("The UPC length is less than 12.")
+            
+            if len(upc) > 12:
+                raise forms.ValidationError("The UPC length is greater than 12.")
+
             upc_list = [int(i) for i in upc]
-            check_digit = len(upc_list) - 1
+            check_digit = upc_list[len(upc_list) - 1]
             total = 0
             odd_total = 0
             even_total = 0
@@ -300,8 +270,14 @@ class EditProduct(forms.Form):
         if ean != "":
             validate_integer(ean)
 
+            if len(ean) < 13:
+                raise forms.ValidationError("The EAN length is less than 12.")
+            
+            if len(ean) > 13:
+                raise forms.ValidationError("The EAN length is greater than 12.")
+
             ean_list = [int(i) for i in ean]
-            check_digit = len(ean_list) - 1
+            check_digit = ean_list[len(ean_list) - 1]
             total = 0
             odd_total = 0
             even_total = 0
@@ -320,58 +296,94 @@ class EditProduct(forms.Form):
 class SearchProduct(forms.Form):
     title = forms.CharField(max_length=50, label="", widget=forms.TextInput(attrs={"class": "form-control me-2", "id": "product_search", "type": "search", "label": "", "placeholder": "Search...", "title": "Search for specific products (by title)", "size": "35"}), required=False)
 
+    def clean_title(self):
+        title = self.cleaned_data["title"]
+        
+        if len(title) > 50:
+            raise forms.ValidationError("Title length is greater than 50.")
+        
+        return title
+
 class AdvancedSearchProduct(forms.Form):
-    # i'll add in more categories and possible more fields later
-
-    PLEASE_CHOOSE_CATEGORY = ""
-    KITCHEN = "kitchen"
-    LIVING_ROOM = "living room"
-    GARAGE = "garage"
-    BATHROOM = "bathroom"
-    BEDROOM = "bedroom"
-    OFFICE = "office"
-    OUTDOOR = "outdoor"
-    TOYS = "toys"
-    GAMES = "games"
-    CLOTHING = "clothing"
-    ELECTRONICS = "electronics"
-
-    CHOICES_CATEGORY = [
-        (PLEASE_CHOOSE_CATEGORY, "Choose the product's category"),
-        (KITCHEN, "kitchen"),
-        (LIVING_ROOM, "living room"),
-        (GARAGE, "garage"),
-        (BATHROOM, "bathroom"),
-        (BEDROOM, "bedroom"),
-        (OFFICE, "office"),
-        (OUTDOOR, "outdoor"),
-        (TOYS, "toys"),
-        (GAMES, "games"),
-        (CLOTHING, "clothing"),
-        (ELECTRONICS, "electronics")
-    ]
-
-    PLEASE_CHOOSE_CONDITION = ""
-    NEW = "new"
-    OPEN_BOX = "open box"
-    PREOWNED = "preowned"
-    USED_LIKE_NEW = "use (like new)"
-    USED_MODERATELY = "used (moderately)"
-    USED_HEAVILY = "used (heavily)"
-    BROKEN_UNUSABLE = "broken (unusable)"
-
-    CHOICES_CONDITION = [
-        (PLEASE_CHOOSE_CONDITION, "Choose the product's condition"),
-        (NEW, "new"),
-        (OPEN_BOX, "open box"),
-        (PREOWNED, "preowned"),
-        (USED_LIKE_NEW, "used (like new)"),
-        (USED_MODERATELY, "used (moderately)"),
-        (USED_HEAVILY, "used (heavily)"),
-        (BROKEN_UNUSABLE, "broken (unusable)")
-    ]
-
     title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product's title", "title": "Enter the product's title", "class": "field"}), required=False)
-    category = forms.ChoiceField(choices=CHOICES_CATEGORY, widget=forms.Select(attrs={"title": "Choose the product's category"}), required=False)
-    condition = forms.ChoiceField(choices=CHOICES_CONDITION, widget=forms.Select(attrs={"title": "Choose the product's condition"}), required=False)
+    category = forms.ChoiceField(choices=ChoicesCategory.CHOICES_CATEGORY, widget=forms.Select(attrs={"title": "Choose the product's category"}), required=False) # to change the choices edit choices.py
+    condition = forms.ChoiceField(choices=ChoicesCondition.CHOICES_CONDITION, widget=forms.Select(attrs={"title": "Choose the product's condition"}), required=False) # to change the choices edit choices.py
+    upc = forms.CharField(min_length=12, max_length=12, label="UPC", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "title": "Enter the product's Universal Product Code (UPC)", "class": "field"}), required=False)
+    ean = forms.CharField(min_length=13, max_length=13, label="EAN", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "title": "Enter the product's International Article Number (EAN)", "class": "field"}), required=False)
     username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter the seller's username", "title": "Enter the seller's username", "class": "field"}), required=False)
+
+    def clean_title(self):
+        title = self.cleaned_data["title"]
+
+        if title != "":
+            if len(title) > 50:
+                raise forms.ValidationError("Title length is greater than 50.")
+        
+        return title
+    
+    def clean_upc(self):
+        upc = self.cleaned_data["upc"]
+
+        if upc != "":
+            validate_integer(upc)
+
+            if len(upc) < 12:
+                raise forms.ValidationError("The UPC length is less than 12.")
+            
+            if len(upc) > 12:
+                raise forms.ValidationError("The UPC length is greater than 12.")
+
+            upc_list = [int(i) for i in upc]
+            check_digit = len(upc_list) - 1
+            total = 0
+            odd_total = 0
+            even_total = 0
+            for i in range(len(upc_list) - 1):
+                if i % 2 == 0:
+                    even_total = even_total + upc_list[i]
+                elif i % 2 != 0:
+                    odd_total = odd_total + upc_list[i]
+            total = even_total * 3 + odd_total + check_digit
+
+            if total % 10 != 0:
+                raise forms.ValidationError("The UPC you entered doesn't seem to be a valid UPC.")
+        
+        return upc
+    
+    def clean_ean(self):
+        ean = self.cleaned_data["ean"]
+
+        if ean != "":
+            validate_integer(ean)
+
+            if len(ean) < 13:
+                raise forms.ValidationError("The EAN length is less than 12.")
+            
+            if len(ean) > 13:
+                raise forms.ValidationError("The EAN length is greater than 12.")
+
+            ean_list = [int(i) for i in ean]
+            check_digit = len(ean_list) - 1
+            total = 0
+            odd_total = 0
+            even_total = 0
+            for i in range(len(ean_list) - 1):
+                if i % 2 == 0:
+                    even_total = even_total + ean_list[i]
+                elif i % 2 != 0:
+                    odd_total = odd_total + ean_list[i]
+            total = even_total + odd_total * 3 + check_digit
+
+            if total % 10 != 0:
+                raise forms.ValidationError("The EAN you entered doesn't seem to be a valid EAN.")
+
+        return ean
+    
+    def clean_username(self):
+        username = self.cleaned_data["username"]
+
+        if username != "":
+            if len(username) > 30:
+                raise forms.ValidationError("Username length is greater than 30.")
+
+        return username
