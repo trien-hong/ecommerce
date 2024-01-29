@@ -20,7 +20,7 @@ USED_MODERATELY = "used (moderately)"
 USED_HEAVILY = "used (heavily)"
 BROKEN_UNUSABLE = "broken (unusable)"
 
-class ChoicesCategory:
+class Choices:
     CHOICES_CATEGORY = [
         # actual values are what's stores in the database
         # (actual values, human readable values)
@@ -39,7 +39,6 @@ class ChoicesCategory:
         (ELECTRONICS, "electronics")
     ]
 
-class ChoicesCondition:
     CHOICES_CONDITION = [
         # actual values are what's stores in the database
         # (actual values, human readable values)

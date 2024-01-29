@@ -2,15 +2,15 @@ import uuid
 from django_resized import ResizedImageField
 from django.db import models
 from django.contrib.auth import get_user_model
-from .choices import ChoicesCategory, ChoicesCondition # to change the choices edit choices.py
+from .choices import Choices # to change the choices edit choices.py
 
 class Product(models.Model):
     uuid = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False, unique=True)
     title = models.CharField(max_length=50)
     picture = ResizedImageField(size=[500, 500], crop=["middle", "center"], quality=100, upload_to="product_picture", null=False, blank=False)
     description = models.CharField(max_length=500)
-    category = models.CharField(choices=ChoicesCategory.CHOICES_CATEGORY) # to change the choices edit choices.py
-    condition = models.CharField(choices=ChoicesCondition.CHOICES_CONDITION) # to change the choices edit choices.py
+    category = models.CharField(choices=Choices.CHOICES_CATEGORY) # to change the choices edit choices.py
+    condition = models.CharField(choices=Choices.CHOICES_CONDITION) # to change the choices edit choices.py
     upc = models.CharField(max_length=12, blank=True)
     ean = models.CharField(max_length=13, blank=True)
     list_date = models.DateTimeField(auto_now_add=True)

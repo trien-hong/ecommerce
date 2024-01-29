@@ -11,6 +11,9 @@
   <body>
     {% include "includes/navbar.html" with location="index" search=True %}
     <div class="container text-break px-0">
+      {% if products %}
+        {% include "includes/sort_by.html" %}
+      {% endif %}
       <div class="content px-2 py-2">
         {% if products %}
           <div class="products">

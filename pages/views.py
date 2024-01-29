@@ -100,6 +100,56 @@ def index_view(request):
 
 @never_cache
 @login_required
+def index_sort_by_view(request):
+    """
+    URL: /index/sort-by?title=... or /index/sort-by?date=... or /index/sort-by?views=...
+    where ?title=... or ?date=... or ?views=... is the query string and ... is either ascending or descending
+    """
+    if request.method == "GET":
+        user = request.user
+        search_product_form = forms.SearchProduct()
+        title_option = request.GET.get("title", None)
+        date_option = request.GET.get("date", None)
+        views_option = request.GET.get("views", None)
+        if title_option != None:
+            if title_option == "ascending":
+                sort_by = "Title (A - Z)"
+                products = Product.objects.all().exclude(bought=True).order_by("title")
+            elif title_option == "descending":
+                sort_by = "Title (Z - A)"
+                products = Product.objects.all().exclude(bought=True).order_by("-title")
+            else:
+                sort_by = None
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the sorting by title.</li><li>Please try again.</li></ul>"))
+        elif date_option != None:
+            if date_option == "ascending":
+                sort_by = "Date (Low - High)"
+                products = Product.objects.all().exclude(bought=True).order_by("list_date")
+            elif date_option == "descending":
+                sort_by = "Date (High - Low)"
+                products = Product.objects.all().exclude(bought=True).order_by("-list_date")
+            else:
+                sort_by = None
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the sorting by date.</li><li>Please try again.</li></ul>"))
+        elif views_option != None:
+            if views_option == "ascending":
+                sort_by = "Views (Low - High)"
+                products = Product.objects.all().exclude(bought=True).order_by("views")
+            elif views_option == "descending":
+                sort_by = "Views (High - Low)"
+                products = Product.objects.all().exclude(bought=True).order_by("-views")
+            else:
+                sort_by = None
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the sorting by views.</li><li>Please try again.</li></ul>"))
+        else:
+            sort_by = None
+            messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the sorting.</li><li>Please try again.</li></ul>"))
+        if sort_by == None:
+            products = Product.objects.all().exclude(bought=True)
+        return render(request, "index.html", { "current_username": user.username, "products": products, "search_product_form": search_product_form, "sort_by": sort_by })
+
+@never_cache
+@login_required
 def product_view(request, uuid):
     """
     URL: /product/id/<uuid:uuid>/

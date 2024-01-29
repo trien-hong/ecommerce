@@ -1,7 +1,7 @@
 from django import forms
 from django.core.validators import validate_integer
 from django.contrib.auth import get_user_model
-from .choices import ChoicesCategory, ChoicesCondition # to change the choices edit choices.py
+from .choices import Choices # to change the choices edit choices.py
 User = get_user_model()
 
 class Login(forms.Form):
@@ -112,8 +112,8 @@ class AddProduct(forms.Form):
     title = forms.CharField(max_length=50, label="Title*",widget=forms.TextInput(attrs={"placeholder": "Enter the product's title", "class": "field"}))
     picture = forms.ImageField(label="Picture*")
     description = forms.CharField(max_length=500, label="Description*", widget=forms.Textarea(attrs={"placeholder": "Enter the product's description", "rows": "5", "class": "field"}))
-    category = forms.ChoiceField(label="Category*", choices=ChoicesCategory.CHOICES_CATEGORY) # to change the choices edit choices.py
-    condition = forms.ChoiceField(label="Condition*", choices=ChoicesCondition.CHOICES_CONDITION) # to change the choices edit choices.py
+    category = forms.ChoiceField(label="Category*", choices=Choices.CHOICES_CATEGORY) # to change the choices edit choices.py
+    condition = forms.ChoiceField(label="Condition*", choices=Choices.CHOICES_CONDITION) # to change the choices edit choices.py
     upc = forms.CharField(min_length=12, max_length=12, label="UPC", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "class": "field"}), required=False)
     ean = forms.CharField(min_length=13, max_length=13, label="EAN", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "class": "field"}), required=False)
 
@@ -203,8 +203,8 @@ class EditProduct(forms.Form):
     title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product's new title", "title": "Only edit a field if you need to", "class": "field"}), required=False)
     picture = forms.ImageField(widget=forms.FileInput(attrs={"title": "Only edit a field if you need to"}), required=False)
     description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"placeholder": "Enter the product's new description", "title": "Only edit a field if you need to", "rows": "6", "class": "field"}), required=False)
-    category = forms.ChoiceField(choices=ChoicesCategory.CHOICES_CATEGORY, widget=forms.Select(attrs={"title": "Only edit a field if you need to"}), required=False) # to change the choices edit choices.py
-    condition = forms.ChoiceField(choices=ChoicesCondition.CHOICES_CONDITION, widget=forms.Select(attrs={"title": "Only edit a field if you need to"}), required=False) # to change the choices edit choices.py
+    category = forms.ChoiceField(choices=Choices.CHOICES_CATEGORY, widget=forms.Select(attrs={"title": "Only edit a field if you need to"}), required=False) # to change the choices edit choices.py
+    condition = forms.ChoiceField(choices=Choices.CHOICES_CONDITION, widget=forms.Select(attrs={"title": "Only edit a field if you need to"}), required=False) # to change the choices edit choices.py
     upc = forms.CharField(min_length=12, max_length=12, label="UPC", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "title": "Only edit a field if you need to", "class": "field"}), required=False)
     ean = forms.CharField(min_length=13, max_length=13, label="EAN", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "title": "Only edit a field if you need to", "class": "field"}), required=False)
 
@@ -306,8 +306,8 @@ class SearchProduct(forms.Form):
 
 class AdvancedSearchProduct(forms.Form):
     title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product's title", "title": "Enter the product's title", "class": "field"}), required=False)
-    category = forms.ChoiceField(choices=ChoicesCategory.CHOICES_CATEGORY, widget=forms.Select(attrs={"title": "Choose the product's category"}), required=False) # to change the choices edit choices.py
-    condition = forms.ChoiceField(choices=ChoicesCondition.CHOICES_CONDITION, widget=forms.Select(attrs={"title": "Choose the product's condition"}), required=False) # to change the choices edit choices.py
+    category = forms.ChoiceField(choices=Choices.CHOICES_CATEGORY, widget=forms.Select(attrs={"title": "Choose the product's category"}), required=False) # to change the choices edit choices.py
+    condition = forms.ChoiceField(choices=Choices.CHOICES_CONDITION, widget=forms.Select(attrs={"title": "Choose the product's condition"}), required=False) # to change the choices edit choices.py
     upc = forms.CharField(min_length=12, max_length=12, label="UPC", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "title": "Enter the product's Universal Product Code (UPC)", "class": "field"}), required=False)
     ean = forms.CharField(min_length=13, max_length=13, label="EAN", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "title": "Enter the product's International Article Number (EAN)", "class": "field"}), required=False)
     username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter the seller's username", "title": "Enter the seller's username", "class": "field"}), required=False)

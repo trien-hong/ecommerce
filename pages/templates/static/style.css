@@ -34,6 +34,11 @@ li::marker {
     border-color: #6C6C6C;
 }
 
+.logo-container a.btn {
+    left: calc(100% + 50px);
+    white-space: nowrap;
+}
+
 .products {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
