@@ -1,6 +1,7 @@
 import os
 import uuid
 from django.http import HttpResponseRedirect
+from django.db.models.functions import Lower
 from django.views.decorators.cache import never_cache
 from django.utils.safestring import mark_safe
 from django.shortcuts import render, redirect
@@ -94,8 +95,8 @@ def index_view(request):
     """
     if request.method == "GET":
         user = request.user
-        products = Product.objects.all().exclude(bought=True)
         search_product_form = forms.SearchProduct()
+        products = Product.objects.all().exclude(bought=True)
         return render(request, "index.html", { "current_username": user.username, "products": products, "search_product_form": search_product_form })
 
 @never_cache
@@ -107,17 +108,17 @@ def index_sort_by_view(request):
     """
     if request.method == "GET":
         user = request.user
-        search_product_form = forms.SearchProduct()
         title_option = request.GET.get("title", None)
         date_option = request.GET.get("date", None)
         views_option = request.GET.get("views", None)
+        search_product_form = forms.SearchProduct()
         if title_option != None:
             if title_option == "ascending":
                 sort_by = "Title (A - Z)"
-                products = Product.objects.all().exclude(bought=True).order_by("title")
+                products = Product.objects.all().exclude(bought=True).order_by(Lower("title"))
             elif title_option == "descending":
                 sort_by = "Title (Z - A)"
-                products = Product.objects.all().exclude(bought=True).order_by("-title")
+                products = Product.objects.all().exclude(bought=True).order_by(Lower("title").desc())
             else:
                 sort_by = None
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the sorting by title.</li><li>Please try again.</li></ul>"))
@@ -147,6 +148,44 @@ def index_sort_by_view(request):
         if sort_by == None:
             products = Product.objects.all().exclude(bought=True)
         return render(request, "index.html", { "current_username": user.username, "products": products, "search_product_form": search_product_form, "sort_by": sort_by })
+    
+@never_cache
+@login_required
+def index_filter_by_view(request):
+    """
+    URL: /index/filter-by?category=... or /index/filter-by?condition=...
+    where ?category=... or ?condition=... is the query string and ... is one of the following choices (see choices.py)
+    """
+    user = request.user
+    category_option = request.GET.get("category", None)
+    condition_option = request.GET.get("condition", None)
+    search_product_form = forms.SearchProduct()
+    if category_option != None:
+        if category_option != "":
+            if category_option == "all":
+                filter_by = "category - all"
+                products = Product.objects.all().exclude(bought=True)
+            else:
+                filter_by = "category - " + category_option
+                products = Product.objects.filter(category=category_option).exclude(bought=True)
+        else:
+            filter_by = None
+            messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the filtering.</li><li>Please try again.</li></ul>"))
+    elif condition_option != None:
+        if condition_option != "":
+            filter_by = "condition - " + condition_option
+            products = Product.objects.filter(condition=condition_option).exclude(bought=True)
+        else:
+            filter_by = None
+            messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the filtering.</li><li>Please try again.</li></ul>"))
+    else:
+        filter_by = None
+        messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the filtering.</li><li>Please try again.</li></ul>"))
+    if filter_by == None:
+        products = Product.objects.all().exclude(bought=True)
+    if not products:
+        messages.add_message(request, messages.ERROR, mark_safe("<ul><li>The specific filter came back empty. </li><li>Please try a different filter.</li></ul>"))
+    return render(request, "index.html", { "current_username": user.username, "products": products, "search_product_form": search_product_form, "filter_by": filter_by })
 
 @never_cache
 @login_required

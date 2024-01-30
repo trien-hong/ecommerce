@@ -1,0 +1,40 @@
+<div class="dropdown-center nested_dropdown ps-2 pt-3">
+    <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+        Filter By {% if filter_by %}| {{filter_by}}{% endif %}
+    </button>
+    <ul class="dropdown-menu">
+        <li class="dropdown-submenu dropend">
+            <a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=all">All Products</a>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        <li class="dropdown-submenu dropend">
+            <a class="dropdown-item dropdown-toggle" href="#">Category&nbsp;</a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=kitchen">Kitchen</a></li>
+			    <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=living-room">Living Room</a></li>
+                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=garage">Garage</a></li>
+                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=bathroom">Bathroom</a></li>
+                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=bedroom">Bedroom</a></li>
+                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=office">Office</a></li>
+                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=outdoor">Outdoor</a></li>
+                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=toys">Toys</a></li>
+                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=games">Games</a></li>
+                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=clothing">Clothing</a></li>
+                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=electronics">Electronics</a></li>
+            </ul>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        <li class="dropdown-submenu dropend">
+            <a class="dropdown-item dropdown-toggle" href="#">Condition&nbsp;</a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?condition=new">New</a></li>
+			    <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?condition=open box">Open Box</a></li>
+                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?condition=preowned">Preowned</a></li>
+			    <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?condition=used (like new)">Used (like new)</a></li>
+                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?condition=used (moderately)">Used (moderately)</a></li>
+			    <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?condition=used (heavily)">Used (heavily)</a></li>
+                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?condition=broken (unusable)">Broken (unusable)</a></li>
+            </ul>
+        </li>
+    </ul>
+</div>

@@ -34,10 +34,25 @@ li::marker {
     border-color: #6C6C6C;
 }
 
-.logo-container a.btn {
-    left: calc(100% + 50px);
-    white-space: nowrap;
+.sort_filter_by {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
+
+.dropdown-submenu {
+    position: relative;
+}
+  
+.dropdown-submenu .dropdown-menu {
+    top: 10%;
+    left: 100%;
+    margin-top: -1px;
+}
+  
+.nested_dropdown li:hover > ul.dropdown-menu {
+    display: block;
+}  
 
 .products {
     display: grid;
