@@ -154,20 +154,25 @@ def index_sort_by_view(request):
 def index_filter_by_view(request):
     """
     URL: /index/filter-by?category=... or /index/filter-by?condition=...
-    where ?category=... or ?condition=... is the query string and ... is one of the following choices (see choices.py)
+    where ?category=... or ?condition=... is the query string and ... is one of the following choices (see choices.py/filter_by.html)
+
     """
     user = request.user
+    none_option = request.GET.get("none", None)
     category_option = request.GET.get("category", None)
     condition_option = request.GET.get("condition", None)
     search_product_form = forms.SearchProduct()
-    if category_option != None:
+    if none_option != None:
+        if none_option == "True":
+            filter_by = "All Products"
+            products = Product.objects.all().exclude(bought=True)
+        else:
+            filter_by = None
+            messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the filtering.</li><li>Please try again.</li></ul>"))
+    elif category_option != None:
         if category_option != "":
-            if category_option == "all":
-                filter_by = "category - all"
-                products = Product.objects.all().exclude(bought=True)
-            else:
-                filter_by = "category - " + category_option
-                products = Product.objects.filter(category=category_option).exclude(bought=True)
+            filter_by = "category - " + category_option
+            products = Product.objects.filter(category=category_option).exclude(bought=True)
         else:
             filter_by = None
             messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the filtering.</li><li>Please try again.</li></ul>"))
@@ -182,8 +187,8 @@ def index_filter_by_view(request):
         filter_by = None
         messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the filtering.</li><li>Please try again.</li></ul>"))
     if filter_by == None:
-        products = Product.objects.all().exclude(bought=True)
-    if not products:
+        products = None
+    if products.exists() == False:
         messages.add_message(request, messages.ERROR, mark_safe("<ul><li>The specific filter came back empty. </li><li>Please try a different filter.</li></ul>"))
     return render(request, "index.html", { "current_username": user.username, "products": products, "search_product_form": search_product_form, "filter_by": filter_by })
 
@@ -218,8 +223,34 @@ def add_product_view(request):
     URL: /product/add-product/
     """
     if request.method == "GET":
-        add_product_form = forms.AddProduct()
-        return render(request, "add_product.html", { "add_product_form": add_product_form })
+        user = request.user
+        option = request.GET.get("option", None)
+        upc = request.GET.get("upc", None)
+        ean = request.GET.get("upc", None)
+        if option == "manually":
+            add_product_form = forms.AddProduct()
+            return render(request, "add_product.html", { "add_product_form": add_product_form, "option": "manually"})
+        elif option == "upc-ean-lookup":
+            upc_ean_lookup_form = forms.UpcEanLookup()
+            return render(request, "add_product.html", { "upc_ean_lookup_form": upc_ean_lookup_form, "option": "upc_ean_lookup" })
+        elif upc != None or ean != None:
+            upc_ean_lookup_form = forms.UpcEanLookup(request.GET)
+            products = None
+            if upc_ean_lookup_form.is_valid():
+                if upc_ean_lookup_form.cleaned_data["upc"] != "" and upc_ean_lookup_form.cleaned_data["ean"] == "":
+                    products = Product.objects.filter(upc=upc_ean_lookup_form.cleaned_data["upc"])
+                elif upc_ean_lookup_form.cleaned_data["ean"] != "" and upc_ean_lookup_form.cleaned_data["upc"] == "":
+                    products = Product.objects.filter(ean=upc_ean_lookup_form.cleaned_data["ean"])
+                elif upc_ean_lookup_form.cleaned_data["upc"] != "" and upc_ean_lookup_form.cleaned_data["ean"] != "":
+                    products = Product.objects.filter(upc=upc_ean_lookup_form.cleaned_data["upc"], ean=upc_ean_lookup_form.cleaned_data["ean"])
+                if products.exists() == False:
+                    messages.add_message(request, messages.ERROR, mark_safe("<ul><li>The UPC and/or EAN did not match a record on our database.</li><li>Please try again.</li></ul>"))
+                return render(request, "add_product.html", { "upc_ean_lookup_form": upc_ean_lookup_form, "products": products, "option": "upc_ean_lookup" })
+            else:
+                messages.add_message(request, messages.ERROR, upc_ean_lookup_form.errors)
+                return render(request, "add_product.html", { "upc_ean_lookup_form": upc_ean_lookup_form, "option": "upc_ean_lookup" })
+        else:
+            return render(request, "add_product.html", { "option": "how" })
     if request.method == "POST":
         user = request.user
         product_info = request.POST
@@ -235,6 +266,27 @@ def add_product_view(request):
         else:
             messages.add_message(request, messages.ERROR, add_product_form.errors)
             return redirect(add_product_view)
+
+@never_cache
+@login_required
+def copy_and_add_product_view(request, uuid):
+    """
+    URL: /product/copy-product/id/<uuid:uuid>/
+    where <uuid:uuid> is the uuid (NOT ID despite the URL) of the product that you want to copy
+    if exposed the uuid is shown to the user and not the ID/PK
+    """
+    if request.method == "GET":
+        return redirect(add_product_view)
+    if request.method == "POST":
+        user = request.user
+        try:
+            original_product = Product.objects.get(uuid=uuid)
+            product = Product(title=original_product.title, picture=original_product.picture, description=original_product.description, category=original_product.category, condition=original_product.condition, upc=original_product.upc, ean=original_product.ean, seller=user)
+            product.save()
+            messages.add_message(request, messages.SUCCESS, "This product's details has been copied over and a new listing has been created. Know that you may edit the product's details at any time.")
+        except Product.DoesNotExist:
+            messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in copying this product's details.</li><li>Please try again.</li></ul>"))
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 @never_cache
 @login_required

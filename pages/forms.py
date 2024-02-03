@@ -334,7 +334,7 @@ class AdvancedSearchProduct(forms.Form):
                 raise forms.ValidationError("The UPC length is greater than 12.")
 
             upc_list = [int(i) for i in upc]
-            check_digit = len(upc_list) - 1
+            check_digit = upc_list[len(upc_list) - 1]
             total = 0
             odd_total = 0
             even_total = 0
@@ -363,7 +363,7 @@ class AdvancedSearchProduct(forms.Form):
                 raise forms.ValidationError("The EAN length is greater than 12.")
 
             ean_list = [int(i) for i in ean]
-            check_digit = len(ean_list) - 1
+            check_digit = ean_list[len(ean_list) - 1]
             total = 0
             odd_total = 0
             even_total = 0
@@ -387,3 +387,65 @@ class AdvancedSearchProduct(forms.Form):
                 raise forms.ValidationError("Username length is greater than 30.")
 
         return username
+
+class UpcEanLookup(forms.Form):
+    upc = forms.CharField(min_length=12, max_length=12, label="UPC", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "title": "Enter the product's Universal Product Code (UPC)", "class": "field"}), required=False)
+    ean = forms.CharField(min_length=13, max_length=13, label="EAN", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "title": "Enter the product's International Article Number (EAN)", "class": "field"}), required=False)
+
+    def clean_upc(self):
+        upc = self.cleaned_data["upc"]
+
+        if upc != "":
+            validate_integer(upc)
+
+            if len(upc) < 12:
+                raise forms.ValidationError("The UPC length is less than 12.")
+            
+            if len(upc) > 12:
+                raise forms.ValidationError("The UPC length is greater than 12.")
+
+            upc_list = [int(i) for i in upc]
+            check_digit = upc_list[len(upc_list) - 1]
+            total = 0
+            odd_total = 0
+            even_total = 0
+            for i in range(len(upc_list) - 1):
+                if i % 2 == 0:
+                    even_total = even_total + upc_list[i]
+                elif i % 2 != 0:
+                    odd_total = odd_total + upc_list[i]
+            total = even_total * 3 + odd_total + check_digit
+
+            if total % 10 != 0:
+                raise forms.ValidationError("The UPC you entered doesn't seem to be a valid UPC.")
+        
+        return upc
+    
+    def clean_ean(self):
+        ean = self.cleaned_data["ean"]
+
+        if ean != "":
+            validate_integer(ean)
+
+            if len(ean) < 13:
+                raise forms.ValidationError("The EAN length is less than 12.")
+            
+            if len(ean) > 13:
+                raise forms.ValidationError("The EAN length is greater than 12.")
+
+            ean_list = [int(i) for i in ean]
+            check_digit = ean_list[len(ean_list) - 1]
+            total = 0
+            odd_total = 0
+            even_total = 0
+            for i in range(len(ean_list) - 1):
+                if i % 2 == 0:
+                    even_total = even_total + ean_list[i]
+                elif i % 2 != 0:
+                    odd_total = odd_total + ean_list[i]
+            total = even_total + odd_total * 3 + check_digit
+
+            if total % 10 != 0:
+                raise forms.ValidationError("The EAN you entered doesn't seem to be a valid EAN.")
+
+        return ean

@@ -11,25 +11,90 @@
   <body>
     {% include "includes/navbar.html" with location="add_product" %}
     <div class="container text-break px-0">
-      <div class="content px-3 py-3">
-        <form class="add_product_form px-3 py-3" action="{% url 'add_product_view' %}" enctype="multipart/form-data" method="POST">
-          <fieldset>
-            {% csrf_token %}
-            <legend class="display-5 text-center"><b>ADD PRODUCT</b></legend>
-            <hr>
-            {% for field in add_product_form %}
-              <div class="control-group mb-3">
-                <label class="control-label">{{field.label}}</label> 
-                <div class="controls">
-                  {{field}}
+      <div class="content py-3">
+        {% if option == "manually" %}
+          <form class="add_product_form mx-3 px-3 py-3" action="{% url 'add_product_view' %}" enctype="multipart/form-data" method="POST">
+            <fieldset>
+              {% csrf_token %}
+              <legend class="display-5 text-center"><b>ADD PRODUCT</b></legend>
+              <hr>
+              {% for field in add_product_form %}
+                <div class="control-group mb-3">
+                  <label class="control-label">{{field.label}}</label> 
+                  <div class="controls">
+                    {{field}}
+                  </div>
                 </div>
+              {% endfor %}
+              <div class="text-center py-2">
+                <input class="btn btn-primary" type="submit" value="ADD PRODUCT" title="Add product">
               </div>
-            {% endfor %}
-            <div class="text-center py-2">
-              <input class="btn btn-primary" type="submit" value="ADD PRODUCT" title="Add product">
+            </fieldset>
+          </form>
+        {% elif option == "upc_ean_lookup" %}
+          <form class="upc_ean_lookup_form mx-3 px-3 py-3" action="{% url 'add_product_view' %}" method="GET">
+            <fieldset>
+              <legend class="display-5 text-center"><b>UPC/EAN LOOKUP</b></legend>
+              <hr>
+              {% for field in upc_ean_lookup_form %}
+                <div class="control-group mb-3">
+                  <label class="control-label">{{field.label}}</label> 
+                  <div class="controls">
+                    {{field}}
+                  </div>
+                </div>
+              {% endfor %}
+              <div class="text-center py-2">
+                <input class="btn btn-primary" type="submit" value="LOOKUP" title="Add product">
+              </div>
+            </fieldset>
+          </form>
+          {% if products %}
+            <div class="pt-2">
+              <hr>
             </div>
-          </fieldset>
-        </form>
+            <div class="products mx-2">
+              {% for product in products %}
+                <div class="product mx-2 my-2 px-3 py-2">
+                  <h4><b>{{product.title}}</b></h4>
+                  <a href="{% url 'product_view' uuid=product.uuid %}" title="Click to view more details of this product"><img src="{{product.picture.url}}" alt="product picture" style="width: 100%;"></a>
+                  <p class="my-0 pt-2"><b>{{product.description}}</b></p>
+                  <p class="my-0 pt-2"><b>Category: {{product.category}}</b></p>
+                  <p class="my-0 pt-2"><b>Condition: {{product.condition}}</b></p>
+                  <div class="add_to_cart_form pb-2">
+                    <form action="{% url 'copy_and_add_product_view' uuid=product.uuid %}" method="POST">
+                      {% csrf_token %}
+                      <fieldset>
+                        <hr>
+                        <div class="add_to_cart_button">
+                          <input class="btn btn-primary" type="submit" value="COPY & ADD" title="Copy product's detail & create listing">
+                        </div>
+                      </fieldset>
+                    </form>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% else %}
+          <div class="option_how mx-3 px-3 py-3">
+            <h3 class="text-center">How would you like to add your product?</h3>
+            <hr>
+            <div class="add_product_options">
+              <div class="manually_button">
+                <a class="btn btn-lg btn-primary" href="{% url 'add_product_view' %}?option=manually" role="button">Manually</a>
+                <hr>
+                <p class="text-center">You will need to enter the product's details manually.<br>That includes title, picture, description, category, etc.</p>
+              </div>
+              <div class="vr mx-3"></div>
+              <div class="upc_ean_lookup_button">
+                <a class="btn btn-lg btn-primary" href="{% url 'add_product_view' %}?option=upc-ean-lookup" role="button">UPC/EAN Lookup</a>
+                <hr>
+                <p class="text-center">You can do a lookup on our database if you know the UPC/EAN.<br>This way, you can simply copy the product's details onto yours.</p>
+              </div>
+            </div>
+          </div>
+        {% endif %}
       </div>
     </div>
     {% include "includes/modal_message.html" %}

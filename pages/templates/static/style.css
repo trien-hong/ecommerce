@@ -17,9 +17,32 @@ li::marker {
     background-color: #9DB2BF;
 }
 
-.login_form, .signup_form, .reset_password_form, .add_product_form, .advanced_search_product_form {
+.login_form, .signup_form, .reset_password_form, .add_product_form, .upc_ean_lookup_form, .advanced_search_product_form {
     background-color: #DDE6ED;
     border: 2px solid black;
+}
+
+.option_how {
+    background-color: #DDE6ED;
+    border: 2px solid black;
+}
+
+.add_product_options {
+    display: flex;
+}
+
+.manually_button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 50%;
+}
+
+.upc_ean_lookup_button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 50%;
 }
 
 .field {
@@ -40,11 +63,11 @@ li::marker {
     justify-content: center;
 }
 
-.dropdown-submenu {
+.dropdown_submenu {
     position: relative;
 }
   
-.dropdown-submenu .dropdown-menu {
+.dropdown_submenu .dropdown-menu {
     top: 10%;
     left: 100%;
     margin-top: -1px;

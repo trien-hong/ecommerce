@@ -3,11 +3,11 @@
         Filter By {% if filter_by %}| {{filter_by}}{% endif %}
     </button>
     <ul class="dropdown-menu">
-        <li class="dropdown-submenu dropend">
-            <a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=all">All Products</a>
+        <li class="dropend dropdown_submenu">
+            <a class="dropdown-item" href="{% url 'index_filter_by_view' %}?none=True">All Products</a>
         </li>
         <li><hr class="dropdown-divider"></li>
-        <li class="dropdown-submenu dropend">
+        <li class="dropend dropdown_submenu">
             <a class="dropdown-item dropdown-toggle" href="#">Category&nbsp;</a>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=kitchen">Kitchen</a></li>
@@ -24,7 +24,7 @@
             </ul>
         </li>
         <li><hr class="dropdown-divider"></li>
-        <li class="dropdown-submenu dropend">
+        <li class="dropend dropdown_submenu">
             <a class="dropdown-item dropdown-toggle" href="#">Condition&nbsp;</a>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?condition=new">New</a></li>

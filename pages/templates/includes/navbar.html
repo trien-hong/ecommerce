@@ -45,9 +45,9 @@
 					</li>
 					<li class="nav-item">
 						{% if location == "add_product" %}
-							<a class="nav-link active" aria-current="page" href="{% url 'add_product_view' %}" title="Add product"><u>Add product</u></a>
+							<a class="nav-link active" aria-current="page" href="{% url 'add_product_view' %}?option=how" title="Add product"><u>Add product</u></a>
 						{% else %}
-							<a class="nav-link" href="{% url 'add_product_view' %}" title="Add product">Add product</a>
+							<a class="nav-link" href="{% url 'add_product_view' %}?option=how" title="Add product">Add product</a>
 						{% endif %}
 					</li>
 					<li class="nav-item">
