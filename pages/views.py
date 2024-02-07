@@ -71,13 +71,13 @@ def reset_password_view(request):
         if request.user.is_authenticated:
             return redirect(index_view)
         else:
-            # i hope to one day add verfication to this
             reset_password_form = forms.RestPassword()
             return render(request, "reset_password.html", { "reset_password_form": reset_password_form})
     if request.method == "POST":
         user_info = request.POST
         reset_password_form = forms.RestPassword(user_info)
         if reset_password_form.is_valid():
+            # i hope to one day add verfication to this before users are allowed to actually change it
             user = User.objects.get(username=reset_password_form.cleaned_data["username"])
             user.set_password(reset_password_form.cleaned_data["confirm_password"])
             user.save()
@@ -108,35 +108,35 @@ def index_sort_by_view(request):
     """
     if request.method == "GET":
         user = request.user
-        title_option = request.GET.get("title", None)
-        date_option = request.GET.get("date", None)
-        views_option = request.GET.get("views", None)
+        title = request.GET.get("title", None)
+        date = request.GET.get("date", None)
+        views = request.GET.get("views", None)
         search_product_form = forms.SearchProduct()
-        if title_option != None:
-            if title_option == "ascending":
+        if title is not None:
+            if title == "ascending":
                 sort_by = "Title (A - Z)"
                 products = Product.objects.all().exclude(bought=True).order_by(Lower("title"))
-            elif title_option == "descending":
+            elif title == "descending":
                 sort_by = "Title (Z - A)"
                 products = Product.objects.all().exclude(bought=True).order_by(Lower("title").desc())
             else:
                 sort_by = None
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the sorting by title.</li><li>Please try again.</li></ul>"))
-        elif date_option != None:
-            if date_option == "ascending":
+        elif date is not None:
+            if date == "ascending":
                 sort_by = "Date (Low - High)"
                 products = Product.objects.all().exclude(bought=True).order_by("list_date")
-            elif date_option == "descending":
+            elif date == "descending":
                 sort_by = "Date (High - Low)"
                 products = Product.objects.all().exclude(bought=True).order_by("-list_date")
             else:
                 sort_by = None
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the sorting by date.</li><li>Please try again.</li></ul>"))
-        elif views_option != None:
-            if views_option == "ascending":
+        elif views is not None:
+            if views == "ascending":
                 sort_by = "Views (Low - High)"
                 products = Product.objects.all().exclude(bought=True).order_by("views")
-            elif views_option == "descending":
+            elif views == "descending":
                 sort_by = "Views (High - Low)"
                 products = Product.objects.all().exclude(bought=True).order_by("-views")
             else:
@@ -145,10 +145,10 @@ def index_sort_by_view(request):
         else:
             sort_by = None
             messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the sorting.</li><li>Please try again.</li></ul>"))
-        if sort_by == None:
+        if sort_by is None:
             products = Product.objects.all().exclude(bought=True)
         return render(request, "index.html", { "current_username": user.username, "products": products, "search_product_form": search_product_form, "sort_by": sort_by })
-    
+
 @never_cache
 @login_required
 def index_filter_by_view(request):
@@ -157,40 +157,40 @@ def index_filter_by_view(request):
     where ?category=... or ?condition=... is the query string and ... is one of the following choices (see choices.py/filter_by.html)
 
     """
-    user = request.user
-    none_option = request.GET.get("none", None)
-    category_option = request.GET.get("category", None)
-    condition_option = request.GET.get("condition", None)
-    search_product_form = forms.SearchProduct()
-    if none_option != None:
-        if none_option == "True":
-            filter_by = "All Products"
-            products = Product.objects.all().exclude(bought=True)
+    if request.method == "GET":
+        user = request.user
+        all_products = request.GET.get("all-products", None)
+        category = request.GET.get("category", None)
+        condition = request.GET.get("condition", None)
+        search_product_form = forms.SearchProduct()
+        if all_products is not None:
+            if all_products == "True":
+                filter_by = "All Products"
+                products = Product.objects.all().exclude(bought=True)
+            else:
+                filter_by = None
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the filtering.</li><li>Please try again.</li></ul>"))
+        elif category is not None:
+            if category != "":
+                filter_by = "category - " + category
+                products = Product.objects.filter(category=category).exclude(bought=True)
+            else:
+                filter_by = None
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the filtering.</li><li>Please try again.</li></ul>"))
+        elif condition is not None:
+            if condition != "":
+                filter_by = "condition - " + condition
+                products = Product.objects.filter(condition=condition).exclude(bought=True)
+            else:
+                filter_by = None
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the filtering.</li><li>Please try again.</li></ul>"))
         else:
             filter_by = None
             messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the filtering.</li><li>Please try again.</li></ul>"))
-    elif category_option != None:
-        if category_option != "":
-            filter_by = "category - " + category_option
-            products = Product.objects.filter(category=category_option).exclude(bought=True)
-        else:
-            filter_by = None
-            messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the filtering.</li><li>Please try again.</li></ul>"))
-    elif condition_option != None:
-        if condition_option != "":
-            filter_by = "condition - " + condition_option
-            products = Product.objects.filter(condition=condition_option).exclude(bought=True)
-        else:
-            filter_by = None
-            messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the filtering.</li><li>Please try again.</li></ul>"))
-    else:
-        filter_by = None
-        messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the filtering.</li><li>Please try again.</li></ul>"))
-    if filter_by == None:
-        products = None
-    if products.exists() == False:
-        messages.add_message(request, messages.ERROR, mark_safe("<ul><li>The specific filter came back empty. </li><li>Please try a different filter.</li></ul>"))
-    return render(request, "index.html", { "current_username": user.username, "products": products, "search_product_form": search_product_form, "filter_by": filter_by })
+        if filter_by is None or products.exists() is False:
+            products = None
+            messages.add_message(request, messages.ERROR, mark_safe("<ul><li>The specific filter came back empty. </li><li>Please try a different filter.</li></ul>"))
+        return render(request, "index.html", { "current_username": user.username, "products": products, "search_product_form": search_product_form, "filter_by": filter_by })
 
 @never_cache
 @login_required
@@ -233,7 +233,7 @@ def add_product_view(request):
         elif option == "upc-ean-lookup":
             upc_ean_lookup_form = forms.UpcEanLookup()
             return render(request, "add_product.html", { "upc_ean_lookup_form": upc_ean_lookup_form, "option": "upc_ean_lookup" })
-        elif upc != None or ean != None:
+        elif upc is not None or ean is not None:
             upc_ean_lookup_form = forms.UpcEanLookup(request.GET)
             products = None
             if upc_ean_lookup_form.is_valid():
@@ -243,7 +243,7 @@ def add_product_view(request):
                     products = Product.objects.filter(ean=upc_ean_lookup_form.cleaned_data["ean"])
                 elif upc_ean_lookup_form.cleaned_data["upc"] != "" and upc_ean_lookup_form.cleaned_data["ean"] != "":
                     products = Product.objects.filter(upc=upc_ean_lookup_form.cleaned_data["upc"], ean=upc_ean_lookup_form.cleaned_data["ean"])
-                if products.exists() == False:
+                if products.exists() is False:
                     messages.add_message(request, messages.ERROR, mark_safe("<ul><li>The UPC and/or EAN did not match a record on our database.</li><li>Please try again.</li></ul>"))
                 return render(request, "add_product.html", { "upc_ean_lookup_form": upc_ean_lookup_form, "products": products, "option": "upc_ean_lookup" })
             else:
@@ -302,18 +302,16 @@ def delete_product_view(request, uuid):
         user = request.user
         try:
             product = Product.objects.get(uuid=uuid)
-            if product.seller != user or product.bought == True:
+            if product.seller != user or product.bought is True:
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in deleting this product from your profile.</li><li>Please try again.</li></ul>"))
-                return redirect(profile_option_view, option="listing-history")
             else:
                 if os.path.exists(product.picture.path):
                     os.remove(product.picture.path)
                 product.delete()
                 messages.add_message(request, messages.SUCCESS, "You successfully deleted the product, \"" + product.title + "\", from your profile.")
-                return redirect(profile_option_view, option="listing-history")
         except Product.DoesNotExist:
             messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in deleting this product from your profile.</li><li>Please try again.</li></ul>"))
-            return redirect(profile_option_view, option="listing-history")
+        return redirect(profile_option_view, option="listing-history")
 
 @never_cache
 @login_required
@@ -328,7 +326,7 @@ def edit_product_view(request, uuid):
         edit_product_form = forms.EditProduct()
         try:
             product = Product.objects.get(uuid=uuid)
-            if product.seller != user or product.bought == True:
+            if product.seller != user or product.bought is True:
                 product = None
         except Product.DoesNotExist:
             product = None
@@ -342,7 +340,6 @@ def edit_product_view(request, uuid):
                 product = Product.objects.get(uuid=uuid)
                 if edit_product_form.cleaned_data["title"] == "" and edit_product_form.cleaned_data["picture"] is None and edit_product_form.cleaned_data["description"] == "" and edit_product_form.cleaned_data["category"] == "" and edit_product_form.cleaned_data["condition"] == "" and edit_product_form.cleaned_data["upc"] == "" and edit_product_form.cleaned_data["ean"] == "":
                     messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Seems like you submitted an empty form.</li><li>If you have nothing to edit on the product, please don't edit it.</li></ul>"))
-                    return redirect(edit_product_view, uuid)
                 else:
                     if edit_product_form.cleaned_data["title"] != "":
                         product.title = edit_product_form.cleaned_data["title"]
@@ -364,14 +361,13 @@ def edit_product_view(request, uuid):
                         product.ean = edit_product_form.cleaned_data["ean"]
                     product.save()
                     messages.add_message(request, messages.SUCCESS, "Your product have been successfully updated.")
-                    return redirect(edit_product_view, uuid)
             except Product.DoesNotExist:
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in editing your product.</li><li>Please try again.</li></ul>"))
-                return redirect(edit_product_view, uuid)
+            return redirect(edit_product_view, uuid)
         else:
             messages.add_message(request, messages.ERROR, edit_product_form.errors)
             return redirect(edit_product_view, uuid)
-        
+
 @never_cache
 @login_required
 def edit_product_delete_upc_ean_view(request, uuid, type):
@@ -384,7 +380,7 @@ def edit_product_delete_upc_ean_view(request, uuid, type):
         user = request.user
         try:
             product = Product.objects.get(uuid=uuid)
-            if product.seller != user or product.bought == True:
+            if product.seller != user or product.bought is True:
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in deleting the product's UPC/EAN.</li><li>Please try again.</li></ul>"))
                 return redirect(edit_product_view, uuid)
             else:
@@ -392,18 +388,15 @@ def edit_product_delete_upc_ean_view(request, uuid, type):
                     product.upc = ""
                     product.save()
                     messages.add_message(request, messages.SUCCESS, "You successfully deleted the product's UPC.")
-                    return redirect(edit_product_view, uuid)
                 elif type == "ean":
                     product.ean = ""
                     product.save()
                     messages.add_message(request, messages.SUCCESS, "You successfully deleted the product's EAN.")
-                    return redirect(edit_product_view, uuid)
                 else:
                     messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in deleting the product's UPC/EAN.</li><li>Please try again.</li></ul>"))
-                    return redirect(edit_product_view, uuid)
         except Product.DoesNotExist:
             messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in deleting the product's UPC/EAN.</li><li>Please try again.</li></ul>"))
-            return redirect(edit_product_view, uuid)
+        return redirect(edit_product_view, uuid)
 
 @never_cache
 @login_required
@@ -422,9 +415,9 @@ def search_view(request):
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Sorry, your search of, \"" + search_product_form.cleaned_data["title"] + "\", came by empty.</li><li>Please note that you are searching by title.</li></ul>"))
             else:
                 products = Product.objects.filter(title__istartswith=search_product_form.cleaned_data["title"]).exclude(bought=True)
-                if products.exists() == False:  
+                if products.exists() is False:
                     products = Product.objects.filter(title__icontains=search_product_form.cleaned_data["title"]).exclude(bought=True)
-                if products.exists() == False:
+                if products.exists() is False:
                     messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Sorry, your search of, \"" + search_product_form.cleaned_data["title"] + "\", came by empty.</li><li>Please note that you are searching by title.</li></ul>"))
                 else:
                     messages.add_message(request, messages.SUCCESS, "Your search resulted in " + str(products.count()) + " products.")
@@ -467,17 +460,18 @@ def advanced_search_view(request):
                             products = products.filter(seller=seller)
                         else:
                             products = None
-                    if products == None or products.count() == 0:
+                    if products is None or products.count() == 0:
                         messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Your advanced search resulted in 0 products.</li><li>Please try again.</li></ul>"))
                     else:
                         messages.add_message(request, messages.SUCCESS, "Your search resulted in " + str(products.count()) + " products.")
             except:
                 products = None
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with your advanced search.</li><li>Please try again.</li></ul>"))
+            return render (request, "advanced_search.html", { "current_username": user.username, "advanced_search_product_form": advanced_search_product_form, "products": products })
         else:
             products = None
             messages.add_message(request, messages.ERROR, advanced_search_product_form.errors)
-        return render (request, "advanced_search.html", { "current_username": user.username, "advanced_search_product_form": advanced_search_product_form, "products": products })
+            return render (request, "advanced_search.html", { "current_username": user.username, "advanced_search_product_form": advanced_search_product_form, "products": products })
 
 @never_cache
 @login_required
@@ -504,23 +498,19 @@ def add_to_cart_view(request, uuid):
         try:
             user = request.user
             product = Product.objects.get(uuid=uuid)
-            if product.bought == True:
+            if product.bought is True:
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Sorry, this product, \"" + product.title + "\" is now sold out.</li></ul>"))
-                return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
             elif product.seller == user:
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>You cannot add your own product to the cart.</li></ul>"))
-                return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
             elif Cart.objects.filter(product=product, user=user).exists():
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>This product, \"" + product.title + "\" already exist in your cart.</li></ul>"))
-                return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
             else:
                 cart = Cart(product=product, user=user)
                 cart.save()
                 messages.add_message(request, messages.SUCCESS, "You've successfully added, \"" + product.title + "\", to your cart.")
-                return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
         except Product.DoesNotExist:
             messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in adding this product to your cart.</li></ul>"))
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 @never_cache
 @login_required
@@ -537,10 +527,9 @@ def delete_from_cart_view(request, uuid):
             item = Cart.objects.get(uuid=uuid)
             item.delete()
             messages.add_message(request, messages.SUCCESS, "The product, \"" + item.product.title + "\", has been successfully removed from your cart.")
-            return redirect(cart_view)
         except Cart.DoesNotExist:
             messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in removing this product from your cart.</li></ul>"))
-            return redirect(cart_view)
+        return redirect(cart_view)
 
 @never_cache
 @login_required
@@ -572,7 +561,7 @@ def check_out_view(request):
         for item in cart:
             try:
                 product = Product.objects.get(id=item.product.id)
-                if product.bought == False:
+                if product.bought is False:
                     product.bought = True
                     product.save()
                     sold = Sold(product=product, buyer=user)
@@ -621,7 +610,6 @@ def profile_option_view(request, option):
     if request.method == "GET":
         user = request.user
         if option == "settings":
-            # i hope to one day add verfication to these
             change_username_form = forms.ChangeUsername()
             change_password_form = forms.ChangePassword()
             delete_account_form = forms.DeleteAccount()
@@ -652,14 +640,14 @@ def change_username_view(request):
         change_username_form = forms.ChangeUsername(user_info)
         if change_username_form.is_valid():
             try:
+                # i hope to one day add verfication to this before users are allowed to actually change it
                 user = User.objects.get(id=request.user.id)
                 user.username = change_username_form.cleaned_data["username"]
                 user.save()
                 messages.add_message(request, messages.SUCCESS, "Your username is now \"" + change_username_form.cleaned_data["username"] +"\". Everything associated with the username has now been updated.")
-                return redirect(profile_option_view, option="settings")
             except User.DoesNotExist:
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in updating your username.</li><li>Please try again.</li></ul>"))
-                return redirect(profile_option_view, option="settings")
+            return redirect(profile_option_view, option="settings")
         else:
             messages.add_message(request, messages.ERROR, change_username_form.errors)
             return redirect(profile_option_view, option="settings")
@@ -677,14 +665,14 @@ def change_password_view(request):
         change_password_form = forms.ChangePassword(user_info)
         if change_password_form.is_valid():
             try:
+                # i hope to one day add verfication to this before users are allowed to actually change it
                 user = User.objects.get(id=request.user.id)
                 user.set_password(change_password_form.cleaned_data["password"])
                 user.save()
                 messages.add_message(request, messages.SUCCESS, "Your password has been successfully updated. You must login again with the new password.")
-                return redirect(profile_option_view, option="settings")
             except User.DoesNotExist:
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in updating your password.</li><li>Please try again.</li></ul>"))
-                return redirect(profile_option_view, option="settings")
+            return redirect(profile_option_view, option="settings")
         else:
             messages.add_message(request, messages.ERROR, change_password_form.errors)
             return redirect(profile_option_view, option="settings")
@@ -702,6 +690,7 @@ def delete_account_view(request):
         delete_account_form = forms.DeleteAccount(user_info, user=request.user)
         if delete_account_form.is_valid():
             try:
+                # i hope to one day add verfication to this before users are allowed to actually change it
                 user = User.objects.get(id=request.user.id)
                 user.delete()
                 messages.add_message(request, messages.SUCCESS, "Your account has been deleted. Thank you for using our service!")

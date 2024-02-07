@@ -15,11 +15,31 @@
         {% if product %}
           <div class="edit_product py-3">
             <div class="current_product_information ps-3">
-              <h2>Title: {{product.title}}</h2>
-              <a href="{% url 'product_view' uuid=product.uuid %}" title="Click to view more details of this product"><img src="{{product.picture.url}}" alt="product picture" style="width: 100%;"></a>
-              <h4>Description: {{product.description}}</h4>
-              <h4>Category: {{product.category}}</h4>
-              <h4>Condition: {{product.condition}}</h4>
+              <div>
+                <h2>Title: {{product.title}}</h2>
+              </div>
+              <div>
+                <a href="{% url 'product_view' uuid=product.uuid %}" title="Click to view more details of this product"><img src="{{product.picture.url}}" alt="product picture" style="width: 100%;"></a>
+              </div>
+              <div>
+                <h4>Description: {{product.description}}</h4>
+              </div>
+              <div>
+                <h4>Category: {{product.category}}</h4>
+              </div>
+              <div>
+                <h4>Condition: {{product.condition}}</h4>
+              </div>
+              {% if product.upc != "" %}
+                <div>
+                  <h4>UPC: {{product.upc}}</h4>
+                </div>
+              {% endif %}
+              {% if product.ean != "" %}
+                <div>
+                  <h4>EAN: {{product.ean}}</h4>
+                </div>
+              {% endif %}
             </div>
             <div class="vr mx-3"></div>
             <div class="edit_product_form pe-3">

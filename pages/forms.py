@@ -26,19 +26,19 @@ class Signup(forms.Form):
 
         if len(username) > 30:
             raise forms.ValidationError("Username length is greater than 30.")
-        
+
         if User.objects.filter(username=username).exists():
             raise forms.ValidationError("Username already exist. Please try using a different username.")
-        
+
         return username
-    
+
     def clean_confirm_password(self):
         password = self.cleaned_data["password"]
         confirm_password = self.cleaned_data["confirm_password"]
 
         if password != confirm_password:
             raise forms.ValidationError("Passwords do not match. Please ensure you are using the same password for both fields.")
-        
+
         return confirm_password
 
 class RestPassword(forms.Form):
@@ -51,24 +51,24 @@ class RestPassword(forms.Form):
 
         if len(username) > 30:
             raise forms.ValidationError("Username length is greater than 30.")
-        
+
         if User.objects.filter(username=username).exists() == False:
             raise forms.ValidationError("Username does not exist. Please try using a different username.")
-        
+
         return username
-    
+
     def clean_confirm_password(self):
         password = self.cleaned_data["password"]
         confirm_password = self.cleaned_data["confirm_password"]
 
         if password != confirm_password:
             raise forms.ValidationError("Passwords do not match. Please ensure you are using the same password for both fields.")
-        
+
         return confirm_password
-    
+
 class ChangeUsername(forms.Form):
     username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your new username", "size": "35"}))
-    
+
     def clean_username(self):
         username = self.cleaned_data["username"]
 
@@ -77,7 +77,7 @@ class ChangeUsername(forms.Form):
 
         if User.objects.filter(username=username).exists() == True:
             raise forms.ValidationError("Username already exist. Please try using a different username.")
-        
+
         return username
 
 class ChangePassword(forms.Form):
@@ -90,7 +90,7 @@ class ChangePassword(forms.Form):
 
         if password != confirm_password:
             raise forms.ValidationError("Passwords do not match. Please ensure you are using the same password for both fields.")
-        
+
         return confirm_password
 
 class DeleteAccount(forms.Form):
@@ -105,7 +105,7 @@ class DeleteAccount(forms.Form):
 
         if self.user.check_password(password) == False:
             raise forms.ValidationError("Password is incorrect. Please enter the correct password.")
-        
+
         return password
 
 class AddProduct(forms.Form):
@@ -122,25 +122,25 @@ class AddProduct(forms.Form):
 
         if len(title) > 50:
             raise forms.ValidationError("Title length is greater than 50.")
-        
+    
         return title
 
     def clean_picture(self):
         picture = self.cleaned_data["picture"]
-        
+
         if picture.size > 5*1024*1024:
             raise forms.ValidationError("Image is greater than 5MB. Please upload an image that is less than 5MB.")
-        
+
         return picture
-    
+
     def clean_description(self):
         description = self.cleaned_data["description"]
 
         if len(description) > 500:
             raise forms.ValidationError("Description length is greater than 500.")
-        
+
         return description
-    
+
     def clean_upc(self):
         upc = self.cleaned_data["upc"]
 
@@ -167,9 +167,9 @@ class AddProduct(forms.Form):
 
             if total % 10 != 0:
                 raise forms.ValidationError("The UPC you entered doesn't seem to be a valid UPC.")
-        
+
         return upc
-    
+
     def clean_ean(self):
         ean = self.cleaned_data["ean"]
 
@@ -178,7 +178,7 @@ class AddProduct(forms.Form):
 
             if len(ean) < 13:
                 raise forms.ValidationError("The EAN length is less than 13")
-            
+
             if len(ean) > 13:
                 raise forms.ValidationError("The EAN length is greater than 13")
 
@@ -198,7 +198,7 @@ class AddProduct(forms.Form):
                 raise forms.ValidationError("The EAN you entered doesn't seem to be a valid EAN.")
 
         return ean
-    
+
 class EditProduct(forms.Form):
     title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product's new title", "title": "Only edit a field if you need to", "class": "field"}), required=False)
     picture = forms.ImageField(widget=forms.FileInput(attrs={"title": "Only edit a field if you need to"}), required=False)
@@ -214,18 +214,18 @@ class EditProduct(forms.Form):
         if title != "":
             if len(title) > 50:
                 raise forms.ValidationError("Title length is greater than 50.")
-        
+
         return title
 
     def clean_picture(self):
         picture = self.cleaned_data["picture"]
-        
+
         if picture is not None:
             if picture.size > 5*1024*1024:
                 raise forms.ValidationError("Image is greater than 5MB. Please upload an image that is less than 5MB.")
-        
+
         return picture
-    
+
     def clean_description(self):
         description = self.cleaned_data["description"]
 
@@ -234,7 +234,7 @@ class EditProduct(forms.Form):
                 raise forms.ValidationError("Description length is greater than 500.")
         
         return description
-    
+
     def clean_upc(self):
         upc = self.cleaned_data["upc"]
 
@@ -243,7 +243,7 @@ class EditProduct(forms.Form):
 
             if len(upc) < 12:
                 raise forms.ValidationError("The UPC length is less than 12.")
-            
+
             if len(upc) > 12:
                 raise forms.ValidationError("The UPC length is greater than 12.")
 
@@ -261,9 +261,9 @@ class EditProduct(forms.Form):
 
             if total % 10 != 0:
                 raise forms.ValidationError("The UPC you entered doesn't seem to be a valid UPC.")
-        
+
         return upc
-    
+
     def clean_ean(self):
         ean = self.cleaned_data["ean"]
 
@@ -272,7 +272,7 @@ class EditProduct(forms.Form):
 
             if len(ean) < 13:
                 raise forms.ValidationError("The EAN length is less than 12.")
-            
+
             if len(ean) > 13:
                 raise forms.ValidationError("The EAN length is greater than 12.")
 
@@ -292,16 +292,16 @@ class EditProduct(forms.Form):
                 raise forms.ValidationError("The EAN you entered doesn't seem to be a valid EAN.")
 
         return ean
-    
+
 class SearchProduct(forms.Form):
     title = forms.CharField(max_length=50, label="", widget=forms.TextInput(attrs={"class": "form-control me-2", "id": "product_search", "type": "search", "label": "", "placeholder": "Search...", "title": "Search for specific products (by title)", "size": "35"}), required=False)
 
     def clean_title(self):
         title = self.cleaned_data["title"]
-        
+
         if len(title) > 50:
             raise forms.ValidationError("Title length is greater than 50.")
-        
+
         return title
 
 class AdvancedSearchProduct(forms.Form):
@@ -318,9 +318,9 @@ class AdvancedSearchProduct(forms.Form):
         if title != "":
             if len(title) > 50:
                 raise forms.ValidationError("Title length is greater than 50.")
-        
+
         return title
-    
+
     def clean_upc(self):
         upc = self.cleaned_data["upc"]
 
@@ -329,7 +329,7 @@ class AdvancedSearchProduct(forms.Form):
 
             if len(upc) < 12:
                 raise forms.ValidationError("The UPC length is less than 12.")
-            
+
             if len(upc) > 12:
                 raise forms.ValidationError("The UPC length is greater than 12.")
 
@@ -347,9 +347,9 @@ class AdvancedSearchProduct(forms.Form):
 
             if total % 10 != 0:
                 raise forms.ValidationError("The UPC you entered doesn't seem to be a valid UPC.")
-        
+
         return upc
-    
+
     def clean_ean(self):
         ean = self.cleaned_data["ean"]
 
@@ -358,7 +358,7 @@ class AdvancedSearchProduct(forms.Form):
 
             if len(ean) < 13:
                 raise forms.ValidationError("The EAN length is less than 12.")
-            
+
             if len(ean) > 13:
                 raise forms.ValidationError("The EAN length is greater than 12.")
 
@@ -378,7 +378,7 @@ class AdvancedSearchProduct(forms.Form):
                 raise forms.ValidationError("The EAN you entered doesn't seem to be a valid EAN.")
 
         return ean
-    
+
     def clean_username(self):
         username = self.cleaned_data["username"]
 
@@ -400,7 +400,7 @@ class UpcEanLookup(forms.Form):
 
             if len(upc) < 12:
                 raise forms.ValidationError("The UPC length is less than 12.")
-            
+
             if len(upc) > 12:
                 raise forms.ValidationError("The UPC length is greater than 12.")
 
@@ -418,9 +418,9 @@ class UpcEanLookup(forms.Form):
 
             if total % 10 != 0:
                 raise forms.ValidationError("The UPC you entered doesn't seem to be a valid UPC.")
-        
+
         return upc
-    
+
     def clean_ean(self):
         ean = self.cleaned_data["ean"]
 
@@ -429,7 +429,7 @@ class UpcEanLookup(forms.Form):
 
             if len(ean) < 13:
                 raise forms.ValidationError("The EAN length is less than 12.")
-            
+
             if len(ean) > 13:
                 raise forms.ValidationError("The EAN length is greater than 12.")
 

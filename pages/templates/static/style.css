@@ -125,7 +125,7 @@ li::marker {
 .current_product_information {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     text-align: center;
     width: 50%;
 }

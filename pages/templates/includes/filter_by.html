@@ -3,8 +3,8 @@
         Filter By {% if filter_by %}| {{filter_by}}{% endif %}
     </button>
     <ul class="dropdown-menu">
-        <li class="dropend dropdown_submenu">
-            <a class="dropdown-item" href="{% url 'index_filter_by_view' %}?none=True">All Products</a>
+        <li class="dropend">
+            <a class="dropdown-item" href="{% url 'index_filter_by_view' %}?all-products=True">All Products</a>
         </li>
         <li><hr class="dropdown-divider"></li>
         <li class="dropend dropdown_submenu">
