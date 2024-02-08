@@ -75,7 +75,14 @@ li::marker {
   
 .nested_dropdown li:hover > ul.dropdown-menu {
     display: block;
-}  
+}
+
+.pagination {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
 
 .products {
     display: grid;
@@ -87,6 +94,7 @@ li::marker {
     border: 2px solid black;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     text-align: center;
 }
 

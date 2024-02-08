@@ -1,5 +1,5 @@
 import os
-import uuid
+from uuid import uuid4
 from django.http import HttpResponseRedirect
 from django.db.models.functions import Lower
 from django.views.decorators.cache import never_cache
@@ -8,6 +8,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib import messages
+from django.core.paginator import Paginator
 from . import forms
 from . models import Product
 from . models import Cart
@@ -95,8 +96,9 @@ def index_view(request):
     """
     if request.method == "GET":
         user = request.user
+        page_number = request.GET.get("page", 1)
         search_product_form = forms.SearchProduct()
-        products = Product.objects.all().exclude(bought=True)
+        products = Paginator(Product.objects.all().exclude(bought=True).order_by(Lower("title")), 9).page(page_number)
         return render(request, "index.html", { "current_username": user.username, "products": products, "search_product_form": search_product_form })
 
 @never_cache
@@ -106,6 +108,7 @@ def index_sort_by_view(request):
     URL: /index/sort-by?title=... or /index/sort-by?date=... or /index/sort-by?views=...
     where ?title=... or ?date=... or ?views=... is the query string and ... is either ascending or descending
     """
+    # i may combine index, sort-by, and filter-by into one view
     if request.method == "GET":
         user = request.user
         title = request.GET.get("title", None)
@@ -155,8 +158,8 @@ def index_filter_by_view(request):
     """
     URL: /index/filter-by?category=... or /index/filter-by?condition=...
     where ?category=... or ?condition=... is the query string and ... is one of the following choices (see choices.py/filter_by.html)
-
     """
+    # i may combine index, sort-by, and filter-by into one view
     if request.method == "GET":
         user = request.user
         all_products = request.GET.get("all-products", None)
@@ -258,7 +261,7 @@ def add_product_view(request):
         add_product_form = forms.AddProduct(product_info, picture)
         if add_product_form.is_valid():
             file_extension = add_product_form.cleaned_data["picture"].name.split(".")[-1]
-            add_product_form.cleaned_data["picture"].name = "product_picture_id_" + str(uuid.uuid4()) + "." + file_extension
+            add_product_form.cleaned_data["picture"].name = "product_picture_id_" + str(uuid4()) + "." + file_extension
             product = Product(title=add_product_form.cleaned_data["title"], picture=add_product_form.cleaned_data["picture"], description=add_product_form.cleaned_data["description"], category=add_product_form.cleaned_data["category"], condition=add_product_form.cleaned_data["condition"], upc=add_product_form.cleaned_data["upc"], ean=add_product_form.cleaned_data["ean"], seller=user)
             product.save()
             messages.add_message(request, messages.SUCCESS, "Your product, \"" + product.title + "\" has been successfully added. Image less than/greater than 500x500 have been upsized/downsized and cropped to the middle and center.")
@@ -311,7 +314,7 @@ def delete_product_view(request, uuid):
                 messages.add_message(request, messages.SUCCESS, "You successfully deleted the product, \"" + product.title + "\", from your profile.")
         except Product.DoesNotExist:
             messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in deleting this product from your profile.</li><li>Please try again.</li></ul>"))
-        return redirect(profile_option_view, option="listing-history")
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 @never_cache
 @login_required
@@ -347,7 +350,7 @@ def edit_product_view(request, uuid):
                         if os.path.exists(product.picture.path):
                             os.remove(product.picture.path)
                         file_extension = edit_product_form.cleaned_data["picture"].name.split(".")[-1]
-                        edit_product_form.cleaned_data["picture"].name = "product_picture_id_" + str(uuid.uuid4()) + "." + file_extension
+                        edit_product_form.cleaned_data["picture"].name = "product_picture_id_" + str(uuid4()) + "." + file_extension
                         product.picture = edit_product_form.cleaned_data["picture"]
                     if edit_product_form.cleaned_data["description"] != "":
                         product.description = edit_product_form.cleaned_data["description"]
