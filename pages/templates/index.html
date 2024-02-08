@@ -13,8 +13,8 @@
     <div class="container text-break px-0">
       {% if products %}
         <div class="sort_filter_by">
-          {% include "includes/sort_by.html" %}
           {% include "includes/filter_by.html" %}
+          {% include "includes/sort_by.html" %}
         </div>
       {% endif %}
       <div class="content px-2 py-2">
@@ -46,26 +46,15 @@
             {% endfor %}
           </div>
           {% if products.has_other_pages %}
-            <hr class="my-2">
-            <div class="pagination py-2">
-              {% if products.has_previous %}
-                {% if request.path == "/index" or request.path == "/" %}
-                  <a class="btn btn-primary me-2" href="{% url 'index_view' %}?page=1" role="button">&laquo; first</a>
-                  <a class="btn btn-primary me-2" href="{% url 'index_view' %}?page={{products.previous_page_number}}" role="button">&lsaquo; previous</a>
-                {% endif %}
-              {% endif %}
-              <h4 class="my-0 mx-1">Page: <u>{{products.number}}</u> / <u>{{products.paginator.num_pages}}</u></h4>
-              {% if products.has_next %}
-                {% if request.path == "/index" or request.path == "/" %}
-                  <a class="btn btn-primary ms-2" href="{% url 'index_view' %}?page={{products.next_page_number}}" role="button">next &rsaquo;</a>
-                  <a class="btn btn-primary ms-2" href="{% url 'index_view' %}?page={{products.paginator.num_pages}}" role="button">last &raquo;</a>
-                {% endif %}
-              {% endif %}
-            </div>
+            {% include "includes/pagination.html" %}
           {% endif %}
         {% else %}
           <div class="empty_or_error text-center mx-2 my-2 px-3 py-3">
-            <h1>There are currently no products to show.<br><br>Why not be the first? <a href="{% url 'add_product_view' %}?option=how" title="Add product">Add product</a></h1>
+            {% if filter_by is not None %}
+              <h1>Sorry, your filter came back empty. There were no products that matched your filter.<br><br><a href="{% url 'index_view' %}" title="Homepage">Go back to homepage</a> </h1>
+            {% else %}
+              <h1>There are currently no products to show.<br><br>Why not be the first? <a href="{% url 'add_product_view' %}?option=how" title="Add product">Add product</a></h1>
+            {% endif %}
           </div>
         {% endif %}
       </div>

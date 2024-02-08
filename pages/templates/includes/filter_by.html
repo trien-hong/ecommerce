@@ -1,39 +1,67 @@
-<div class="dropdown-center nested_dropdown ps-2 pt-3">
+<div class="dropdown-center nested_dropdown pe-2 pt-3">
     <button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-        Filter By {% if filter_by %}| {{filter_by}}{% endif %}
+        Filter By {% if filter_by %}| {{filter_by.1}}{% endif %}
     </button>
     <ul class="dropdown-menu">
         <li class="dropend">
-            <a class="dropdown-item" href="{% url 'index_filter_by_view' %}?all-products=True">All Products</a>
+            {% if sort_by %}
+                <a class="dropdown-item" href="{% url 'index_view' %}?all-products=True&{{sort_by.0}}">All Products</a>
+            {% else %}
+                <a class="dropdown-item" href="{% url 'index_view' %}?all-products=True">All Products</a>
+            {% endif %}
         </li>
         <li><hr class="dropdown-divider"></li>
         <li class="dropend dropdown_submenu">
             <a class="dropdown-item dropdown-toggle" href="#">Category&nbsp;</a>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=kitchen">Kitchen</a></li>
-			    <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=living-room">Living Room</a></li>
-                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=garage">Garage</a></li>
-                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=bathroom">Bathroom</a></li>
-                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=bedroom">Bedroom</a></li>
-                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=office">Office</a></li>
-                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=outdoor">Outdoor</a></li>
-                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=toys">Toys</a></li>
-                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=games">Games</a></li>
-                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=clothing">Clothing</a></li>
-                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?category=electronics">Electronics</a></li>
+                {% if sort_by %}
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=kitchen&{{sort_by.0}}">Kitchen</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=living-room&{{sort_by.0}}">Living Room</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=garage&{{sort_by.0}}">Garage</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=bathroom&{{sort_by.0}}">Bathroom</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=bedroom&{{sort_by.0}}">Bedroom</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=office&{{sort_by.0}}">Office</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=outdoor&{{sort_by.0}}">Outdoor</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=toys&{{sort_by.0}}">Toys</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=games&{{sort_by.0}}">Games</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=clothing&{{sort_by.0}}">Clothing</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=electronics&{{sort_by.0}}">Electronics</a></li>
+                {% else %}
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=kitchen">Kitchen</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=living-room">Living Room</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=garage">Garage</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=bathroom">Bathroom</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=bedroom">Bedroom</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=office">Office</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=outdoor">Outdoor</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=toys">Toys</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=games">Games</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=clothing">Clothing</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?category=electronics">Electronics</a></li>
+                {% endif %}
             </ul>
         </li>
         <li><hr class="dropdown-divider"></li>
         <li class="dropend dropdown_submenu">
             <a class="dropdown-item dropdown-toggle" href="#">Condition&nbsp;</a>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?condition=new">New</a></li>
-			    <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?condition=open box">Open Box</a></li>
-                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?condition=preowned">Preowned</a></li>
-			    <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?condition=used (like new)">Used (like new)</a></li>
-                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?condition=used (moderately)">Used (moderately)</a></li>
-			    <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?condition=used (heavily)">Used (heavily)</a></li>
-                <li><a class="dropdown-item" href="{% url 'index_filter_by_view' %}?condition=broken (unusable)">Broken (unusable)</a></li>
+                {% if sort_by %}
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?condition=new">New</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?condition=open box">Open Box</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?condition=preowned">Preowned</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?condition=used (like new)">Used (like new)</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?condition=used (moderately)">Used (moderately)</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?condition=used (heavily)">Used (heavily)</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?condition=broken (unusable)">Broken (unusable)</a></li>
+                {% else %}
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?condition=new">New</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?condition=open box">Open Box</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?condition=preowned">Preowned</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?condition=used (like new)">Used (like new)</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?condition=used (moderately)">Used (moderately)</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?condition=used (heavily)">Used (heavily)</a></li>
+                    <li><a class="dropdown-item" href="{% url 'index_view' %}?condition=broken (unusable)">Broken (unusable)</a></li>
+                {% endif %}
             </ul>
         </li>
     </ul>

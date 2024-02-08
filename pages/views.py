@@ -18,7 +18,7 @@ User = get_user_model()
 @never_cache
 def login_view(request):
     """
-    URL: /login/
+    URL: /login
     """
     if request.method == "GET":
         if request.user.is_authenticated:
@@ -44,7 +44,7 @@ def login_view(request):
 @never_cache
 def signup_view(request):
     """
-    URL: /signup/
+    URL: /signup
     """
     if request.method == "GET":
         if request.user.is_authenticated:
@@ -66,7 +66,7 @@ def signup_view(request):
 @never_cache
 def reset_password_view(request):
     """
-    URL: /reset-password/
+    URL: /reset-password
     """
     if request.method == "GET":
         if request.user.is_authenticated:
@@ -92,108 +92,70 @@ def reset_password_view(request):
 @login_required
 def index_view(request):
     """
-    URL: /index/ OR /
+    URL: /index OR ""
+    Query strings for filtering: ?all-products=..., ?category=..., ?condition=... and ... is one of the following choices (see choices.py/filter_by.html)
+    Query strings for sorting: ?title=..., ?date=..., ?views=..., and ... is either ascending or descending
+    Query string for pagination: ?page=... and ... is a number
     """
-    if request.method == "GET":
-        user = request.user
-        page_number = request.GET.get("page", 1)
-        search_product_form = forms.SearchProduct()
-        products = Paginator(Product.objects.all().exclude(bought=True).order_by(Lower("title")), 9).page(page_number)
-        return render(request, "index.html", { "current_username": user.username, "products": products, "search_product_form": search_product_form })
-
-@never_cache
-@login_required
-def index_sort_by_view(request):
-    """
-    URL: /index/sort-by?title=... or /index/sort-by?date=... or /index/sort-by?views=...
-    where ?title=... or ?date=... or ?views=... is the query string and ... is either ascending or descending
-    """
-    # i may combine index, sort-by, and filter-by into one view
-    if request.method == "GET":
-        user = request.user
-        title = request.GET.get("title", None)
-        date = request.GET.get("date", None)
-        views = request.GET.get("views", None)
-        search_product_form = forms.SearchProduct()
-        if title is not None:
-            if title == "ascending":
-                sort_by = "Title (A - Z)"
-                products = Product.objects.all().exclude(bought=True).order_by(Lower("title"))
-            elif title == "descending":
-                sort_by = "Title (Z - A)"
-                products = Product.objects.all().exclude(bought=True).order_by(Lower("title").desc())
-            else:
-                sort_by = None
-                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the sorting by title.</li><li>Please try again.</li></ul>"))
-        elif date is not None:
-            if date == "ascending":
-                sort_by = "Date (Low - High)"
-                products = Product.objects.all().exclude(bought=True).order_by("list_date")
-            elif date == "descending":
-                sort_by = "Date (High - Low)"
-                products = Product.objects.all().exclude(bought=True).order_by("-list_date")
-            else:
-                sort_by = None
-                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the sorting by date.</li><li>Please try again.</li></ul>"))
-        elif views is not None:
-            if views == "ascending":
-                sort_by = "Views (Low - High)"
-                products = Product.objects.all().exclude(bought=True).order_by("views")
-            elif views == "descending":
-                sort_by = "Views (High - Low)"
-                products = Product.objects.all().exclude(bought=True).order_by("-views")
-            else:
-                sort_by = None
-                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the sorting by views.</li><li>Please try again.</li></ul>"))
-        else:
-            sort_by = None
-            messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the sorting.</li><li>Please try again.</li></ul>"))
-        if sort_by is None:
-            products = Product.objects.all().exclude(bought=True)
-        return render(request, "index.html", { "current_username": user.username, "products": products, "search_product_form": search_product_form, "sort_by": sort_by })
-
-@never_cache
-@login_required
-def index_filter_by_view(request):
-    """
-    URL: /index/filter-by?category=... or /index/filter-by?condition=...
-    where ?category=... or ?condition=... is the query string and ... is one of the following choices (see choices.py/filter_by.html)
-    """
-    # i may combine index, sort-by, and filter-by into one view
     if request.method == "GET":
         user = request.user
         all_products = request.GET.get("all-products", None)
         category = request.GET.get("category", None)
         condition = request.GET.get("condition", None)
+        title = request.GET.get("title", None)
+        date = request.GET.get("date", None)
+        views = request.GET.get("views", None)
+        page_number = request.GET.get("page", 1)
+        filter_by = None
+        sort_by = None
         search_product_form = forms.SearchProduct()
+        products = Product.objects.all().exclude(bought=True).order_by(Lower("title"))
         if all_products is not None:
             if all_products == "True":
-                filter_by = "All Products"
-                products = Product.objects.all().exclude(bought=True)
+                filter_by = ["all-products=true", "All Products"]
             else:
-                filter_by = None
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the filtering.</li><li>Please try again.</li></ul>"))
         elif category is not None:
             if category != "":
-                filter_by = "category - " + category
-                products = Product.objects.filter(category=category).exclude(bought=True)
+                filter_by = ["category=" + category, "Category - " + category]
+                products = products.filter(category=category)
             else:
-                filter_by = None
-                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the filtering.</li><li>Please try again.</li></ul>"))
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with filtering by category.</li><li>Please try again.</li></ul>"))
         elif condition is not None:
             if condition != "":
-                filter_by = "condition - " + condition
-                products = Product.objects.filter(condition=condition).exclude(bought=True)
+                filter_by = ["condition=" + condition, "Condition - " + condition]
+                products = products.filter(condition=condition)
             else:
-                filter_by = None
-                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the filtering.</li><li>Please try again.</li></ul>"))
-        else:
-            filter_by = None
-            messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with the filtering.</li><li>Please try again.</li></ul>"))
-        if filter_by is None or products.exists() is False:
-            products = None
-            messages.add_message(request, messages.ERROR, mark_safe("<ul><li>The specific filter came back empty. </li><li>Please try a different filter.</li></ul>"))
-        return render(request, "index.html", { "current_username": user.username, "products": products, "search_product_form": search_product_form, "filter_by": filter_by })
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with filtering by condition.</li><li>Please try again.</li></ul>"))
+        if title is not None:
+            if title == "ascending":
+                sort_by = ["title=ascending", "Title (A - Z)"]
+                products = products.order_by(Lower("title"))
+            elif title == "descending":
+                sort_by = ["title=descending", "Title (Z - A)"]
+                products = products.order_by(Lower("title").desc())
+            else:
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with sorting by title.</li><li>Please try again.</li></ul>"))
+        elif date is not None:
+            if date == "ascending":
+                sort_by = ["date=ascending", "Date (Low - High)"]
+                products = products.order_by("list_date")
+            elif date == "descending":
+                sort_by = ["date=descending", "Date (High - Low)"]
+                products = products.order_by("-list_date")
+            else:
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with sorting by date.</li><li>Please try again.</li></ul>"))
+        elif views is not None:
+            if views == "ascending":
+                sort_by = ["views=ascending", "Views (Low - High)"]
+                products = products.order_by("views")
+            elif views == "descending":
+                sort_by = ["views=descending", "Views (High - Low)"]
+                products = products.order_by("-views")
+            else:
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with sorting by views.</li><li>Please try again.</li></ul>"))
+        products = Paginator(products, 3).page(page_number)
+        return render(request, "index.html", { "current_username": user.username, "products": products, "filter_by": filter_by, "sort_by": sort_by, "current_page_number": page_number,"search_product_form": search_product_form })
 
 @never_cache
 @login_required

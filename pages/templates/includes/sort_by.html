@@ -1,15 +1,26 @@
-<div class="dropdown-center pe-2 pt-3">
+<div class="dropdown-center ps-2 pt-3">
 	<button type="button" class="btn btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-		Sort By {% if sort_by %}| {{sort_by}}{% endif %}
+		Sort By {% if sort_by %}| {{sort_by.1}}{% endif %}
 	</button>
 	<ul class="dropdown-menu">
-		<li><a class="dropdown-item" href="{% url 'index_sort_by_view' %}?title=ascending">Title (A - Z)</a></li>
-		<li><a class="dropdown-item" href="{% url 'index_sort_by_view' %}?title=descending">Title (Z - A)</a></li>
-		<li><hr class="dropdown-divider"></li>
-		<li><a class="dropdown-item" href="{% url 'index_sort_by_view' %}?date=ascending">Date (Low - High)</a></li>
-		<li><a class="dropdown-item" href="{% url 'index_sort_by_view' %}?date=descending">Date (High - Low)</a></li>
-		<li><hr class="dropdown-divider"></li>
-		<li><a class="dropdown-item" href="{% url 'index_sort_by_view' %}?views=ascending">Views (Low - High)</a></li>
-		<li><a class="dropdown-item" href="{% url 'index_sort_by_view' %}?views=descending">Views (High - Low)</a></li>
+		{% if filter_by %}
+			<li><a class="dropdown-item" href="{% url 'index_view' %}?{{filter_by.0}}&title=ascending">Title (A - Z)</a></li>
+			<li><a class="dropdown-item" href="{% url 'index_view' %}?{{filter_by.0}}&title=descending">Title (Z - A)</a></li>
+			<li><hr class="dropdown-divider"></li>
+			<li><a class="dropdown-item" href="{% url 'index_view' %}?{{filter_by.0}}&date=ascending">Date (Low - High)</a></li>
+			<li><a class="dropdown-item" href="{% url 'index_view' %}?{{filter_by.0}}&date=descending">Date (High - Low)</a></li>
+			<li><hr class="dropdown-divider"></li>
+			<li><a class="dropdown-item" href="{% url 'index_view' %}?{{filter_by.0}}&views=ascending">Views (Low - High)</a></li>
+			<li><a class="dropdown-item" href="{% url 'index_view' %}?{{filter_by.0}}&views=descending">Views (High - Low)</a></li>
+      	{% else %}
+			<li><a class="dropdown-item" href="{% url 'index_view' %}?title=ascending">Title (A - Z)</a></li>
+			<li><a class="dropdown-item" href="{% url 'index_view' %}?title=descending">Title (Z - A)</a></li>
+			<li><hr class="dropdown-divider"></li>
+			<li><a class="dropdown-item" href="{% url 'index_view' %}?date=ascending">Date (Low - High)</a></li>
+			<li><a class="dropdown-item" href="{% url 'index_view' %}?date=descending">Date (High - Low)</a></li>
+			<li><hr class="dropdown-divider"></li>
+			<li><a class="dropdown-item" href="{% url 'index_view' %}?views=ascending">Views (Low - High)</a></li>
+			<li><a class="dropdown-item" href="{% url 'index_view' %}?views=descending">Views (High - Low)</a></li>
+		{% endif %}
 	</ul>
 </div>

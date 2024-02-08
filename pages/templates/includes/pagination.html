@@ -1,0 +1,100 @@
+<hr class="my-2">
+<nav class="py-2">
+    <ul class="pagination">
+        {% if products.has_previous %}
+            <li class="page-item">
+                {% if filter_by is not None and sort_by is not None %}
+                    <a class="page-link" href="{% url 'index_view' %}?{{filter_by.0}}&{{sort_by.0}}&page=1" role="button">&laquo; first</a>
+                {% elif filter_by %}
+                    <a class="page-link" href="{% url 'index_view' %}?{{filter_by.0}}&page=1" role="button">&laquo; first</a>
+                {% elif sort_by %}
+                    <a class="page-link" href="{% url 'index_view' %}?{{sort_by.0}}&page=1" role="button">&laquo; first</a>
+                {% else %}
+                    <a class="page-link" href="{% url 'index_view' %}?page=1" role="button">&laquo; first</a>
+                {% endif %}
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" role="button">&laquo; first</a>
+            </li>
+        {% endif %}
+        {% if products.has_previous %}
+            <li class="page-item">
+                {% if filter_by is not None and sort_by is not None %}
+                    <a class="page-link" href="{% url 'index_view' %}?{{filter_by.0}}&{{sort_by.0}}&page={{products.previous_page_number}}" role="button">&lsaquo; previous</a>
+                {% elif filter_by %}
+                    <a class="page-link" href="{% url 'index_view' %}?{{filter_by.0}}&page={{products.previous_page_number}}" role="button">&lsaquo; previous</a>
+                {% elif sort_by %}
+                    <a class="page-link" href="{% url 'index_view' %}?{{sort_by.0}}&page={{products.previous_page_number}}" role="button">&lsaquo; previous</a>
+                {% else %}
+                    <a class="page-link" href="{% url 'index_view' %}?page={{products.previous_page_number}}" role="button">&lsaquo; previous</a>
+                {% endif %}
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" role="button">&lsaquo; previous</a>
+            </li>
+        {% endif %}
+        {% if products.has_previous %}
+            {% if filter_by is not None and sort_by is not None %}
+                <a class="page-link" href="{% url 'index_view' %}?{{filter_by.0}}&{{sort_by.0}}&page={{products.previous_page_number}}" role="button">{{products.previous_page_number}}</a>
+            {% elif filter_by %}
+                <a class="page-link" href="{% url 'index_view' %}?{{filter_by.0}}&page={{products.previous_page_number}}" role="button">{{products.previous_page_number}}</a>
+            {% elif sort_by %}
+                <a class="page-link" href="{% url 'index_view' %}?{{sort_by.0}}&page={{products.previous_page_number}}" role="button">{{products.previous_page_number}}</a>
+            {% else %}
+                <a class="page-link" href="{% url 'index_view' %}?page={{products.previous_page_number}}" role="button">{{products.previous_page_number}}</a>
+            {% endif %}
+        {% endif %}
+        <li class="page-item active" aria-current="page">
+            <a class="page-link" href="#">{{current_page_number}}</a>
+        </li>
+        {% if products.has_next %}
+            <li class="page-item">
+                {% if filter_by is not None and sort_by is not None %}
+                    <a class="page-link" href="{% url 'index_view' %}?{{filter_by.0}}&{{sort_by.0}}&page={{products.next_page_number}}" role="button">{{products.next_page_number}}</a>
+                {% elif filter_by %}
+                    <a class="page-link" href="{% url 'index_view' %}?{{filter_by.0}}&page={{products.next_page_number}}" role="button">{{products.next_page_number}}</a>
+                {% elif sort_by %}
+                    <a class="page-link" href="{% url 'index_view' %}?{{sort_by.0}}&page={{products.next_page_number}}" role="button">{{products.next_page_number}}</a>
+                {% else %}
+                    <a class="page-link" href="{% url 'index_view' %}?page={{products.next_page_number}}" role="button">{{products.next_page_number}}</a>
+                {% endif %}
+            </li>
+        {% endif %}
+        {% if products.has_next %}
+            <li class="page-item">
+                {% if filter_by is not None and sort_by is not None %}
+                    <a class="page-link" href="{% url 'index_view' %}?{{filter_by.0}}&{{sort_by.0}}&page={{products.next_page_number}}" role="button">next &rsaquo;</a>
+                {% elif filter_by %}
+                    <a class="page-link" href="{% url 'index_view' %}?{{filter_by.0}}&page={{products.next_page_number}}" role="button">next &rsaquo;</a>
+                {% elif sort_by %}
+                    <a class="page-link" href="{% url 'index_view' %}?{{sort_by.0}}&page={{products.next_page_number}}" role="button">next &rsaquo;</a>
+                {% else %}
+                    <a class="page-link" href="{% url 'index_view' %}?page={{products.next_page_number}}" role="button">next &rsaquo;</a>
+                {% endif %}
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" role="button">next &rsaquo;</a></a>
+            </li>
+        {% endif %}
+        {% if products.has_next %}
+            <li class="page-item">
+                {% if filter_by is not None and sort_by is not None %}
+                    <a class="page-link" href="{% url 'index_view' %}?{{filter_by.0}}&{{sort_by.0}}&page={{products.paginator.num_pages}}" role="button">last &raquo;</a>
+                {% elif filter_by %}
+                    <a class="page-link" href="{% url 'index_view' %}?{{filter_by.0}}&page={{products.paginator.num_pages}}" role="button">last &raquo;</a>
+                {% elif sort_by %}
+                    <a class="page-link" href="{% url 'index_view' %}?{{sort_by.0}}&page={{products.paginator.num_pages}}" role="button">last &raquo;</a>
+                {% else %}
+                    <a class="page-link" href="{% url 'index_view' %}?page={{products.paginator.num_pages}}" role="button">last &raquo;</a>
+                {% endif %}
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#" role="button">last &raquo;</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
