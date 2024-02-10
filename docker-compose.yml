@@ -1,0 +1,20 @@
+
+services:
+  app:
+    build: .
+    volumes:
+      - .:/src
+    ports:
+      - 8000:8000
+    command: >
+      sh -c "python3 manage.py makemigrations && 
+            python3 manage.py migrate &&
+            python3 manage.py runserver 0.0.0.0:8000"
+    depends_on:
+      - database
+  database:
+    image: postgres:15.3
+    volumes:
+      - ./database:/var/lib/postgresql/data
+    env_file: # the location of this matters
+      - .env # you should add the .env file at the top level directory (where Dockfile and docker-compose.yml is located)

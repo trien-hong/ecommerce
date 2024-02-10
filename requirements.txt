@@ -1,0 +1,8 @@
+asgiref
+Django
+django_resized
+Pillow
+psycopg2-binary
+python-dotenv
+pytz
+sqlparse
