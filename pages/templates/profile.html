@@ -12,8 +12,9 @@
     {% include "includes/navbar.html" with location="profile" %}
     <div class="container text-break px-0">
       <div class="content px-3 py-3">
-        <div class="welcome text-center pb-2">
-          <h1>Welcome, {{user.username}}!</h1>
+        <div class="welcome py-2">
+          <h1>Welcome, {{current_username}}!</h1>
+          <h1>Avaliable Credits: <b>${{available_credits}}</b></h1>
         </div>
         <div class="options">
           <div class="profile_buttons px-2 py-2">
@@ -104,13 +105,14 @@
                         <h4><b>{{item.title}}</b></h4>
                         <a href="{% url 'product_view' uuid=item.uuid %}" title="Click to view more details of this product"><img src="{{item.picture.url}}" alt="product picture" style="width: 100%;"></a>
                         <p class="my-0 pt-2"><b>{{item.description}}</b></p>
-                        <p class="my-0 pt-2"><b>Category: {{item.category}}</b></p>
+                        <p class="my-0 pt-2">Category: <b>{{item.category}}</b></p>
+                        <p class="my-0 pt-2">Condition: <b>{{item.condition}}</b></p>
                         <div class="add_to_cart_form pb-2">
                           <form action="{% url 'add_to_cart_view' uuid=item.uuid %}" method="POST">
                             <fieldset>
                               {% csrf_token %}
                               <hr>
-                              {% if item.bought == True %}
+                              {% if item.bought is True %}
                                 <a class="btn btn-danger disabled" href="{% url 'edit_product_view' uuid=item.uuid %}">EDIT PRODUCT</a>
                                 <h4 class="bought mt-3 mb-0" title="This product was bought from a buyer"><b><u>SOLD</u></b></h4>
                               {% else %}
@@ -138,7 +140,8 @@
                         <h4><b>{{item.product.title}}</b></h4>
                         <a class="pt-2" href="{% url 'product_view' uuid=item.product.uuid %}" title="Click to view more details of this product"><img src="{{item.product.picture.url}}" alt="product picture" style="width: 100%;"></a>
                         <p class="my-0 pt-2"><b>{{item.product.description}}</b></p>
-                        <p class="my-0 pt-2"><b>Category: {{item.product.category}}</b></p>
+                        <p class="my-0 pt-2">Category: <b>{{item.product.category}}</b></p>
+                        <p class="my-0 pt-2">Condition: <b>{{item.product.condition}}</b></p>
                         <p class="my-0 pt-2"><b>Bought @ {{item.buy_date}}</b></p>
                       </div>
                     {% endfor %}

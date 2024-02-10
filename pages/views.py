@@ -2,6 +2,7 @@ import os
 from uuid import uuid4
 from django.http import HttpResponseRedirect
 from django.db.models.functions import Lower
+from django.db.models import Sum
 from django.views.decorators.cache import never_cache
 from django.utils.safestring import mark_safe
 from django.shortcuts import render, redirect
@@ -154,7 +155,7 @@ def index_view(request):
                 products = products.order_by("-views")
             else:
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with sorting by views.</li><li>Please try again.</li></ul>"))
-        products = Paginator(products, 3).page(page_number)
+        products = Paginator(products, 9).page(page_number)
         return render(request, "index.html", { "current_username": user.username, "products": products, "filter_by": filter_by, "sort_by": sort_by, "current_page_number": page_number,"search_product_form": search_product_form })
 
 @never_cache
@@ -224,13 +225,13 @@ def add_product_view(request):
         if add_product_form.is_valid():
             file_extension = add_product_form.cleaned_data["picture"].name.split(".")[-1]
             add_product_form.cleaned_data["picture"].name = "product_picture_id_" + str(uuid4()) + "." + file_extension
-            product = Product(title=add_product_form.cleaned_data["title"], picture=add_product_form.cleaned_data["picture"], description=add_product_form.cleaned_data["description"], category=add_product_form.cleaned_data["category"], condition=add_product_form.cleaned_data["condition"], upc=add_product_form.cleaned_data["upc"], ean=add_product_form.cleaned_data["ean"], seller=user)
+            product = Product(title=add_product_form.cleaned_data["title"], picture=add_product_form.cleaned_data["picture"], description=add_product_form.cleaned_data["description"], category=add_product_form.cleaned_data["category"], condition=add_product_form.cleaned_data["condition"], price=add_product_form.cleaned_data["price"], upc=add_product_form.cleaned_data["upc"], ean=add_product_form.cleaned_data["ean"], seller=user)
             product.save()
             messages.add_message(request, messages.SUCCESS, "Your product, \"" + product.title + "\" has been successfully added. Image less than/greater than 500x500 have been upsized/downsized and cropped to the middle and center.")
-            return redirect(add_product_view)
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
         else:
             messages.add_message(request, messages.ERROR, add_product_form.errors)
-            return redirect(add_product_view)
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 @never_cache
 @login_required
@@ -447,7 +448,8 @@ def cart_view(request):
     if request.method == "GET":
         user = request.user
         cart = Cart.objects.filter(user=user)
-        return render(request, "cart.html", { "cart": cart })
+        total_price = Product.objects.filter(uuid__in=cart.values_list("product__uuid", flat=True)).aggregate(Sum('price'))["price__sum"]
+        return render(request, "cart.html", { "cart": cart, "total_price": total_price })
 
 @never_cache
 @login_required
@@ -520,40 +522,51 @@ def check_out_view(request):
     if request.method == "GET":
         return redirect(cart_view)
     if request.method == "POST":
-        already_bought = 0
         user = request.user
         cart = Cart.objects.filter(user=user)
-        for item in cart:
-            try:
-                product = Product.objects.get(id=item.product.id)
-                if product.bought is False:
-                    product.bought = True
-                    product.save()
-                    sold = Sold(product=product, buyer=user)
-                    sold.save()
-                    item.delete()
-                else:
-                    already_bought = already_bought + 1
-            except Product.DoesNotExist:
-                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with one, some, or all your items in your cart.</li><li>It's possible the seller delisted an item in your cart.</li></ul>"))
-                return redirect(cart_view)
-        if already_bought == 0:
-            messages.add_message(request, messages.SUCCESS, "Checkout was successful. All the items in your cart have been bought by you.")
+        total_price = Product.objects.filter(uuid__in=cart.values_list("product__uuid", flat=True)).aggregate(Sum('price'))["price__sum"]
+        if total_price > request.user.credits:
+            messages.add_message(request, messages.ERROR, mark_safe("<ul><li>You do not have enough credits to purchase all these items within your cart.</li></ul>"))
             return redirect(cart_view)
-        elif already_bought == 1:
-            if cart.count() == already_bought:
-                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Checkout was unsuccessful.</li><li>The item you wanted to buy has been bought by another person.</li></ul>"))
-                return redirect(cart_view)
-            else:
-                messages.add_message(request, messages.SUCCESS, "Checkout was successful. However, there was 1 item that has been bought by another person and that item is now marked by \"SOLD OUT\". That 1 item will not be purchased.")
-                return redirect(cart_view)
         else:
-            if cart.count() == already_bought:
-                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Checkout was unsuccessful.</li><li>The item(s) you wanted to buy has been bought by another person.</li></ul>"))
+            already_bought = 0
+            for item in cart:
+                try:
+                    product = Product.objects.get(id=item.product.id)
+                    if product.bought is False:
+                        product.bought = True
+                        product.save()
+                        seller = User.objects.get(username=product.seller)
+                        seller.credits = seller.credits + product.price
+                        seller.save()
+                        buyer = User.objects.get(username=user.username)
+                        buyer.credits = buyer.credits - product.price
+                        buyer.save()
+                        sold = Sold(product=product, buyer=user)
+                        sold.save()
+                        item.delete()
+                    else:
+                        already_bought = already_bought + 1
+                except Product.DoesNotExist:
+                    messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with one, some, or all your items in your cart.</li><li>It's possible the seller delisted an item in your cart.</li></ul>"))
+                    return redirect(cart_view)
+            if already_bought == 0:
+                messages.add_message(request, messages.SUCCESS, "Checkout was successful. All the items in your cart have been bought by you.")
                 return redirect(cart_view)
+            elif already_bought == 1:
+                if cart.count() == already_bought:
+                    messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Checkout was unsuccessful.</li><li>The item you wanted to buy has been bought by another person.</li></ul>"))
+                    return redirect(cart_view)
+                else:
+                    messages.add_message(request, messages.SUCCESS, "Checkout was successful. However, there was 1 item that has been bought by another person and that item is now marked by \"SOLD OUT\". That 1 item will not be purchased.")
+                    return redirect(cart_view)
             else:
-                messages.add_message(request, messages.SUCCESS, "Checkout was successful. However, some item(s) has been bought by another person and those item(s) are now marked by \"SOLD OUT\". There was a total of " + str(already_bought) + " item(s) bought already. Those item(s) will not be purchased.")
-                return redirect(cart_view)
+                if cart.count() == already_bought:
+                    messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Checkout was unsuccessful.</li><li>The item(s) you wanted to buy has been bought by another person.</li></ul>"))
+                    return redirect(cart_view)
+                else:
+                    messages.add_message(request, messages.SUCCESS, "Checkout was successful. However, some item(s) has been bought by another person and those item(s) are now marked by \"SOLD OUT\". There was a total of " + str(already_bought) + " item(s) bought already. Those item(s) will not be purchased.")
+                    return redirect(cart_view)
 
 @never_cache
 @login_required
@@ -563,7 +576,7 @@ def profile_view(request):
     """
     if request.method == "GET":
         user = request.user
-        return render(request, "profile.html", { "user": user, "option": None })
+        return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "option": None })
 
 @never_cache
 @login_required
@@ -578,17 +591,17 @@ def profile_option_view(request, option):
             change_username_form = forms.ChangeUsername()
             change_password_form = forms.ChangePassword()
             delete_account_form = forms.DeleteAccount()
-            return render(request, "profile.html", { "user": user, "option": "settings", "change_username_form": change_username_form, "change_password_form": change_password_form, "delete_account_form": delete_account_form })
+            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "option": "settings", "change_username_form": change_username_form, "change_password_form": change_password_form, "delete_account_form": delete_account_form })
         elif option == "wish-list":
-            return render(request, "profile.html", { "user": user, "option": "wish-list" })
+            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "option": "wish-list" })
         elif option == "listing-history":
             listing_history = Product.objects.filter(seller=user)
-            return render(request, "profile.html", { "user": user, "option": "listing-history", "listing_history": listing_history })
+            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "option": "listing-history", "listing_history": listing_history })
         elif option == "purchase-history":
             purchase_history = Sold.objects.filter(buyer=user)
-            return render(request, "profile.html", { "user": user, "option": "purchase-history", "purchase_history": purchase_history })
+            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "option": "purchase-history", "purchase_history": purchase_history })
         elif option == "login-history":
-            return render(request, "profile.html", { "user": user, "option": "login-history" })
+            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "option": "login-history" })
         else:
             return redirect(profile_view)
 

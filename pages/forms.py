@@ -1,4 +1,5 @@
 from django import forms
+from decimal import Decimal
 from django.core.validators import validate_integer
 from django.contrib.auth import get_user_model
 from .choices import Choices # to change the choices edit choices.py
@@ -109,11 +110,12 @@ class DeleteAccount(forms.Form):
         return password
 
 class AddProduct(forms.Form):
-    title = forms.CharField(max_length=50, label="Title*",widget=forms.TextInput(attrs={"placeholder": "Enter the product's title", "class": "field"}))
+    title = forms.CharField(max_length=50, label="Title*", widget=forms.TextInput(attrs={"placeholder": "Enter the product's title", "class": "field"}))
     picture = forms.ImageField(label="Picture*")
     description = forms.CharField(max_length=500, label="Description*", widget=forms.Textarea(attrs={"placeholder": "Enter the product's description", "rows": "5", "class": "field"}))
     category = forms.ChoiceField(label="Category*", choices=Choices.CHOICES_CATEGORY) # to change the choices edit choices.py
     condition = forms.ChoiceField(label="Condition*", choices=Choices.CHOICES_CONDITION) # to change the choices edit choices.py
+    price = forms.DecimalField(label="Price (in $/USD)*", widget=forms.TextInput(attrs={"placeholder": "Enter the product's price (ie. 5.00, 10.50, 9,999.99, etc.)", "class": "field"}), required=True)
     upc = forms.CharField(min_length=12, max_length=12, label="UPC", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "class": "field"}), required=False)
     ean = forms.CharField(min_length=13, max_length=13, label="EAN", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "class": "field"}), required=False)
 
@@ -140,6 +142,14 @@ class AddProduct(forms.Form):
             raise forms.ValidationError("Description length is greater than 500.")
 
         return description
+    
+    def clean_price(self):
+        price = self.cleaned_data["price"]
+
+        if price >= 1000000.00:
+            raise forms.ValidationError("The max price is set at $999,999.99. Please lower the price.")
+        
+        return price
 
     def clean_upc(self):
         upc = self.cleaned_data["upc"]
@@ -232,7 +242,7 @@ class EditProduct(forms.Form):
         if description != "":
             if len(description) > 500:
                 raise forms.ValidationError("Description length is greater than 500.")
-        
+
         return description
 
     def clean_upc(self):

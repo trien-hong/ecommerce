@@ -21,7 +21,9 @@
                 <div class="item px-5">
                   <div class="item_details">
                     <div>
-                      <p class="item_number">{{forloop.counter}}</p>
+                      <p class="item_and_price_number">#{{forloop.counter}}</p>
+                      <hr>
+                      <p class="item_and_price_number"><b>${{item.product.price}}</b></p>
                     </div>
                     <div class="vr mx-5"></div>
                     <div class="ms-1">
@@ -33,7 +35,7 @@
                   <div class="remove_from_cart_form">
                     <form action="{% url 'delete_from_cart_view' uuid=item.uuid %}" method="POST">
                       {% csrf_token %}
-                      {% if item.product.bought == True %}
+                      {% if item.product.bought is True %}
                         <h4 class="bought text-center" title="Sorry, this product is sold out"><b><u>SOLD OUT</u></b></h4>
                       {% endif %}
                       <div class="remove_from_cart_button">
@@ -47,6 +49,9 @@
               <div class="cart-footer px-5 pb-3"> 
                 <div class="check_out_confirm">
                   <a class="btn btn-danger" href="{% url 'confirm_message_view' type='delete-all-items-from-cart' %}" role="button" title="Delete all items">DELETE ALL ITEMS</a>
+                </div>
+                <div>
+                  <h3 class="my-0">Total Price: <b>${{total_price}}</b></h3>
                 </div>
                 <div class="check_out_confirm">
                   <a class="btn btn-primary" href="{% url 'confirm_message_view' type='check-out' %}" role="button" title="Check out">CHECK OUT</a>

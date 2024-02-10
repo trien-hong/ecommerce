@@ -25,6 +25,9 @@
               <div>
                 <h3>Category: {{product.category}}</h3>
                 <h3>Condition: {{product.condition}}</h3>
+              </div>
+              <hr>
+              <div>
                 <h3>List Date: {{product.list_date}}</h3>
                 <h3>Seller: {{product.seller}}</h3>
               </div>
@@ -42,19 +45,27 @@
               {% else %}
                 <hr>
               {% endif %}
-              <div class="add_to_cart_form">
+              <div>
                 <form action="{% url 'add_to_cart_view' uuid=product.uuid %}" method="POST">
                   {% csrf_token %}
-                  {% if product.bought == True %}
-                    <input class="btn btn-danger" type="submit" value="ADD TO CART" disabled>
-                    <h4 class="bought mt-3" title="Sorry, this product is already sold out"><b><u>SOLD OUT</u></b></h4>
-                  {% elif current_username == product.seller.username %}
-                    <a class="btn btn-secondary" href="{% url 'edit_product_view' uuid=product.uuid %}" title="Edit product">EDIT PRODUCT</a>
-                  {% elif in_cart == True %}
-                    <input class="btn btn-danger" type="submit" value="ADD TO CART" disabled>
-                  {% else %}
-                    <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart">
-                  {% endif %}
+                  <div class="add_to_cart_button">
+                    <h3>Price: <b>${{product.price}}</b></h3>
+                    {% if current_username == product.seller.username %}
+                      {% if product.bought is True %}
+                        <a class="btn btn-danger btn disabled" href="{% url 'edit_product_view' uuid=product.uuid %}" title="Edit product" disabled>EDIT PRODUCT</a>
+                        <h4 class="bought mt-3" title="Sorry, this product is already sold out"><b><u>SOLD OUT</u></b></h4>
+                      {% else %}
+                        <a class="btn btn-secondary" href="{% url 'edit_product_view' uuid=product.uuid %}" title="Edit product">EDIT PRODUCT</a>
+                      {% endif %}
+                    {% elif product.bought is True %}
+                      <input class="btn btn-danger" type="submit" value="ADD TO CART" disabled>
+                      <h4 class="bought mt-3" title="Sorry, this product is already sold out"><b><u>SOLD OUT</u></b></h4>
+                    {% elif in_cart is True %}
+                      <input class="btn btn-danger" type="submit" value="ADD TO CART" disabled>
+                    {% else %}
+                      <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart">
+                    {% endif %}
+                  </div>
                 </form>
               </div>
             </div>

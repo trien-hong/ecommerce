@@ -96,6 +96,13 @@ li::marker {
     text-align: center;
 }
 
+.add_to_cart_button {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .product_view {
     background-color: #DDE6ED;
     border: 2px solid black;
@@ -183,7 +190,7 @@ li::marker {
     align-items: center;
 }
 
-.item_number {
+.item_and_price_number {
     display: flex;
     justify-content: center;
     font-size: 1.75em;
@@ -198,6 +205,16 @@ li::marker {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+}
+
+.welcome {
+    background-color: #DDE6ED;
+    border-top: 2px solid black;
+    border-left: 2px solid black;
+    border-right: 2px solid black;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
 }
 
 .options {
@@ -239,5 +256,6 @@ li::marker {
     border: 2px solid black;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     text-align: center;
 }
