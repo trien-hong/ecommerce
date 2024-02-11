@@ -113,7 +113,7 @@
                               {% csrf_token %}
                               <hr>
                               {% if item.bought is True %}
-                                <a class="btn btn-danger disabled" href="{% url 'edit_product_view' uuid=item.uuid %}">EDIT PRODUCT</a>
+                                <a class="btn btn-danger disabled" href="#">EDIT PRODUCT</a>
                                 <h4 class="bought mt-3 mb-0" title="This product was bought from a buyer"><b><u>SOLD</u></b></h4>
                               {% else %}
                                 <a class="btn btn-secondary" href="{% url 'edit_product_view' uuid=item.uuid %}" title="Edit product">EDIT PRODUCT</a>

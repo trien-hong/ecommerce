@@ -114,7 +114,7 @@ li::marker {
 .product_main_identifiers {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-around;
     text-align: center;
     width: 50%;
 }

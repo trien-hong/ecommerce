@@ -18,14 +18,14 @@
             <hr>
             <div class="items">
               {% for item in cart %}
-                <div class="item px-5">
+                <div class="item px-4">
                   <div class="item_details">
                     <div>
                       <p class="item_and_price_number">#{{forloop.counter}}</p>
                       <hr>
                       <p class="item_and_price_number"><b>${{item.product.price}}</b></p>
                     </div>
-                    <div class="vr mx-5"></div>
+                    <div class="vr mx-4"></div>
                     <div class="ms-1">
                       <h4>Title: {{item.product.title}}</h4>
                       <a href="{% url 'product_view' uuid=item.product.uuid %}" title="Click to view more details of this product"><img src="{{item.product.picture.url}}" alt="product picture" width="150" height="150"></a>
@@ -46,7 +46,7 @@
                 </div>
                 <hr>
               {% endfor %}
-              <div class="cart-footer px-5 pb-3"> 
+              <div class="cart-footer px-4 pb-3"> 
                 <div class="check_out_confirm">
                   <a class="btn btn-danger" href="{% url 'confirm_message_view' type='delete-all-items-from-cart' %}" role="button" title="Delete all items">DELETE ALL ITEMS</a>
                 </div>
