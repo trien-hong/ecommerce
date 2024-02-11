@@ -146,8 +146,8 @@ class AddProduct(forms.Form):
     def clean_price(self):
         price = self.cleaned_data["price"]
 
-        if price >= 1000000.00:
-            raise forms.ValidationError("The max price is set at $999,999.99. Please lower the price.")
+        if price > 9999.99:
+            raise forms.ValidationError("The max price is set at $9,999.99. Please lower the price.")
         
         return price
 

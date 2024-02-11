@@ -155,14 +155,16 @@ def index_view(request):
                 products = products.order_by("-views")
             else:
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with sorting by views.</li><li>Please try again.</li></ul>"))
-        products = Paginator(products, 9).page(page_number)
+        cart = Cart.objects.filter(user=user)
+        items_in_cart = products.filter(uuid__in=cart.values_list("product__uuid", flat=True))
+        products = Paginator(products.difference(items_in_cart), 9).page(page_number)
         return render(request, "index.html", { "current_username": user.username, "products": products, "filter_by": filter_by, "sort_by": sort_by, "current_page_number": page_number,"search_product_form": search_product_form })
 
 @never_cache
 @login_required
 def product_view(request, uuid):
     """
-    URL: /product/id/<uuid:uuid>/
+    URL: /product/id/<uuid:uuid>
     where <uuid:uuid> is the uuid (NOT ID despite the URL) of the product being viewed
     if exposed the uuid is shown to the user and not the ID/PK
     """
@@ -186,7 +188,7 @@ def product_view(request, uuid):
 @login_required
 def add_product_view(request):
     """
-    URL: /product/add-product/
+    URL: /product/add-product
     """
     if request.method == "GET":
         user = request.user
@@ -237,7 +239,7 @@ def add_product_view(request):
 @login_required
 def copy_and_add_product_view(request, uuid):
     """
-    URL: /product/copy-product/id/<uuid:uuid>/
+    URL: /product/copy-product/id/<uuid:uuid>
     where <uuid:uuid> is the uuid (NOT ID despite the URL) of the product that you want to copy
     if exposed the uuid is shown to the user and not the ID/PK
     """
@@ -258,7 +260,7 @@ def copy_and_add_product_view(request, uuid):
 @login_required
 def delete_product_view(request, uuid):
     """
-    URL: /product/delete-product/id/<uuid:uuid>/
+    URL: /product/delete-product/id/<uuid:uuid>
     where <uuid:uuid> is the uuid (NOT ID despite the URL) of the product that you want to delete
     if exposed the uuid is shown to the user and not the ID/PK
     """
@@ -283,7 +285,7 @@ def delete_product_view(request, uuid):
 @login_required
 def edit_product_view(request, uuid):
     """
-    URL: /product/edit-product/id/<uuid:uuid>/
+    URL: /product/edit-product/id/<uuid:uuid>
     where <uuid:uuid> is the uuid (NOT ID despite the URL) of the product that you want to edit
     if exposed the uuid is shown to the user and not the ID/PK
     """
@@ -338,7 +340,7 @@ def edit_product_view(request, uuid):
 @login_required
 def edit_product_delete_upc_ean_view(request, uuid, type):
     """
-    URL: product/edit-product/id/<uuid:uuid>/delete-<str:type>/
+    URL: product/edit-product/id/<uuid:uuid>/delete-<str:type>
     where <uuid:uuid> is the uuid (NOT ID despite the URL) of the product that you want to delete it's UPC/EAN from and where <str:type> is either upc or ean
     if exposed the uuid is shown to the user and not the ID/PK
     """
@@ -386,6 +388,9 @@ def search_view(request):
                 if products.exists() is False:
                     messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Sorry, your search of, \"" + search_product_form.cleaned_data["title"] + "\", came by empty.</li><li>Please note that you are searching by title.</li></ul>"))
                 else:
+                    cart = Cart.objects.filter(user=user)
+                    items_in_cart = products.filter(uuid__in=cart.values_list("product__uuid", flat=True))
+                    products = products.difference(items_in_cart)
                     messages.add_message(request, messages.SUCCESS, "Your search resulted in " + str(products.count()) + " products.")
             return render(request, "search.html", { "current_username": user.username, "products": products, "search_product_form": search_product_form, "search_term": search_product_form.cleaned_data["title"] })
         else:
@@ -429,6 +434,9 @@ def advanced_search_view(request):
                     if products is None or products.count() == 0:
                         messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Your advanced search resulted in 0 products.</li><li>Please try again.</li></ul>"))
                     else:
+                        cart = Cart.objects.filter(user=user)
+                        items_in_cart = products.filter(uuid__in=cart.values_list("product__uuid", flat=True))
+                        products = products.difference(items_in_cart)
                         messages.add_message(request, messages.SUCCESS, "Your search resulted in " + str(products.count()) + " products.")
             except:
                 products = None
@@ -443,7 +451,7 @@ def advanced_search_view(request):
 @login_required
 def cart_view(request):
     """
-    URL: /cart/
+    URL: /cart
     """
     if request.method == "GET":
         user = request.user
@@ -455,7 +463,7 @@ def cart_view(request):
 @login_required
 def add_to_cart_view(request, uuid):
     """
-    URL: /cart/add-to-cart/id/<uuid:uuid>/
+    URL: /cart/add-to-cart/id/<uuid:uuid>
     where <uuid:uuid> is the uuid (NOT ID/PK despite the URL) of product being added to the cart
     if exposed the uuid is shown to the user and not the ID/PK
     """
@@ -483,7 +491,7 @@ def add_to_cart_view(request, uuid):
 @login_required
 def delete_from_cart_view(request, uuid):
     """
-    URL: /cart/delete-from-cart/id/<uuid:uuid>/
+    URL: /cart/delete-from-cart/id/<uuid:uuid>
     where <uuid:uuid> is the uuid (NOT ID/PK despite the URL) of item being removed from the cart
     if exposed the uuid is shown to the user and not the ID/PK
     """
@@ -502,7 +510,7 @@ def delete_from_cart_view(request, uuid):
 @login_required
 def delete_all_items_from_cart_view(request):
     """
-    URL: /cart/delete-all-items-from-cart/
+    URL: /cart/delete-all-items-from-cart
     """
     if request.method == "GET":
         return redirect(cart_view)
@@ -517,7 +525,7 @@ def delete_all_items_from_cart_view(request):
 @login_required
 def check_out_view(request):
     """
-    URL: /cart/check-out/
+    URL: /cart/check-out
     """
     if request.method == "GET":
         return redirect(cart_view)
@@ -534,8 +542,6 @@ def check_out_view(request):
                 try:
                     product = Product.objects.get(id=item.product.id)
                     if product.bought is False:
-                        product.bought = True
-                        product.save()
                         seller = User.objects.get(username=product.seller)
                         seller.credits = seller.credits + product.price
                         seller.save()
@@ -544,6 +550,8 @@ def check_out_view(request):
                         buyer.save()
                         sold = Sold(product=product, buyer=user)
                         sold.save()
+                        product.bought = True
+                        product.save()
                         item.delete()
                     else:
                         already_bought = already_bought + 1
@@ -572,7 +580,7 @@ def check_out_view(request):
 @login_required
 def profile_view(request):
     """
-    URL: /profile/
+    URL: /profile
     """
     if request.method == "GET":
         user = request.user
@@ -582,7 +590,7 @@ def profile_view(request):
 @login_required
 def profile_option_view(request, option):
     """
-    URL: /profile/<str:option>/
+    URL: /profile/<str:option>
     where <str:option> is either "settings", "wish-list", "listing-history", "purchase-history", or "login-history" and if not simply redirect to profile page
     """
     if request.method == "GET":
@@ -609,7 +617,7 @@ def profile_option_view(request, option):
 @login_required
 def change_username_view(request):
     """
-    URL: /profile/settings/change-username/
+    URL: /profile/settings/change-username
     """
     if request.method == "GET":
         return redirect(profile_option_view, option="settings")
@@ -634,7 +642,7 @@ def change_username_view(request):
 @login_required
 def change_password_view(request):
     """
-    URL: /profile/settings/change-password/
+    URL: /profile/settings/change-password
     """
     if request.method == "GET":
         return redirect(profile_option_view, option="settings")
@@ -659,7 +667,7 @@ def change_password_view(request):
 @login_required
 def delete_account_view(request):
     """
-    URL: /profile/settings/delete-account/
+    URL: /profile/settings/delete-account
     """
     if request.method == "GET":
         return redirect(profile_option_view, option="settings")
@@ -684,7 +692,7 @@ def delete_account_view(request):
 @login_required
 def confirm_message_view(request, type):
     """
-    URL: /confirm-message/type/<str:type>/
+    URL: /confirm-message/type/<str:type>
     where <str:type> is any one of the following below
     """
     if request.method == "GET":
@@ -710,7 +718,7 @@ def confirm_message_view(request, type):
 @login_required
 def logout_user(request):
     """
-    URL: /logout-user/
+    URL: /logout-user
     """
     logout(request)
     messages.add_message(request, messages.SUCCESS, "Logout successful!")

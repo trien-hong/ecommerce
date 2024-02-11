@@ -6,16 +6,16 @@ from django.contrib.auth.models import AbstractUser
 from .choices import Choices # to change the choices edit choices.py
 
 class User(AbstractUser):
-    credits = models.DecimalField(max_digits=9, decimal_places=2, default=5.00)
+    credits = models.DecimalField(max_digits=11, decimal_places=2, default=5.00) # number > 999,999,999.99 will result in an error
 
 class Product(models.Model):
     uuid = models.UUIDField(primary_key=False, editable=False, unique=True, default=uuid.uuid4)
     title = models.CharField(max_length=50)
     picture = ResizedImageField(size=[500, 500], crop=["middle", "center"], quality=100, upload_to="product_picture", null=False, blank=False)
     description = models.CharField(max_length=500)
-    category = models.CharField(choices=Choices.CHOICES_CATEGORY) # to change the choices edit choices.py
-    condition = models.CharField(choices=Choices.CHOICES_CONDITION) # to change the choices edit choices.py
-    price = models.DecimalField(max_digits=6, decimal_places=2)
+    category = models.CharField(choices=Choices.CHOICES_CATEGORY) # to see or edit the choices go to choices.py
+    condition = models.CharField(choices=Choices.CHOICES_CONDITION) # to see or edit the choices go to choices.py
+    price = models.DecimalField(max_digits=6, decimal_places=2) # number > 9,999.99 will result in an error
     upc = models.CharField(max_length=12, blank=True)
     ean = models.CharField(max_length=13, blank=True)
     list_date = models.DateTimeField(auto_now_add=True)
