@@ -4,3 +4,4 @@
 media
 pages/migrations/*
 !pages/migrations/__init__.py
+/database
