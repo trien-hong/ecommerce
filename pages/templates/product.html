@@ -51,12 +51,14 @@
                   <div class="add_to_cart_button">
                     <h3>Price: <b>${{product.price}}</b></h3>
                     {% if current_username == product.seller.username %}
-                      {% if product.bought is True %}
+                      {% if product.status == "sold out" %}
                         <a class="btn btn-danger btn disabled" href="#" title="Edit product">EDIT PRODUCT</a>
                       {% else %}
                         <a class="btn btn-secondary" href="{% url 'edit_product_view' uuid=product.uuid %}" title="Edit product">EDIT PRODUCT</a>
                       {% endif %}
-                    {% elif product.bought is True %}
+                    {% elif product.status == "inactive" %}
+                      <input class="btn btn-warning" type="submit" value="ADD TO CART" disabled>
+                    {% elif product.status == "sold out" %}
                       <input class="btn btn-danger" type="submit" value="ADD TO CART" disabled>
                     {% elif in_cart is True %}
                       <input class="btn btn-danger" type="submit" value="ADD TO CART" disabled>
@@ -64,8 +66,10 @@
                       <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart">
                     {% endif %}
                   </div>
-                  {% if product.bought is True %}
-                    <h4 class="bought mt-3" title="Sorry, this product is already sold out"><b><u>SOLD OUT</u></b></h4>
+                  {% if product.status == "inactive" %}
+                    <h4 class="bg-warning mt-3" title="Sorry, the seller has disabled this product"><b><u>INACTIVE</u></b></h4>
+                  {% elif product.status == "sold out" %}
+                    <h4 class="bg-danger mt-3" title="Sorry, this product is already sold out"><b><u>SOLD OUT</u></b></h4>
                   {% endif %}
                 </form>
               </div>

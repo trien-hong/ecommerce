@@ -160,14 +160,6 @@ li::marker {
     justify-content: center;
 }
 
-.bought {
-    background-color: #EA868F;
-}
-
-.not_bought {
-    background-color: lightgreen;
-}
-
 .empty_or_error {
     background-color: #F3F3F3;
     border: 2px solid black;

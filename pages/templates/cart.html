@@ -35,8 +35,10 @@
                   <div class="remove_from_cart_form">
                     <form action="{% url 'delete_from_cart_view' uuid=item.uuid %}" method="POST">
                       {% csrf_token %}
-                      {% if item.product.bought is True %}
-                        <h4 class="bought text-center" title="Sorry, this product is sold out"><b><u>SOLD OUT</u></b></h4>
+                      {% if item.product.status == "inactive" %}
+                        <h4 class="bg-warning text-center" title="Sorry, this product has been deactivated by the seller"><b><u>INACTIVE</u></b></h4>
+                      {% elif item.product.status == "sold out" %}
+                        <h4 class="bg-danger text-center" title="Sorry, this product is sold out"><b><u>SOLD OUT</u></b></h4>
                       {% endif %}
                       <div class="remove_from_cart_button">
                         <input class="btn btn-danger" type="submit" value="REMOVE ITEM" title="Remove item">

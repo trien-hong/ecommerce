@@ -112,12 +112,15 @@
                             <fieldset>
                               {% csrf_token %}
                               <hr>
-                              {% if item.bought is True %}
+                              {% if item.status == "inactive" %}
+                                <a class="btn btn-secondary" href="{% url 'edit_product_view' uuid=item.uuid %}" title="Edit product">EDIT PRODUCT</a>
+                                <h4 class="bg-warning mt-3 mb-0" title="This product has been deactivated by you"><b><u>INACTIVE</u></b></h4>
+                              {% elif item.status == "sold out" %}
                                 <a class="btn btn-danger disabled" href="#">EDIT PRODUCT</a>
-                                <h4 class="bought mt-3 mb-0" title="This product was bought from a buyer"><b><u>SOLD</u></b></h4>
+                                <h4 class="bg-danger mt-3 mb-0" title="This product was bought from a buyer"><b><u>SOLD OUT</u></b></h4>
                               {% else %}
                                 <a class="btn btn-secondary" href="{% url 'edit_product_view' uuid=item.uuid %}" title="Edit product">EDIT PRODUCT</a>
-                                <h4 class="not_bought mt-3 mb-0" title="No one has bought this yet"><b><u>ACTIVE</b></u></h4>
+                                <h4 class="bg-success mt-3 mb-0" title="No one has bought this yet"><b><u>ACTIVE</b></u></h4>
                               {% endif %}
                             </fieldset>
                           </form>

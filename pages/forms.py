@@ -2,7 +2,7 @@ from django import forms
 from decimal import Decimal
 from django.core.validators import validate_integer
 from django.contrib.auth import get_user_model
-from .choices import Choices # to change the choices edit choices.py
+from .choices import Choices # to see or edit the choices go to choices.py
 User = get_user_model()
 
 class Login(forms.Form):
@@ -113,8 +113,8 @@ class AddProduct(forms.Form):
     title = forms.CharField(max_length=50, label="Title*", widget=forms.TextInput(attrs={"placeholder": "Enter the product's title", "class": "field"}))
     picture = forms.ImageField(label="Picture*")
     description = forms.CharField(max_length=500, label="Description*", widget=forms.Textarea(attrs={"placeholder": "Enter the product's description", "rows": "5", "class": "field"}))
-    category = forms.ChoiceField(label="Category*", choices=Choices.CHOICES_CATEGORY) # to change the choices edit choices.py
-    condition = forms.ChoiceField(label="Condition*", choices=Choices.CHOICES_CONDITION) # to change the choices edit choices.py
+    category = forms.ChoiceField(label="Category*", choices=Choices.CHOICES_CATEGORY) # to see or edit the choices go to choices.py
+    condition = forms.ChoiceField(label="Condition*", choices=Choices.CHOICES_CONDITION) # to see or edit the choices go to choices.py
     price = forms.DecimalField(label="Price (in $/USD)*", widget=forms.TextInput(attrs={"placeholder": "Enter the product's price (ie. 5.00, 10.50, 9,999.99, etc.)", "class": "field"}), required=True)
     upc = forms.CharField(min_length=12, max_length=12, label="UPC", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "class": "field"}), required=False)
     ean = forms.CharField(min_length=13, max_length=13, label="EAN", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "class": "field"}), required=False)
@@ -210,13 +210,20 @@ class AddProduct(forms.Form):
         return ean
 
 class EditProduct(forms.Form):
+    CHOICES_PRODUCT_STATUS = [
+        Choices.CHOICES_PRODUCT_STATUS[0],
+        Choices.CHOICES_PRODUCT_STATUS[1],
+        Choices.CHOICES_PRODUCT_STATUS[2]
+    ] # to see or edit the choices go to choices.py
+
     title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product's new title", "title": "Only edit a field if you need to", "class": "field"}), required=False)
     picture = forms.ImageField(widget=forms.FileInput(attrs={"title": "Only edit a field if you need to"}), required=False)
     description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"placeholder": "Enter the product's new description", "title": "Only edit a field if you need to", "rows": "6", "class": "field"}), required=False)
-    category = forms.ChoiceField(choices=Choices.CHOICES_CATEGORY, widget=forms.Select(attrs={"title": "Only edit a field if you need to"}), required=False) # to change the choices edit choices.py
-    condition = forms.ChoiceField(choices=Choices.CHOICES_CONDITION, widget=forms.Select(attrs={"title": "Only edit a field if you need to"}), required=False) # to change the choices edit choices.py
+    category = forms.ChoiceField(choices=Choices.CHOICES_CATEGORY, widget=forms.Select(attrs={"title": "Only edit a field if you need to"}), required=False) # to see or edit the choices go to choices.py
+    condition = forms.ChoiceField(choices=Choices.CHOICES_CONDITION, widget=forms.Select(attrs={"title": "Only edit a field if you need to"}), required=False) # to see or edit the choices go to choices.py
     upc = forms.CharField(min_length=12, max_length=12, label="UPC", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "title": "Only edit a field if you need to", "class": "field"}), required=False)
     ean = forms.CharField(min_length=13, max_length=13, label="EAN", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "title": "Only edit a field if you need to", "class": "field"}), required=False)
+    status = forms.ChoiceField(choices=CHOICES_PRODUCT_STATUS, widget=forms.Select(attrs={"title": "Only edit a field if you need to"}), required=False) # to see or edit the choices go to choices.py
 
     def clean_title(self):
         title = self.cleaned_data["title"]
@@ -316,8 +323,8 @@ class SearchProduct(forms.Form):
 
 class AdvancedSearchProduct(forms.Form):
     title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product's title", "title": "Enter the product's title", "class": "field"}), required=False)
-    category = forms.ChoiceField(choices=Choices.CHOICES_CATEGORY, widget=forms.Select(attrs={"title": "Choose the product's category"}), required=False) # to change the choices edit choices.py
-    condition = forms.ChoiceField(choices=Choices.CHOICES_CONDITION, widget=forms.Select(attrs={"title": "Choose the product's condition"}), required=False) # to change the choices edit choices.py
+    category = forms.ChoiceField(choices=Choices.CHOICES_CATEGORY, widget=forms.Select(attrs={"title": "Choose the product's category"}), required=False) # to see or edit the choices go to choices.py
+    condition = forms.ChoiceField(choices=Choices.CHOICES_CONDITION, widget=forms.Select(attrs={"title": "Choose the product's condition"}), required=False) # to see or edit the choices go to choices.py
     upc = forms.CharField(min_length=12, max_length=12, label="UPC", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "title": "Enter the product's Universal Product Code (UPC)", "class": "field"}), required=False)
     ean = forms.CharField(min_length=13, max_length=13, label="EAN", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "title": "Enter the product's International Article Number (EAN)", "class": "field"}), required=False)
     username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter the seller's username", "title": "Enter the seller's username", "class": "field"}), required=False)

@@ -1,3 +1,8 @@
+PLEASE_CHOOSE_PRODUCT_STATUS = ""
+ACTIVE = "active"
+INACTIVE = "inactive"
+SOLD_OUT = "sold out"
+
 PLEASE_CHOOSE_CATEGORY = ""
 KITCHEN = "kitchen"
 LIVING_ROOM = "living room"
@@ -21,6 +26,16 @@ USED_HEAVILY = "used (heavily)"
 BROKEN_UNUSABLE = "broken (unusable)"
 
 class Choices:
+    CHOICES_PRODUCT_STATUS = [
+        # actual values are what's stores in the database
+        # (actual values, human readable values)
+        # for this case, both are the same
+        (PLEASE_CHOOSE_PRODUCT_STATUS, "Choose a status"),
+        (ACTIVE, "active"),
+        (INACTIVE, "inactive"),
+        (SOLD_OUT, "sold out")
+    ]
+
     CHOICES_CATEGORY = [
         # actual values are what's stores in the database
         # (actual values, human readable values)

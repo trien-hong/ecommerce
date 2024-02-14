@@ -3,7 +3,7 @@ from django_resized import ResizedImageField
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
-from .choices import Choices # to change the choices edit choices.py
+from .choices import Choices # to see or edit the choices go to choices.py
 
 class User(AbstractUser):
     credits = models.DecimalField(max_digits=11, decimal_places=2, default=5.00) # number > 999,999,999.99 will result in an error
@@ -20,7 +20,7 @@ class Product(models.Model):
     ean = models.CharField(max_length=13, blank=True)
     list_date = models.DateTimeField(auto_now_add=True)
     seller = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    bought = models.BooleanField(default=False)
+    status = models.CharField(choices=Choices.CHOICES_PRODUCT_STATUS, default=Choices.CHOICES_PRODUCT_STATUS[1][0]) # to see or edit the choices go to choices.py
     views = models.IntegerField(default=0)
 
 class Cart(models.Model):

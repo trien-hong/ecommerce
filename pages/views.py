@@ -11,9 +11,10 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib import messages
 from django.core.paginator import Paginator
 from . import forms
-from . models import Product
-from . models import Cart
-from . models import Sold
+from .models import Product
+from .models import Cart
+from .models import Sold
+from .choices import Choices # to see or edit the choices go to choices.py
 User = get_user_model()
 
 @never_cache
@@ -110,7 +111,7 @@ def index_view(request):
         filter_by = None
         sort_by = None
         search_product_form = forms.SearchProduct()
-        products = Product.objects.all().exclude(bought=True).order_by(Lower("title"))
+        products = Product.objects.all().exclude(status=Choices.CHOICES_PRODUCT_STATUS[2][0]).exclude(status=Choices.CHOICES_PRODUCT_STATUS[3][0]).order_by(Lower("title")) # to see or edit the choices go to choices.py
         if all_products is not None:
             if all_products == "True":
                 filter_by = ["all-products=true", "All Products"]
@@ -155,9 +156,13 @@ def index_view(request):
                 products = products.order_by("-views")
             else:
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with sorting by views.</li><li>Please try again.</li></ul>"))
-        cart = Cart.objects.filter(user=user)
-        items_in_cart = products.filter(uuid__in=cart.values_list("product__uuid", flat=True))
-        products = Paginator(products.difference(items_in_cart), 9).page(page_number)
+        products = Paginator(products, 9).page(page_number)
+        # cart = Cart.objects.filter(user=user)
+        # items_in_cart = products.filter(uuid__in=cart.values_list("product__uuid", flat=True))
+        # products = Paginator(products.difference(items_in_cart), 9).page(page_number)
+        # it has come to my attention that .difference(...) does not work on either side of .order_by(...)
+        # for the time being, i'll remove it and possibly find a different solution later
+        # items within cart will now reappear on the index page
         return render(request, "index.html", { "current_username": user.username, "products": products, "filter_by": filter_by, "sort_by": sort_by, "current_page_number": page_number,"search_product_form": search_product_form })
 
 @never_cache
@@ -270,7 +275,7 @@ def delete_product_view(request, uuid):
         user = request.user
         try:
             product = Product.objects.get(uuid=uuid)
-            if product.seller != user or product.bought is True:
+            if product.seller != user or product.status == Choices.CHOICES_PRODUCT_STATUS[3][0]: # to see or edit the choices go to choices.py
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in deleting this product from your profile.</li><li>Please try again.</li></ul>"))
             else:
                 if os.path.exists(product.picture.path):
@@ -294,7 +299,7 @@ def edit_product_view(request, uuid):
         edit_product_form = forms.EditProduct()
         try:
             product = Product.objects.get(uuid=uuid)
-            if product.seller != user or product.bought is True:
+            if product.seller != user or product.status == Choices.CHOICES_PRODUCT_STATUS[3][0]: # to see or edit the choices go to choices.py
                 product = None
         except Product.DoesNotExist:
             product = None
@@ -306,7 +311,7 @@ def edit_product_view(request, uuid):
         if edit_product_form.is_valid():
             try:
                 product = Product.objects.get(uuid=uuid)
-                if edit_product_form.cleaned_data["title"] == "" and edit_product_form.cleaned_data["picture"] is None and edit_product_form.cleaned_data["description"] == "" and edit_product_form.cleaned_data["category"] == "" and edit_product_form.cleaned_data["condition"] == "" and edit_product_form.cleaned_data["upc"] == "" and edit_product_form.cleaned_data["ean"] == "":
+                if edit_product_form.cleaned_data["title"] == "" and edit_product_form.cleaned_data["picture"] is None and edit_product_form.cleaned_data["description"] == "" and edit_product_form.cleaned_data["category"] == "" and edit_product_form.cleaned_data["condition"] == "" and edit_product_form.cleaned_data["upc"] == "" and edit_product_form.cleaned_data["ean"] == "" and edit_product_form.cleaned_data["status"] == "":
                     messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Seems like you submitted an empty form.</li><li>If you have nothing to edit on the product, please don't edit it.</li></ul>"))
                 else:
                     if edit_product_form.cleaned_data["title"] != "":
@@ -327,6 +332,8 @@ def edit_product_view(request, uuid):
                         product.upc = edit_product_form.cleaned_data["upc"]
                     if edit_product_form.cleaned_data["ean"] != "":
                         product.ean = edit_product_form.cleaned_data["ean"]
+                    if edit_product_form.cleaned_data["status"] != "":
+                        product.status = edit_product_form.cleaned_data["status"]
                     product.save()
                     messages.add_message(request, messages.SUCCESS, "Your product have been successfully updated.")
             except Product.DoesNotExist:
@@ -344,11 +351,13 @@ def edit_product_delete_upc_ean_view(request, uuid, type):
     where <uuid:uuid> is the uuid (NOT ID despite the URL) of the product that you want to delete it's UPC/EAN from and where <str:type> is either upc or ean
     if exposed the uuid is shown to the user and not the ID/PK
     """
+    if request.method == "GET":
+        return redirect(edit_product_view, uuid)
     if request.method == "POST":
         user = request.user
         try:
             product = Product.objects.get(uuid=uuid)
-            if product.seller != user or product.bought is True:
+            if product.seller != user or product.status == Choices.CHOICES_PRODUCT_STATUS[3][0]: # to see or edit the choices go to choices.py
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in deleting the product's UPC/EAN.</li><li>Please try again.</li></ul>"))
                 return redirect(edit_product_view, uuid)
             else:
@@ -382,9 +391,9 @@ def search_view(request):
                 products = None
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Sorry, your search of, \"" + search_product_form.cleaned_data["title"] + "\", came by empty.</li><li>Please note that you are searching by title.</li></ul>"))
             else:
-                products = Product.objects.filter(title__istartswith=search_product_form.cleaned_data["title"]).exclude(bought=True)
+                products = Product.objects.filter(title__istartswith=search_product_form.cleaned_data["title"]).exclude(status=Choices.CHOICES_PRODUCT_STATUS[2][0]).exclude(status=Choices.CHOICES_PRODUCT_STATUS[3][0]) # to see or edit the choices go to choices.py
                 if products.exists() is False:
-                    products = Product.objects.filter(title__icontains=search_product_form.cleaned_data["title"]).exclude(bought=True)
+                    products = Product.objects.filter(title__icontains=search_product_form.cleaned_data["title"]).exclude(status=Choices.CHOICES_PRODUCT_STATUS[2][0]).exclude(status=Choices.CHOICES_PRODUCT_STATUS[3][0]) # to see or edit the choices go to choices.py
                 if products.exists() is False:
                     messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Sorry, your search of, \"" + search_product_form.cleaned_data["title"] + "\", came by empty.</li><li>Please note that you are searching by title.</li></ul>"))
                 else:
@@ -412,9 +421,9 @@ def advanced_search_view(request):
                 if (advanced_search_product_form.cleaned_data["title"] == "" or advanced_search_product_form.cleaned_data["title"] is None) and (advanced_search_product_form.cleaned_data["category"] == "" or advanced_search_product_form.cleaned_data["category"] is None) and (advanced_search_product_form.cleaned_data["condition"] == "" or advanced_search_product_form.cleaned_data["condition"] is None) and (advanced_search_product_form.cleaned_data["upc"] == "" or advanced_search_product_form.cleaned_data["upc"] is None) and (advanced_search_product_form.cleaned_data["ean"] == "" or advanced_search_product_form.cleaned_data["ean"] is None) and (advanced_search_product_form.cleaned_data["username"] == "" or advanced_search_product_form.cleaned_data["username"] is None):
                     products = None
                 else:
-                    # products = Product.objects.filter(title=..., category=..., condition=..., upc=..., ean=..., seller=...).exclude(bought=True)
+                    # products = Product.objects.filter(title=..., category=..., condition=..., upc=..., ean=..., seller=...).exclude(status=Choices.CHOICES_PRODUCT_STATUS[2][0]).exclude(status=Choices.CHOICES_PRODUCT_STATUS[3][0])
                     # where ... does not work with "" (empty string) or None
-                    products = Product.objects.all().exclude(bought=True)
+                    products = Product.objects.all().exclude(status=Choices.CHOICES_PRODUCT_STATUS[2][0]).exclude(status=Choices.CHOICES_PRODUCT_STATUS[3][0]) # to see or edit the choices go to choices.py
                     if advanced_search_product_form.cleaned_data["title"] != "" and advanced_search_product_form.cleaned_data["title"] is not None:
                         products = products.filter(title__istartswith=advanced_search_product_form.cleaned_data["title"])
                     if advanced_search_product_form.cleaned_data["category"] != "" and advanced_search_product_form.cleaned_data["category"] is not None:
@@ -473,7 +482,7 @@ def add_to_cart_view(request, uuid):
         try:
             user = request.user
             product = Product.objects.get(uuid=uuid)
-            if product.bought is True:
+            if product.status == Choices.CHOICES_PRODUCT_STATUS[3][0]: # to see or edit the choices go to choices.py
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Sorry, this product, \"" + product.title + "\" is now sold out.</li></ul>"))
             elif product.seller == user:
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>You cannot add your own product to the cart.</li></ul>"))
@@ -541,7 +550,7 @@ def check_out_view(request):
             for item in cart:
                 try:
                     product = Product.objects.get(id=item.product.id)
-                    if product.bought is False:
+                    if product.status != Choices.CHOICES_PRODUCT_STATUS[3][0]: # to see or edit the choices go to choices.py
                         seller = User.objects.get(username=product.seller)
                         seller.credits = seller.credits + product.price
                         seller.save()
@@ -550,7 +559,7 @@ def check_out_view(request):
                         buyer.save()
                         sold = Sold(product=product, buyer=user)
                         sold.save()
-                        product.bought = True
+                        product.status = Choices.CHOICES_PRODUCT_STATUS[3][0] # to see or edit the choices go to choices.py
                         product.save()
                         item.delete()
                     else:
