@@ -7,6 +7,7 @@ from .choices import Choices # to see or edit the choices go to choices.py
 
 class User(AbstractUser):
     credits = models.DecimalField(max_digits=11, decimal_places=2, default=5.00) # number > 999,999,999.99 will result in an error
+    member_id = models.UUIDField(primary_key=False, editable=False, unique=True, default=uuid.uuid4)
 
 class Product(models.Model):
     uuid = models.UUIDField(primary_key=False, editable=False, unique=True, default=uuid.uuid4)

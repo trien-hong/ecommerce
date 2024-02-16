@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>E-commerce | Storefront</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}"/>
+    <script type="text/javascript" src="{% static 'bootstrap/bootstrap.bundle.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'jquery/jquery.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'style.css' %}"/>
+  </head>
+  <body>
+    {% include "includes/navbar.html" %}
+    <div class="container text-break px-0">
+      <div class="content px-2 py-2">
+        {% if products %}
+          <div class="storefront_header">
+            <div class="seller_basic_info">
+              <!-- will need to implement fully -->
+              <img class="img-thumbnail" src="https://kgo.googleusercontent.com/profile_vrt_raw_bytes_1587515358_10512.png" alt="profile_image">
+              <p>{{seller.username}}</p>
+            </div>
+            <div class="vr"></div>
+            <div class="seller_reviews">
+              <!-- will need to implement fully -->
+              <p>Reviews:</p>
+            </div>
+          </div>
+          <hr>
+          <div class="products">
+            {% include "includes/products.html" %}
+          </div>
+				{% else %}
+          <div class="empty_or_error text-center mx-2 my-2 px-3 py-3">
+            {% if seller is None %}
+              <h1>Sorry, the seller, does not exist.</h1>
+              <h1 class="my-0 pt-5"><a href="{% url 'index_view' %}" title="Homepage">Go back to homepag</a> </h1>
+            {% else %}
+              <h1>Sorry, the seller, {{seller}}, does not currently have any active listings.</h1>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    {% include "includes/modal_message.html" %}
+  </body>
+</html>

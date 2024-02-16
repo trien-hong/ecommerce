@@ -167,6 +167,32 @@ def index_view(request):
 
 @never_cache
 @login_required
+def storefront_view(request):
+    """
+    URL: /storefront?member-id=...
+    where ?member-id is the query string
+    """
+    if request.method == "GET":
+        member_id = request.GET.get("member-id", None)
+        if member_id is not None:
+            try:
+                seller = User.objects.get(member_id=member_id)
+                products = Product.objects.filter(seller=seller)
+                seller_exist = True
+            except:
+                seller = None
+                seller_exist = False
+                products = None
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error.</li><li>The seller does not exist.</li></ul>"))
+        else:
+            seller = None
+            seller_exist = False
+            products = None
+            messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error.</li><li>The seller does not exist.</li></ul>"))
+        return render(request, "storefront.html", { "seller": seller, "seller_exist": seller_exist, "products": products } )
+
+@never_cache
+@login_required
 def product_view(request, uuid):
     """
     URL: /product/id/<uuid:uuid>
@@ -547,27 +573,33 @@ def check_out_view(request):
             return redirect(cart_view)
         else:
             already_bought = 0
+            not_bought = 0
             for item in cart:
                 try:
                     product = Product.objects.get(id=item.product.id)
-                    if product.status != Choices.CHOICES_PRODUCT_STATUS[3][0]: # to see or edit the choices go to choices.py
+                    if product.status != Choices.CHOICES_PRODUCT_STATUS[2][0] and product.status != Choices.CHOICES_PRODUCT_STATUS[3][0]: # to see or edit the choices go to choices.py
                         seller = User.objects.get(username=product.seller)
-                        seller.credits = seller.credits + product.price
-                        seller.save()
-                        buyer = User.objects.get(username=user.username)
-                        buyer.credits = buyer.credits - product.price
-                        buyer.save()
-                        sold = Sold(product=product, buyer=user)
-                        sold.save()
-                        product.status = Choices.CHOICES_PRODUCT_STATUS[3][0] # to see or edit the choices go to choices.py
-                        product.save()
-                        item.delete()
+                        if seller.credits + product.price > 999999999.99:
+                            not_bought = not_bought + 1
+                            product.status = Choices.CHOICES_PRODUCT_STATUS[2][0] # to see or edit the choices go to choices.py
+                            product.save()
+                        else:
+                            seller.credits = seller.credits + product.price
+                            seller.save()
+                            buyer = User.objects.get(username=user.username)
+                            buyer.credits = buyer.credits - product.price
+                            buyer.save()
+                            sold = Sold(product=product, buyer=user)
+                            sold.save()
+                            product.status = Choices.CHOICES_PRODUCT_STATUS[3][0] # to see or edit the choices go to choices.py
+                            product.save()
+                            item.delete()
                     else:
                         already_bought = already_bought + 1
                 except Product.DoesNotExist:
                     messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with one, some, or all your items in your cart.</li><li>It's possible the seller delisted an item in your cart.</li></ul>"))
                     return redirect(cart_view)
-            if already_bought == 0:
+            if already_bought == 0 and not_bought == 0:
                 messages.add_message(request, messages.SUCCESS, "Checkout was successful. All the items in your cart have been bought by you.")
                 return redirect(cart_view)
             elif already_bought == 1:

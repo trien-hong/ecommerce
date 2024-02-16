@@ -9,6 +9,7 @@ urlpatterns = [
     path("login", views.login_view, name="login_view"),
     path("signup", views.signup_view, name="signup_view"),
     path("reset-password", views.reset_password_view, name="reset_password_view"),
+    path("storefront", views.storefront_view, name="storefront_view"),
     path("product/id/<uuid:uuid>", views.product_view, name="product_view"),
     path("product/add-product", views.add_product_view, name="add_product_view"),
     path("product/copy-and-add-product/id/<uuid:uuid>", views.copy_and_add_product_view, name="copy_and_add_product_view"),

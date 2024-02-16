@@ -29,7 +29,7 @@
                     <div class="ms-1">
                       <h4>Title: {{item.product.title}}</h4>
                       <a href="{% url 'product_view' uuid=item.product.uuid %}" title="Click to view more details of this product"><img src="{{item.product.picture.url}}" alt="product picture" width="150" height="150"></a>
-                      <p class="mb-0 pt-2"><b>Seller: {{item.product.seller}}</b></p>
+                      <p class="mb-0 pt-2"><b>Seller:</b> <a href="{% url 'storefront_view' %}?member-id={{item.product.seller.member_id}}" title="Vist {{item.product.seller}} store"><b>{{item.product.seller}}</b></a></h3>
                     </div>
                   </div>
                   <div class="remove_from_cart_form">

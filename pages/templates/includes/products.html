@@ -11,7 +11,7 @@
                     {% csrf_token %}
                     <hr>
                     <div class="add_to_cart_button">
-                            <p class="my-0">Price: <b>${{product.price}}</b></p>
+                        <p class="my-0">Price: <b>${{product.price}}</b></p>
                         {% if current_username == product.seller.username %}
                             <input class="btn btn-danger" type="submit" value="ADD TO CART" disabled>
                         {% else %}

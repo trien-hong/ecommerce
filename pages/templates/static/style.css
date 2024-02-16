@@ -160,6 +160,26 @@ li::marker {
     justify-content: center;
 }
 
+.storefront_header {
+    background-color: #F3F3F3;
+    border: 2px solid black;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.seller_basic_info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.seller_reviews {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 .empty_or_error {
     background-color: #F3F3F3;
     border: 2px solid black;

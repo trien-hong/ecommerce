@@ -29,7 +29,7 @@
               <hr>
               <div>
                 <h3>List Date: {{product.list_date}}</h3>
-                <h3>Seller: {{product.seller}}</h3>
+                <h3>Seller: <a href="{% url 'storefront_view' %}?member-id={{product.seller.member_id}}" title="Vist {{product.seller}} store">{{product.seller}}</a></h3>
               </div>
               {% if product.upc != "" or product.ean != "" %}
                 <hr>
