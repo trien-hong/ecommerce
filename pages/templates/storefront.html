@@ -18,46 +18,50 @@
             <h1 class="my-0 pt-5"><a href="{% url 'index_view' %}" title="Homepage">Go back to homepage</a> </h1>
           </div>
         {% else %}
-          {% if products %}
-            <div class="storefront_header my-2 mx-2 py-3 px-3">
-              <!-- will need to implement fully there's some placeholder code-->
-              <div class="seller_basic_info">
-                <div class="picture">
-                  <img class="profile_picture" src="https://kgo.googleusercontent.com/profile_vrt_raw_bytes_1587515358_10512.png" alt="profile_picture" width="125" height="125">
+          <div class="storefront_header my-2 mx-2 py-3 px-3">
+            <!-- will need to implement fully there's some placeholder code-->
+            <div class="seller_basic_info">
+              {% if seller.picture %}
+                <div>
+                  <img class="profile_picture" src="{{seller.picture.url}}" alt="profile picture" width="125" height="125">
                 </div>
+              {% endif %}
+              {% if seller.picture %}
                 <div class="vr mx-3"></div>
-                <div class="info">
-                  <h5 class="my-0 pb-2"><b>{{seller_username}}</b></h5>
-                  <p class="my-0 pt-2">Items sold: <b>123</b></p>
-                </div>
+              {% endif %}
+              <div class="info">
+                <h5 class="my-0 pb-2"><b>{{seller.username}}</b></h5>
+                <p class="my-0 pt-2">Items sold: <b>{{seller.items_sold}}</b></p>
               </div>
-              <div class="seller_ratings">
-                <div class="text-center">
-                  <h5 class="my-0 pb-3"><b>Ratings</b></h5>
+            </div>
+            <div class="seller_ratings">
+              <div class="text-center">
+                <h5 class="my-0 pb-3"><b>Ratings</b></h5>
+              </div>
+              <div class="ratings">
+                <div class="my-0">
+                  <p>Accurate Description: <b>1/10</b></p>
                 </div>
-                <div class="ratings">
-                  <div class="my-0">
-                    <p>Accurate Description: <b>1/10</b></p>
-                  </div>
-                  <div class="my-0">
-                    <p>Communication: <b>2/10</b></p>
-                  </div>
-                  <div class="my-0">
-                    <p>Shipping Cost: <b>3/10</b></p>
-                  </div>
-                  <div class="my-0">
-                    <p>Shipping Speed: <b>4/10</b></p>
-                  </div>
+                <div class="my-0">
+                  <p>Communication: <b>2/10</b></p>
+                </div>
+                <div class="my-0">
+                  <p>Shipping Cost: <b>3/10</b></p>
+                </div>
+                <div class="my-0">
+                  <p>Shipping Speed: <b>4/10</b></p>
                 </div>
               </div>
             </div>
-            <hr>
+          </div>
+          <hr>
+          {% if products %}
             <div class="products">
               {% include "includes/products.html" %}
             </div>
           {% else %}
             <div class="empty_or_error text-center mx-2 my-2 px-3 py-3">
-              <h1>Sorry, the seller, {{seller_username}}, does not currently have any active listings.</h1>
+              <h1>Sorry, the seller, {{seller.username}}, does not currently have any active listings.</h1>
             </div>
           {% endif %}
         {% endif %}

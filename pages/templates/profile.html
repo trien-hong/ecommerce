@@ -56,41 +56,50 @@
               <h1 class="option_none">Please choose from 1 of the 6 options.</h1>
             {% elif option == 'settings' %}
               <div class="settings">
-                <div class="change_username_form px-3 py-3">
+                <div class="change_username_form ms-2 me-2 mb-2 px-3 py-3">
                   <h2 class="py-0 my-0">CHANGE USERNAME</h2>
-                  <hr>
+                  <hr class="mb-2">
                   <form action="{% url 'change_username_view' %}" method="POST">
                     {% csrf_token %}
-                    <table>
-                      {{change_username_form}}
-                    </table>
-                    <div class="change_username_button pt-3">
+                    {{change_username_form}}
+                    <div class="pt-3">
+                      <hr class="mt-0">
                       <input class="btn btn-primary" type="submit" value="CHANGE USERNAME" title="Change username">
                     </div>
                   </form>
                 </div>
-                <div class="change_password_form px-3 py-3 my-2">
+                <div class="change_password_form ms-2 me-2 mb-2 px-3 py-3">
                   <h2 class="py-0 my-0">CHANGE PASSWORD</h2>
-                  <hr>
+                  <hr class="mb-2">
                   <form action="{% url 'change_password_view' %}" method="POST">
                     {% csrf_token %}
-                    <table>
-                      {{change_password_form}}
-                    </table>
-                    <div class="change_password_button pt-3">
+                    {{change_password_form}}
+                    <div class="pt-3">
+                      <hr class="mt-0">
                       <input class="btn btn-primary" type="submit" value="CHANGE PASSWORD" title="Change password">
                     </div>
                   </form>
                 </div>
-                <div class="delete_account_form px-3 py-3">
+                <div class="change_password_form ms-2 me-2 mt-2 px-3 py-3">
+                  <h2 class="py-0 my-0">UPLOAD PROFILE PICTURE</h2>
+                  <hr class="mb-2">
+                  <form action="{% url 'upload_profile_picture_view' %}" enctype="multipart/form-data" method="POST">
+                    {% csrf_token %}
+                    {{upload_profile_picture_form}}
+                    <div class="pt-3">
+                      <hr class="mt-0">
+                      <input class="btn btn-primary" type="submit" value="UPLOAD PROFILE PICTURE" title="Upload porfile picture">
+                    </div>
+                  </form>
+                </div>
+                <div class="delete_account_form ms-2 me-2 mt-2 px-3 py-3">
                   <h2 class="py-0 my-0">DELETE ACCOUNT</h2>
-                  <hr>
+                  <hr class="mb-2">
                   <form action="{% url 'delete_account_view' %}" method="POST">
                     {% csrf_token %}
-                    <table>
-                      {{delete_account_form}}
-                    </table>
-                    <div class="delete_account_button pt-3">
+                    {{delete_account_form}}
+                    <div class="pt-3">
+                      <hr class="mt-0">
                       <input class="btn btn-primary" type="submit" value="DELETE ACCOUNT" title="Delete account">
                     </div>
                   </form>

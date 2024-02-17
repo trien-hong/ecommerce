@@ -27,6 +27,7 @@ urlpatterns = [
     path("profile/<str:option>", views.profile_option_view, name="profile_option_view"),
     path("profile/settings/change-username", views.change_username_view, name="change_username_view"),
     path("profile/settings/change-password", views.change_password_view, name="change_password_view"),
+    path("profile/settings/upload-profile-picture", views.upload_profile_picture_view, name="upload_profile_picture_view"),
     path("profile/settings/delete-account", views.delete_account_view, name="delete_account_view"),
     path("confirm-message/type/<str:type>", views.confirm_message_view, name="confirm_message_view"),
     path("logout-user", views.logout_user, name="logout_user")

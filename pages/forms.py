@@ -67,7 +67,7 @@ class RestPassword(forms.Form):
         return confirm_password
 
 class ChangeUsername(forms.Form):
-    username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your new username", "size": "35"}))
+    username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your new username", "class": "field"}))
 
     def clean_username(self):
         username = self.cleaned_data["username"]
@@ -81,8 +81,8 @@ class ChangeUsername(forms.Form):
         return username
 
 class ChangePassword(forms.Form):
-    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your new password", "size": "35"}))
-    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Confirm your new password", "size": "35"}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your new password", "class": "field"}))
+    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Confirm your new password", "class": "field"}))
 
     def clean_confirm_password(self):
         password = self.cleaned_data["password"]
@@ -93,8 +93,19 @@ class ChangePassword(forms.Form):
 
         return confirm_password
 
+class UploadProfilePicture(forms.Form):
+    picture = forms.ImageField(widget=forms.FileInput(attrs={"class": "field"}))
+    
+    def clean_picture(self):
+        picture = self.cleaned_data["picture"]
+
+        if picture.size > 5*1024*1024:
+            raise forms.ValidationError("Image is greater than 5MB. Please upload an image that is less than 5MB.")
+
+        return picture
+
 class DeleteAccount(forms.Form):
-    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your password to delete account", "size": "35"}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your password to delete account", "class": "field"}))
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)

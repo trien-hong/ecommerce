@@ -174,6 +174,7 @@ li::marker {
 }
 
 .profile_picture {
+    background-color: gray;
     border: 1px solid black;
     border-radius: 50%;
 }
@@ -274,9 +275,23 @@ li::marker {
     width: 80%;
 }
 
-.change_username_form, .change_password_form, .delete_account_form {
+.settings {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.change_username_form, .change_password_form, .upload_profile_picture_form, .delete_account_form {
     background-color: white;
     border: 2px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.change_username_form label, .change_password_form label, .upload_profile_picture_form label, .delete_account_form label {
+    display: flex;
+    justify-content: flex-start;
+    padding-bottom: 1%;
 }
 
 .listing_history, .purchase_history {

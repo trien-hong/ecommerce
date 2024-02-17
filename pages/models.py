@@ -6,7 +6,9 @@ from django.contrib.auth.models import AbstractUser
 from .choices import Choices # to see or edit the choices go to choices.py
 
 class User(AbstractUser):
+    picture = ResizedImageField(size=[125, 125], crop=["middle", "center"], quality=100, upload_to="user_picture", null=True, blank=True)
     member_id = models.UUIDField(primary_key=False, editable=False, unique=True, default=uuid.uuid4)
+    items_sold = models.PositiveIntegerField(default=0)
     credits = models.DecimalField(max_digits=11, decimal_places=2, default=5.00) # number > 999,999,999.99 will result in an error
 
 class Product(models.Model):

@@ -25,11 +25,21 @@
               <div>
                 <h3>Category: {{product.category}}</h3>
                 <h3>Condition: {{product.condition}}</h3>
+                <h3>List Date: {{product.list_date}}</h3>
               </div>
               <hr>
-              <div>
-                <h3>List Date: {{product.list_date}}</h3>
-                <h3>Seller: <a href="{% url 'storefront_view' %}?member-id={{product.seller.member_id}}" title="Vist {{product.seller}} store">{{product.seller}}</a></h3>
+              <div class="seller_basic_info">
+                {% if product.seller.picture %}
+                  <div>
+                    <img class="profile_picture" src="{{product.seller.picture.url}}" alt="profile picture" width="125" height="125">
+                  </div>
+                {% endif %}
+                {% if product.seller.picture %}
+                  <div class="vr mx-3"></div>
+                {% endif %}
+                <div class="info">
+                  <h3>Seller: <a href="{% url 'storefront_view' %}?member-id={{product.seller.member_id}}" title="Vist {{product.seller}} store">{{product.seller}}</a></h3>
+                </div>
               </div>
               {% if product.upc != "" or product.ean != "" %}
                 <hr>

@@ -80,11 +80,14 @@ def reset_password_view(request):
         user_info = request.POST
         reset_password_form = forms.RestPassword(user_info)
         if reset_password_form.is_valid():
-            # i hope to one day add verfication to this before users are allowed to actually change it
-            user = User.objects.get(username=reset_password_form.cleaned_data["username"])
-            user.set_password(reset_password_form.cleaned_data["confirm_password"])
-            user.save()
-            messages.add_message(request, messages.SUCCESS, "The password associated with the username has been reset. You may now login.")
+            try:
+                # i hope to one day add verfication to this before users are allowed to actually change it
+                user = User.objects.get(username=reset_password_form.cleaned_data["username"])
+                user.set_password(reset_password_form.cleaned_data["confirm_password"])
+                user.save()
+                messages.add_message(request, messages.SUCCESS, "The password associated with the username has been reset. You may now login.")
+            except User.DoesNotExist:
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with resetting your password.</li><li>Please try again.</li></ul>"))
             return redirect(reset_password_view)
         else:
             messages.add_message(request, messages.ERROR, reset_password_form.errors)
@@ -178,7 +181,7 @@ def storefront_view(request):
             try:
                 seller = User.objects.get(member_id=member_id)
                 products = Product.objects.filter(seller=seller)
-            except:
+            except User.DoesNotExist:
                 seller = None
                 products = None
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error.</li><li>The seller does not exist.</li></ul>"))
@@ -571,10 +574,11 @@ def check_out_view(request):
         else:
             sold_out_count = 0
             inactive_count = 0
+            total_products_not_bought = 0
             for item in cart:
                 try:
                     product = Product.objects.get(id=item.product.id)
-                    if product.status != Choices.CHOICES_PRODUCT_STATUS[2][0] and product.status != Choices.CHOICES_PRODUCT_STATUS[3][0]: # to see or edit the choices go to choices.py
+                    if product.status == Choices.CHOICES_PRODUCT_STATUS[1][0]: # to see or edit the choices go to choices.py
                         seller = User.objects.get(username=product.seller)
                         if seller.credits + product.price > 999999999.99:
                             inactive_count = inactive_count + 1
@@ -582,6 +586,7 @@ def check_out_view(request):
                             product.save()
                         else:
                             seller.credits = seller.credits + product.price
+                            seller.items_sold = seller.items_sold + 1
                             seller.save()
                             buyer = User.objects.get(username=user.username)
                             buyer.credits = buyer.credits - product.price
@@ -591,35 +596,37 @@ def check_out_view(request):
                             product.status = Choices.CHOICES_PRODUCT_STATUS[3][0] # to see or edit the choices go to choices.py
                             product.save()
                             item.delete()
+                    elif product.status == Choices.CHOICES_PRODUCT_STATUS[2][0]: # to see or edit the choices go to choices.py
+                        inactive_count = inactive_count + 1
+                    elif product.status == Choices.CHOICES_PRODUCT_STATUS[3][0]: # to see or edit the choices go to choices.py
+                        sold_out_count = sold_out_count + 1
                     else:
-                        if product.status == Choices.CHOICES_PRODUCT_STATUS[2][0]: # to see or edit the choices go to choices.py
-                            inactive_count = inactive_count + 1
-                        else:
-                            sold_out_count = sold_out_count + 1
-                except Product.DoesNotExist:
+                        messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with one item in your cart.</li><li>Please try again.</li></ul>"))
+                        return redirect(cart_view)
+                except (Product.DoesNotExist, User.DoesNotExist):
                     messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with one, some, or all your items in your cart.</li><li>It's possible the seller delisted an item in your cart.</li></ul>"))
                     return redirect(cart_view)
             total_products_not_bought = sold_out_count + inactive_count
-            if total_products_not_bought == cart.count():
-                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Checkout was unsuccessful.</li><li>The item(s) you wanted to buy have been bought by another person, or the item(s) have been disabled by the seller's own discretion, or by us due to an overflow of credits on the seller's part.</li><li>Items have been marked with \"SOLD OUT\" or \"INACTIVE\" accordingly.</li></ul>"))
-                return redirect(cart_view)
-            elif total_products_not_bought == 0:
+            if total_products_not_bought == 0:
                 messages.add_message(request, messages.SUCCESS, "Checkout was successful. All the items in your cart have been bought by you.")
+                return redirect(cart_view)
+            elif total_products_not_bought == cart.count():
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Checkout was unsuccessful.</li><li>The item(s) you wanted to buy have been bought by another person, or the item(s) have been deactivated by the seller's own discretion, or by us due to an overflow of credits on the seller's part.</li><li>Items have been marked with \"SOLD OUT\" or \"INACTIVE\" accordingly.</li></ul>"))
                 return redirect(cart_view)
             elif sold_out_count == 1 and inactive_count == 0:
                 messages.add_message(request, messages.WARNING, mark_safe("<ul><li>Checkout was successful.</li><li>However, there was 1 item that has been bought by another person.</li><li>That items have been marked with \"SOLD OUT\".</li></ul>"))
                 return redirect(cart_view)
             elif sold_out_count == 0 and inactive_count == 1:
-                messages.add_message(request, messages.WARNING, mark_safe("<ul><li>Checkout was successful.</li><li>However, there was 1 item that has been disabled by the seller's own discretion or by us due to an overflow of credits on the seller's part.</li><li>That item have been marked with \"INACTIVE\".</li></ul>"))
+                messages.add_message(request, messages.WARNING, mark_safe("<ul><li>Checkout was successful.</li><li>However, there was 1 item that has been deactivated by the seller's own discretion or by us due to an overflow of credits on the seller's part.</li><li>That item have been marked with \"INACTIVE\".</li></ul>"))
                 return redirect(cart_view)
             elif sold_out_count > 1 and inactive_count == 0:
                 messages.add_message(request, messages.WARNING, mark_safe("<ul><li>Checkout was successful.</li><li>However, there were multiple items that has been bought by another person.</li><li>Those items have been marked with \"SOLD OUT\".</li></ul>"))
                 return redirect(cart_view)
             elif sold_out_count == 0 and inactive_count > 1:
-                messages.add_message(request, messages.WARNING, mark_safe("<ul><li>Checkout was successful.</li><li>However, there were multiple items that has been disabled by the seller's own discretion or by us due to an overflow of credits on the seller's part.</li><li>Those items have been marked with \"INACTIVE\".</li></ul>"))
+                messages.add_message(request, messages.WARNING, mark_safe("<ul><li>Checkout was successful.</li><li>However, there were multiple items that has been deactivated by the seller's own discretion or by us due to an overflow of credits on the seller's part.</li><li>Those items have been marked with \"INACTIVE\".</li></ul>"))
                 return redirect(cart_view)
             else:
-                messages.add_message(request, messages.WARNING, mark_safe("<ul><li>Checkout was successful.</li><li>However, there were multiple items that are already sold out or have been disabled by the seller's own discretion, or by us due to an overflow of credits on the seller's part.</li><li>Items have been marked with \"SOLD OUT\" or \"INACTIVE\" accordingly.</li></ul>"))
+                messages.add_message(request, messages.WARNING, mark_safe("<ul><li>Checkout was successful.</li><li>However, there were multiple items that are already sold out or have been deactivated by the seller's own discretion, or by us due to an overflow of credits on the seller's part.</li><li>Items have been marked with \"SOLD OUT\" or \"INACTIVE\" accordingly.</li></ul>"))
                 return redirect(cart_view)
 
 @never_cache
@@ -644,8 +651,9 @@ def profile_option_view(request, option):
         if option == "settings":
             change_username_form = forms.ChangeUsername()
             change_password_form = forms.ChangePassword()
+            upload_profile_picture_form = forms.UploadProfilePicture()
             delete_account_form = forms.DeleteAccount()
-            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "member_id": user.member_id, "option": "settings", "change_username_form": change_username_form, "change_password_form": change_password_form, "delete_account_form": delete_account_form })
+            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "member_id": user.member_id, "option": "settings", "change_username_form": change_username_form, "change_password_form": change_password_form, "upload_profile_picture_form": upload_profile_picture_form,"delete_account_form": delete_account_form })
         elif option == "wish-list":
             return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "member_id": user.member_id, "option": "wish-list" })
         elif option == "listing-history":
@@ -668,12 +676,13 @@ def change_username_view(request):
     if request.method == "GET":
         return redirect(profile_option_view, option="settings")
     if request.method == "POST":
+        user = request.user
         user_info = request.POST
         change_username_form = forms.ChangeUsername(user_info)
         if change_username_form.is_valid():
             try:
                 # i hope to one day add verfication to this before users are allowed to actually change it
-                user = User.objects.get(id=request.user.id)
+                user = User.objects.get(username=user.username)
                 user.username = change_username_form.cleaned_data["username"]
                 user.save()
                 messages.add_message(request, messages.SUCCESS, "Your username is now \"" + change_username_form.cleaned_data["username"] +"\". Everything associated with the username has now been updated.")
@@ -693,12 +702,13 @@ def change_password_view(request):
     if request.method == "GET":
         return redirect(profile_option_view, option="settings")
     if request.method == "POST":
+        user = request.user
         user_info = request.POST
         change_password_form = forms.ChangePassword(user_info)
         if change_password_form.is_valid():
             try:
                 # i hope to one day add verfication to this before users are allowed to actually change it
-                user = User.objects.get(id=request.user.id)
+                user = User.objects.get(username=user.username)
                 user.set_password(change_password_form.cleaned_data["password"])
                 user.save()
                 messages.add_message(request, messages.SUCCESS, "Your password has been successfully updated. You must login again with the new password.")
@@ -711,6 +721,33 @@ def change_password_view(request):
 
 @never_cache
 @login_required
+def upload_profile_picture_view(request):
+    """
+    URL: /profile/settings/upload-profile-picture
+    """
+    if request.method == "GET":
+        return redirect(profile_option_view, option="settings")
+    if request.method == "POST":
+        user = request.user
+        picture = request.FILES
+        upload_profile_picture_form = forms.UploadProfilePicture(request.POST, picture)
+        if upload_profile_picture_form.is_valid():
+            try:
+                file_extension = upload_profile_picture_form.cleaned_data["picture"].name.split(".")[-1]
+                upload_profile_picture_form.cleaned_data["picture"].name = "profile_picture_id_" + str(uuid4()) + "." + file_extension
+                user = User.objects.get(username=user.username)
+                user.picture = upload_profile_picture_form.cleaned_data["picture"]
+                user.save()
+                messages.add_message(request, messages.SUCCESS, "Your profile picture has successfully been uploaded. Image less than/greater than 125x125 have been upsized/downsized and cropped to the middle and center.")
+            except User.DoesNotExist:
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in uploading your profile picture.</li><li>Please try again.</li></ul>"))
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+        else:
+            messages.add_message(request, messages.ERROR, upload_profile_picture_form.errors)
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+
+@never_cache
+@login_required
 def delete_account_view(request):
     """
     URL: /profile/settings/delete-account
@@ -718,12 +755,13 @@ def delete_account_view(request):
     if request.method == "GET":
         return redirect(profile_option_view, option="settings")
     if request.method == "POST":
+        user = request.user
         user_info = request.POST
         delete_account_form = forms.DeleteAccount(user_info, user=request.user)
         if delete_account_form.is_valid():
             try:
                 # i hope to one day add verfication to this before users are allowed to actually change it
-                user = User.objects.get(id=request.user.id)
+                user = User.objects.get(username=user.username)
                 user.delete()
                 messages.add_message(request, messages.SUCCESS, "Your account has been deleted. Thank you for using our service!")
                 return redirect(login_view)
