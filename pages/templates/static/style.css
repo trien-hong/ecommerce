@@ -165,19 +165,40 @@ li::marker {
     border: 2px solid black;
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-between;
+}
+
+.picture {
+    display: flex;
+    justify-content: center;
+}
+
+.profile_picture {
+    border: 1px solid black;
+    border-radius: 50%;
 }
 
 .seller_basic_info {
     display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.info {
+    display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
-.seller_reviews {
+.seller_ratings {
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+.ratings {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
 }
 
 .empty_or_error {
@@ -259,7 +280,7 @@ li::marker {
 }
 
 .listing_history, .purchase_history {
-    height: 77vh;
+    height: 97vh;
     overflow-y: auto;
 }
 

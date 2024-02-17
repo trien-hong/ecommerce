@@ -170,7 +170,7 @@ def index_view(request):
 def storefront_view(request):
     """
     URL: /storefront?member-id=...
-    where ?member-id is the query string
+    where ?member-id=... is the query string
     """
     if request.method == "GET":
         member_id = request.GET.get("member-id", None)
@@ -178,18 +178,15 @@ def storefront_view(request):
             try:
                 seller = User.objects.get(member_id=member_id)
                 products = Product.objects.filter(seller=seller)
-                seller_exist = True
             except:
                 seller = None
-                seller_exist = False
                 products = None
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error.</li><li>The seller does not exist.</li></ul>"))
         else:
             seller = None
-            seller_exist = False
             products = None
             messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error.</li><li>The seller does not exist.</li></ul>"))
-        return render(request, "storefront.html", { "seller": seller, "seller_exist": seller_exist, "products": products } )
+        return render(request, "storefront.html", { "seller": seller, "products": products })
 
 @never_cache
 @login_required
@@ -572,15 +569,15 @@ def check_out_view(request):
             messages.add_message(request, messages.ERROR, mark_safe("<ul><li>You do not have enough credits to purchase all these items within your cart.</li></ul>"))
             return redirect(cart_view)
         else:
-            already_bought = 0
-            not_bought = 0
+            sold_out_count = 0
+            inactive_count = 0
             for item in cart:
                 try:
                     product = Product.objects.get(id=item.product.id)
                     if product.status != Choices.CHOICES_PRODUCT_STATUS[2][0] and product.status != Choices.CHOICES_PRODUCT_STATUS[3][0]: # to see or edit the choices go to choices.py
                         seller = User.objects.get(username=product.seller)
                         if seller.credits + product.price > 999999999.99:
-                            not_bought = not_bought + 1
+                            inactive_count = inactive_count + 1
                             product.status = Choices.CHOICES_PRODUCT_STATUS[2][0] # to see or edit the choices go to choices.py
                             product.save()
                         else:
@@ -595,27 +592,35 @@ def check_out_view(request):
                             product.save()
                             item.delete()
                     else:
-                        already_bought = already_bought + 1
+                        if product.status == Choices.CHOICES_PRODUCT_STATUS[2][0]: # to see or edit the choices go to choices.py
+                            inactive_count = inactive_count + 1
+                        else:
+                            sold_out_count = sold_out_count + 1
                 except Product.DoesNotExist:
                     messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with one, some, or all your items in your cart.</li><li>It's possible the seller delisted an item in your cart.</li></ul>"))
                     return redirect(cart_view)
-            if already_bought == 0 and not_bought == 0:
+            total_products_not_bought = sold_out_count + inactive_count
+            if total_products_not_bought == cart.count():
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Checkout was unsuccessful.</li><li>The item(s) you wanted to buy have been bought by another person, or the item(s) have been disabled by the seller's own discretion, or by us due to an overflow of credits on the seller's part.</li><li>Items have been marked with \"SOLD OUT\" or \"INACTIVE\" accordingly.</li></ul>"))
+                return redirect(cart_view)
+            elif total_products_not_bought == 0:
                 messages.add_message(request, messages.SUCCESS, "Checkout was successful. All the items in your cart have been bought by you.")
                 return redirect(cart_view)
-            elif already_bought == 1:
-                if cart.count() == already_bought:
-                    messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Checkout was unsuccessful.</li><li>The item you wanted to buy has been bought by another person.</li></ul>"))
-                    return redirect(cart_view)
-                else:
-                    messages.add_message(request, messages.SUCCESS, "Checkout was successful. However, there was 1 item that has been bought by another person and that item is now marked by \"SOLD OUT\". That 1 item will not be purchased.")
-                    return redirect(cart_view)
+            elif sold_out_count == 1 and inactive_count == 0:
+                messages.add_message(request, messages.WARNING, mark_safe("<ul><li>Checkout was successful.</li><li>However, there was 1 item that has been bought by another person.</li><li>That items have been marked with \"SOLD OUT\".</li></ul>"))
+                return redirect(cart_view)
+            elif sold_out_count == 0 and inactive_count == 1:
+                messages.add_message(request, messages.WARNING, mark_safe("<ul><li>Checkout was successful.</li><li>However, there was 1 item that has been disabled by the seller's own discretion or by us due to an overflow of credits on the seller's part.</li><li>That item have been marked with \"INACTIVE\".</li></ul>"))
+                return redirect(cart_view)
+            elif sold_out_count > 1 and inactive_count == 0:
+                messages.add_message(request, messages.WARNING, mark_safe("<ul><li>Checkout was successful.</li><li>However, there were multiple items that has been bought by another person.</li><li>Those items have been marked with \"SOLD OUT\".</li></ul>"))
+                return redirect(cart_view)
+            elif sold_out_count == 0 and inactive_count > 1:
+                messages.add_message(request, messages.WARNING, mark_safe("<ul><li>Checkout was successful.</li><li>However, there were multiple items that has been disabled by the seller's own discretion or by us due to an overflow of credits on the seller's part.</li><li>Those items have been marked with \"INACTIVE\".</li></ul>"))
+                return redirect(cart_view)
             else:
-                if cart.count() == already_bought:
-                    messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Checkout was unsuccessful.</li><li>The item(s) you wanted to buy has been bought by another person.</li></ul>"))
-                    return redirect(cart_view)
-                else:
-                    messages.add_message(request, messages.SUCCESS, "Checkout was successful. However, some item(s) has been bought by another person and those item(s) are now marked by \"SOLD OUT\". There was a total of " + str(already_bought) + " item(s) bought already. Those item(s) will not be purchased.")
-                    return redirect(cart_view)
+                messages.add_message(request, messages.WARNING, mark_safe("<ul><li>Checkout was successful.</li><li>However, there were multiple items that are already sold out or have been disabled by the seller's own discretion, or by us due to an overflow of credits on the seller's part.</li><li>Items have been marked with \"SOLD OUT\" or \"INACTIVE\" accordingly.</li></ul>"))
+                return redirect(cart_view)
 
 @never_cache
 @login_required
@@ -625,7 +630,7 @@ def profile_view(request):
     """
     if request.method == "GET":
         user = request.user
-        return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "option": None })
+        return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "member_id": user.member_id, "option": None })
 
 @never_cache
 @login_required
@@ -640,17 +645,17 @@ def profile_option_view(request, option):
             change_username_form = forms.ChangeUsername()
             change_password_form = forms.ChangePassword()
             delete_account_form = forms.DeleteAccount()
-            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "option": "settings", "change_username_form": change_username_form, "change_password_form": change_password_form, "delete_account_form": delete_account_form })
+            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "member_id": user.member_id, "option": "settings", "change_username_form": change_username_form, "change_password_form": change_password_form, "delete_account_form": delete_account_form })
         elif option == "wish-list":
-            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "option": "wish-list" })
+            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "member_id": user.member_id, "option": "wish-list" })
         elif option == "listing-history":
             listing_history = Product.objects.filter(seller=user)
-            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "option": "listing-history", "listing_history": listing_history })
+            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "member_id": user.member_id, "option": "listing-history", "listing_history": listing_history })
         elif option == "purchase-history":
             purchase_history = Sold.objects.filter(buyer=user)
-            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "option": "purchase-history", "purchase_history": purchase_history })
+            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "member_id": user.member_id, "option": "purchase-history", "purchase_history": purchase_history })
         elif option == "login-history":
-            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "option": "login-history" })
+            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "member_id": user.member_id, "option": "login-history" })
         else:
             return redirect(profile_view)
 

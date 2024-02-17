@@ -1,5 +1,4 @@
 from django import forms
-from decimal import Decimal
 from django.core.validators import validate_integer
 from django.contrib.auth import get_user_model
 from .choices import Choices # to see or edit the choices go to choices.py
@@ -466,3 +465,11 @@ class UpcEanLookup(forms.Form):
                 raise forms.ValidationError("The EAN you entered doesn't seem to be a valid EAN.")
 
         return ean
+
+class Review(forms.Form):
+    overall_rating = forms.ChoiceField(choices=Choices.CHOICES_OVERALL_RATING, widget=forms.Select(attrs={"title": "Choose the overall rating", "class": "field"})) # to see or edit the choices go to choices.py
+    accurate_description = forms.IntegerField(min_value=1, max_value=10, widget=forms.Select(attrs={"title": "How accurate was the product's description", "class": "field"}))
+    shipping_speed = forms.IntegerField(min_value=1, max_value=10, widget=forms.Select(attrs={"title": "How reasonable was the shipping speed", "class": "field"}))
+    shipping_cost = forms.IntegerField(min_value=1, max_value=10, widget=forms.Select(attrs={"title": "How reasonable was the shipping cost", "class": "field"}))
+    communication = forms.IntegerField(min_value=1, max_value=10, widget=forms.Select(attrs={"title": "How was the seller's communication", "class": "field"}))
+    comment = forms.CharField(max_length=250, widget=forms.Textarea(attrs={"placeholder": "A simple sentence or two that described your experience", "title": "A simple sentence or two that described your experience", "rows": "6", "class": "field"}))

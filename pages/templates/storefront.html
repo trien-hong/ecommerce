@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>E-commerce | Storefront</title>
+    <title>E-commerce | Storefront {% if seller %}- {{ seller.username }}{% endif %}</title>
     <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}"/>
     <script type="text/javascript" src="{% static 'bootstrap/bootstrap.bundle.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'jquery/jquery.min.js' %}"></script>
@@ -12,32 +12,54 @@
     {% include "includes/navbar.html" %}
     <div class="container text-break px-0">
       <div class="content px-2 py-2">
-        {% if products %}
-          <div class="storefront_header">
-            <div class="seller_basic_info">
-              <!-- will need to implement fully -->
-              <img class="img-thumbnail" src="https://kgo.googleusercontent.com/profile_vrt_raw_bytes_1587515358_10512.png" alt="profile_image">
-              <p>{{seller.username}}</p>
-            </div>
-            <div class="vr"></div>
-            <div class="seller_reviews">
-              <!-- will need to implement fully -->
-              <p>Reviews:</p>
-            </div>
-          </div>
-          <hr>
-          <div class="products">
-            {% include "includes/products.html" %}
-          </div>
-				{% else %}
+        {% if seller is None %}
           <div class="empty_or_error text-center mx-2 my-2 px-3 py-3">
-            {% if seller is None %}
-              <h1>Sorry, the seller, does not exist.</h1>
-              <h1 class="my-0 pt-5"><a href="{% url 'index_view' %}" title="Homepage">Go back to homepag</a> </h1>
-            {% else %}
-              <h1>Sorry, the seller, {{seller}}, does not currently have any active listings.</h1>
-            {% endif %}
+            <h1>Sorry, the seller, does not exist.</h1>
+            <h1 class="my-0 pt-5"><a href="{% url 'index_view' %}" title="Homepage">Go back to homepage</a> </h1>
           </div>
+        {% else %}
+          {% if products %}
+            <div class="storefront_header my-2 mx-2 py-3 px-3">
+              <!-- will need to implement fully there's some placeholder code-->
+              <div class="seller_basic_info">
+                <div class="picture">
+                  <img class="profile_picture" src="https://kgo.googleusercontent.com/profile_vrt_raw_bytes_1587515358_10512.png" alt="profile_picture" width="125" height="125">
+                </div>
+                <div class="vr mx-3"></div>
+                <div class="info">
+                  <h5 class="my-0 pb-2"><b>{{seller_username}}</b></h5>
+                  <p class="my-0 pt-2">Items sold: <b>123</b></p>
+                </div>
+              </div>
+              <div class="seller_ratings">
+                <div class="text-center">
+                  <h5 class="my-0 pb-3"><b>Ratings</b></h5>
+                </div>
+                <div class="ratings">
+                  <div class="my-0">
+                    <p>Accurate Description: <b>1/10</b></p>
+                  </div>
+                  <div class="my-0">
+                    <p>Communication: <b>2/10</b></p>
+                  </div>
+                  <div class="my-0">
+                    <p>Shipping Cost: <b>3/10</b></p>
+                  </div>
+                  <div class="my-0">
+                    <p>Shipping Speed: <b>4/10</b></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <hr>
+            <div class="products">
+              {% include "includes/products.html" %}
+            </div>
+          {% else %}
+            <div class="empty_or_error text-center mx-2 my-2 px-3 py-3">
+              <h1>Sorry, the seller, {{seller_username}}, does not currently have any active listings.</h1>
+            </div>
+          {% endif %}
         {% endif %}
       </div>
     </div>

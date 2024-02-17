@@ -43,15 +43,17 @@
             {% endif %}
             <hr>
             {% if option == 'login-history' %}
-              <a class="btn btn-success mt-5" href="{% url 'profile_option_view' option='login-history' %}" role="button" title="Login hisotry"><u>Login Hisotry</u></a>
+              <a class="btn btn-success my-5" href="{% url 'profile_option_view' option='login-history' %}" role="button" title="Login hisotry"><u>Login Hisotry</u></a>
             {% else %}
-              <a class="btn btn-primary mt-5" href="{% url 'profile_option_view' option='login-history' %}" role="button" title="Login hisotry">Login Hisotry</a>
+              <a class="btn btn-primary my-5" href="{% url 'profile_option_view' option='login-history' %}" role="button" title="Login hisotry">Login Hisotry</a>
             {% endif %}
+            <hr>
+            <a class="btn btn-primary mt-5" href="{% url 'storefront_view' %}?member-id={{member_id}}" role="button" title="Visit your storefront">Storefront</a>
           </div>
           <div class="vr"></div>
           <div class="option_view">
             {% if option == None %}
-              <h1 class="option_none">Please choose from 1 of the 5 options.</h1>
+              <h1 class="option_none">Please choose from 1 of the 6 options.</h1>
             {% elif option == 'settings' %}
               <div class="settings">
                 <div class="change_username_form px-3 py-3">
