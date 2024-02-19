@@ -16,7 +16,7 @@
           <div class="product_view px-3 py-3">
             <div class="product_main_identifiers">
               <h2><b>{{product.title}}</b></h2>
-              <img src="{{product.picture.url}}" alt="product picture">
+              <img src="{{product.product_picture.url}}" alt="product picture">
             </div>
             <div class="vr mx-3"></div>
             <div class="product_sub_identifiers">
@@ -29,12 +29,10 @@
               </div>
               <hr>
               <div class="seller_basic_info">
-                {% if product.seller.picture %}
+                {% if product.seller.profile_picture %}
                   <div>
-                    <img class="profile_picture" src="{{product.seller.picture.url}}" alt="profile picture" width="125" height="125">
+                    <img class="profile_picture" src="{{product.seller.profile_picture.url}}" alt="profile picture" width="125" height="125">
                   </div>
-                {% endif %}
-                {% if product.seller.picture %}
                   <div class="vr mx-3"></div>
                 {% endif %}
                 <div class="info">

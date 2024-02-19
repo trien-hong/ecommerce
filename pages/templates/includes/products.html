@@ -1,7 +1,7 @@
 {% for product in products %}
     <div class="product mx-2 my-2 px-3 py-2">
         <h4><b>{{product.title}}</b></h4>
-        <a href="{% url 'product_view' uuid=product.uuid %}" title="Click to view more details of this product"><img src="{{product.picture.url}}" alt="product picture" style="width: 100%;"></a>
+        <a href="{% url 'product_view' uuid=product.uuid %}" title="Click to view more details of this product"><img src="{{product.product_picture.url}}" alt="product picture" style="width: 100%;"></a>
         <p class="my-0 pt-2"><b>{{product.description}}</b></p>
         <p class="my-0 pt-2">Category: <b>{{product.category}}</b></p>
         <p class="my-0 pt-2">Condition: <b>{{product.condition}}</b></p>

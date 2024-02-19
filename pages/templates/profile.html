@@ -55,54 +55,80 @@
             {% if option == None %}
               <h1 class="option_none">Please choose from 1 of the 6 options.</h1>
             {% elif option == 'settings' %}
-              <div class="settings">
-                <div class="change_username_form ms-2 me-2 mb-2 px-3 py-3">
-                  <h2 class="py-0 my-0">CHANGE USERNAME</h2>
-                  <hr class="mb-2">
-                  <form action="{% url 'change_username_view' %}" method="POST">
-                    {% csrf_token %}
-                    {{change_username_form}}
-                    <div class="pt-3">
-                      <hr class="mt-0">
-                      <input class="btn btn-primary" type="submit" value="CHANGE USERNAME" title="Change username">
+              <div>
+                <div>
+                  {% if user.banner_picture %}
+                    <div class="banner_picture pt-2 px-2">
+                      <img src="{{user.banner_picture.url}}" alt="banner picture" style="width: 100%;">
                     </div>
-                  </form>
+                  {% endif %}
+                  {% if user.profile_picture %}
+                    <div class="settings_profile_picture">
+                      <img class="profile_picture" src="{{user.profile_picture.url}}" alt="banner picture">
+                    </div>
+                  {% endif %}
                 </div>
-                <div class="change_password_form ms-2 me-2 mb-2 px-3 py-3">
-                  <h2 class="py-0 my-0">CHANGE PASSWORD</h2>
-                  <hr class="mb-2">
-                  <form action="{% url 'change_password_view' %}" method="POST">
-                    {% csrf_token %}
-                    {{change_password_form}}
-                    <div class="pt-3">
-                      <hr class="mt-0">
-                      <input class="btn btn-primary" type="submit" value="CHANGE PASSWORD" title="Change password">
-                    </div>
-                  </form>
-                </div>
-                <div class="change_password_form ms-2 me-2 mt-2 px-3 py-3">
-                  <h2 class="py-0 my-0">UPLOAD PROFILE PICTURE</h2>
-                  <hr class="mb-2">
-                  <form action="{% url 'upload_profile_picture_view' %}" enctype="multipart/form-data" method="POST">
-                    {% csrf_token %}
-                    {{upload_profile_picture_form}}
-                    <div class="pt-3">
-                      <hr class="mt-0">
-                      <input class="btn btn-primary" type="submit" value="UPLOAD PROFILE PICTURE" title="Upload porfile picture">
-                    </div>
-                  </form>
-                </div>
-                <div class="delete_account_form ms-2 me-2 mt-2 px-3 py-3">
-                  <h2 class="py-0 my-0">DELETE ACCOUNT</h2>
-                  <hr class="mb-2">
-                  <form action="{% url 'delete_account_view' %}" method="POST">
-                    {% csrf_token %}
-                    {{delete_account_form}}
-                    <div class="pt-3">
-                      <hr class="mt-0">
-                      <input class="btn btn-primary" type="submit" value="DELETE ACCOUNT" title="Delete account">
-                    </div>
-                  </form>
+                <div class="settings px-2 py-2">
+                  <div class="change_username_form me-1 px-3 py-3">
+                    <h2 class="py-0 my-0">CHANGE USERNAME</h2>
+                    <hr class="mb-2">
+                    <form action="{% url 'change_username_view' %}" method="POST">
+                      {% csrf_token %}
+                      {{change_username_form}}
+                      <div class="pt-3">
+                        <hr class="mt-0">
+                        <input class="btn btn-primary" type="submit" value="CHANGE USERNAME" title="Change username">
+                      </div>
+                    </form>
+                  </div>
+                  <div class="change_password_form ms-1 px-3 py-3">
+                    <h2 class="py-0 my-0">CHANGE PASSWORD</h2>
+                    <hr class="mb-2">
+                    <form action="{% url 'change_password_view' %}" method="POST">
+                      {% csrf_token %}
+                      {{change_password_form}}
+                      <div class="pt-3">
+                        <hr class="mt-0">
+                        <input class="btn btn-primary" type="submit" value="CHANGE PASSWORD" title="Change password">
+                      </div>
+                    </form>
+                  </div>
+                  <div class="upload_profile_picture_form me-1 my-2 px-3 py-3">
+                    <h2 class="py-0 my-0">UPLOAD PROFILE PICTURE</h2>
+                    <hr class="mb-2">
+                    <form action="{% url 'upload_profile_picture_view' %}" enctype="multipart/form-data" method="POST">
+                      {% csrf_token %}
+                      {{upload_profile_picture_form}}
+                      <div class="pt-3">
+                        <hr class="mt-0">
+                        <input class="btn btn-primary" type="submit" value="UPLOAD PROFILE PICTURE" title="Upload porfile picture">
+                      </div>
+                    </form>
+                  </div>
+                  <div class="upload_banner_picture ms-1 my-2 px-3 py-3">
+                    <h2 class="py-0 my-0">UPLOAD BANNER PICTURE</h2>
+                    <hr class="mb-2">
+                    <form action="{% url 'upload_banner_picture_view' %}" enctype="multipart/form-data" method="POST">
+                      {% csrf_token %}
+                      {{upload_banner_picture_form}}
+                      <div class="pt-3">
+                        <hr class="mt-0">
+                        <input class="btn btn-primary" type="submit" value="UPLOAD BANNER PICTURE" title="Upload banner picture">
+                      </div>
+                    </form>
+                  </div>
+                  <div class="delete_account_form me-1 px-3 py-3">
+                    <h2 class="py-0 my-0">DELETE ACCOUNT</h2>
+                    <hr class="mb-2">
+                    <form action="{% url 'delete_account_view' %}" method="POST">
+                      {% csrf_token %}
+                      {{delete_account_form}}
+                      <div class="pt-3">
+                        <hr class="mt-0">
+                        <input class="btn btn-primary" type="submit" value="DELETE ACCOUNT" title="Delete account">
+                      </div>
+                    </form>
+                  </div>
                 </div>
               </div>
             {% elif option == 'wish-list' %}
@@ -114,7 +140,7 @@
                     {% for item in listing_history %}
                       <div class="profile_items mx-2 my-2 px-3 py-2">
                         <h4><b>{{item.title}}</b></h4>
-                        <a href="{% url 'product_view' uuid=item.uuid %}" title="Click to view more details of this product"><img src="{{item.picture.url}}" alt="product picture" style="width: 100%;"></a>
+                        <a href="{% url 'product_view' uuid=item.uuid %}" title="Click to view more details of this product"><img src="{{item.product_picture.url}}" alt="product picture" style="width: 100%;"></a>
                         <p class="my-0 pt-2"><b>{{item.description}}</b></p>
                         <p class="my-0 pt-2">Category: <b>{{item.category}}</b></p>
                         <p class="my-0 pt-2">Condition: <b>{{item.condition}}</b></p>
@@ -152,7 +178,7 @@
                     {% for item in purchase_history %}
                       <div class="profile_items mx-2 my-2 px-3 py-2">
                         <h4><b>{{item.product.title}}</b></h4>
-                        <a class="pt-2" href="{% url 'product_view' uuid=item.product.uuid %}" title="Click to view more details of this product"><img src="{{item.product.picture.url}}" alt="product picture" style="width: 100%;"></a>
+                        <a class="pt-2" href="{% url 'product_view' uuid=item.product.uuid %}" title="Click to view more details of this product"><img src="{{item.product.product_picture.url}}" alt="product picture" style="width: 100%;"></a>
                         <p class="my-0 pt-2"><b>{{item.product.description}}</b></p>
                         <p class="my-0 pt-2">Category: <b>{{item.product.category}}</b></p>
                         <p class="my-0 pt-2">Condition: <b>{{item.product.condition}}</b></p>

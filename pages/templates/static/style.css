@@ -162,15 +162,9 @@ li::marker {
 
 .storefront_header {
     background-color: #F3F3F3;
-    border: 2px solid black;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-}
-
-.picture {
-    display: flex;
-    justify-content: center;
 }
 
 .profile_picture {
@@ -179,10 +173,15 @@ li::marker {
     border-radius: 50%;
 }
 
+.settings_profile_picture {
+    margin-top: -7%;
+}
+
 .seller_basic_info {
     display: flex;
     flex-direction: row;
     justify-content: center;
+    align-items: center;
 }
 
 .info {
@@ -280,7 +279,7 @@ li::marker {
     grid-template-columns: 1fr 1fr;
 }
 
-.change_username_form, .change_password_form, .upload_profile_picture_form, .delete_account_form {
+.change_username_form, .change_password_form, .upload_profile_picture_form, .upload_banner_picture, .delete_account_form {
     background-color: white;
     border: 2px solid black;
     display: flex;
@@ -288,7 +287,7 @@ li::marker {
     justify-content: center;
 }
 
-.change_username_form label, .change_password_form label, .upload_profile_picture_form label, .delete_account_form label {
+.change_username_form label, .change_password_form label, .upload_profile_picture_form label, .upload_banner_picture label, .delete_account_form label {
     display: flex;
     justify-content: flex-start;
     padding-bottom: 1%;

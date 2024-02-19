@@ -95,7 +95,7 @@ class ChangePassword(forms.Form):
 
 class UploadProfilePicture(forms.Form):
     picture = forms.ImageField(widget=forms.FileInput(attrs={"class": "field"}))
-    
+
     def clean_picture(self):
         picture = self.cleaned_data["picture"]
 
@@ -119,6 +119,17 @@ class DeleteAccount(forms.Form):
 
         return password
 
+class UploadBannerPicture(forms.Form):
+    picture = forms.ImageField(widget=forms.FileInput(attrs={"class": "field"}))
+
+    def clean_picture(self):
+        picture = self.cleaned_data["picture"]
+
+        if picture.size > 5*1024*1024:
+            raise forms.ValidationError("Image is greater than 5MB. Please upload an image that is less than 5MB.")
+
+        return picture
+
 class AddProduct(forms.Form):
     title = forms.CharField(max_length=50, label="Title*", widget=forms.TextInput(attrs={"placeholder": "Enter the product's title", "class": "field"}))
     picture = forms.ImageField(label="Picture*")
@@ -134,7 +145,7 @@ class AddProduct(forms.Form):
 
         if len(title) > 50:
             raise forms.ValidationError("Title length is greater than 50.")
-    
+
         return title
 
     def clean_picture(self):
@@ -152,13 +163,29 @@ class AddProduct(forms.Form):
             raise forms.ValidationError("Description length is greater than 500.")
 
         return description
-    
+
+    def clean_category(self):
+        category = self.cleaned_data["category"]
+
+        if category == "" or (category, category) not in Choices.CHOICES_CATEGORY: # to see or edit the choices go to choices.py
+            raise forms.ValidationError("Category choice is not valid.")
+
+        return category
+
+    def clean_condition(self):
+        condition = self.cleaned_data["condition"]
+
+        if condition == "" or (condition, condition) not in Choices.CHOICES_CONDITION: # to see or edit the choices go to choices.py
+            raise forms.ValidationError("Condition choice is not valid.")
+
+        return condition
+
     def clean_price(self):
         price = self.cleaned_data["price"]
 
         if price > 9999.99:
             raise forms.ValidationError("The max price is set at $9,999.99. Please lower the price.")
-        
+
         return price
 
     def clean_upc(self):
@@ -262,6 +289,24 @@ class EditProduct(forms.Form):
 
         return description
 
+    def clean_category(self):
+        category = self.cleaned_data["category"]
+
+        if category != "":
+            if (category, category) not in Choices.CHOICES_CATEGORY: # to see or edit the choices go to choices.py
+                raise forms.ValidationError("Category choice is not valid.")
+
+        return category
+
+    def clean_condition(self):
+        condition = self.cleaned_data["condition"]
+
+        if condition != "":
+            if (condition, condition) not in Choices.CHOICES_CONDITION: # to see or edit the choices go to choices.py
+                raise forms.ValidationError("Condition choice is not valid.")
+
+        return condition
+
     def clean_upc(self):
         upc = self.cleaned_data["upc"]
 
@@ -320,6 +365,15 @@ class EditProduct(forms.Form):
 
         return ean
 
+    def clean_status(self):
+        status = self.cleaned_data["status"]
+
+        if status != "":
+            if status not in EditProduct.CHOICES_PRODUCT_STATUS: # to see or edit the choices go to choices.py
+                raise forms.ValidationError("Condition choice is not valid.")
+
+        return status
+
 class SearchProduct(forms.Form):
     title = forms.CharField(max_length=50, label="", widget=forms.TextInput(attrs={"class": "form-control me-2", "id": "product_search", "type": "search", "label": "", "placeholder": "Search...", "title": "Search for specific products (by title)", "size": "35"}), required=False)
 
@@ -347,6 +401,24 @@ class AdvancedSearchProduct(forms.Form):
                 raise forms.ValidationError("Title length is greater than 50.")
 
         return title
+
+    def clean_category(self):
+        category = self.cleaned_data["category"]
+
+        if category != "":
+            if (category, category) not in Choices.CHOICES_CATEGORY: # to see or edit the choices go to choices.py
+                raise forms.ValidationError("Category choice is not valid.")
+
+        return category
+
+    def clean_condition(self):
+        condition = self.cleaned_data["condition"]
+
+        if condition != "":
+            if (condition, condition) not in Choices.CHOICES_CONDITION: # to see or edit the choices go to choices.py
+                raise forms.ValidationError("Condition choice is not valid.")
+
+        return condition
 
     def clean_upc(self):
         upc = self.cleaned_data["upc"]

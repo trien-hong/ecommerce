@@ -11,29 +11,28 @@
   <body>
     {% include "includes/navbar.html" with location="advanced_search" %}
     <div class="container text-break px-0">
-      <div class="content py-3">
-        <form class="advanced_search_product_form mx-3 px-3 py-3" action="{% url 'advanced_search_view' %}" method="GET">
-          <fieldset>
-            <legend class="display-5 text-center"><b>ADVANCED SEARCH</b></legend>
-            <hr>
-            {% for field in advanced_search_product_form %}
-              <div class="control-group mb-3">
-                <label class="control-label">{{field.label}}</label> 
-                <div class="controls">
-                  {{field}}
+      <div class="content">
+        <div class="py-3">
+          <form class="advanced_search_product_form mx-3 px-3 py-3" action="{% url 'advanced_search_view' %}" method="GET">
+            <fieldset>
+              <legend class="display-5 text-center"><b>ADVANCED SEARCH</b></legend>
+              <hr>
+              {% for field in advanced_search_product_form %}
+                <div class="control-group mb-3">
+                  <label class="control-label">{{field.label}}</label> 
+                  <div class="controls">
+                    {{field}}
+                  </div>
                 </div>
+              {% endfor %}
+              <div class="text-center py-2">
+                <input class="btn btn-primary" type="submit" value="ADVANCED SEARCH" title="Advanced search">
               </div>
-            {% endfor %}
-            <div class="text-center py-2">
-              <input class="btn btn-primary" type="submit" value="ADVANCED SEARCH" title="Advanced search">
-            </div>
-          </fieldset>
-        </form>
+            </fieldset>
+          </form>
+        </div>
         {% if products %}
-          <div class="pt-2">
-            <hr>
-          </div>
-          <div class="products px-2">
+          <div class="products pb-2 px-2">
             {% include "includes/products.html" %}
           </div>
         {% endif %}

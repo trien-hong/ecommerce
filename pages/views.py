@@ -177,6 +177,7 @@ def storefront_view(request):
     """
     if request.method == "GET":
         member_id = request.GET.get("member-id", None)
+        upload_banner_picture_form = forms.UploadBannerPicture()
         if member_id is not None:
             try:
                 seller = User.objects.get(member_id=member_id)
@@ -189,7 +190,7 @@ def storefront_view(request):
             seller = None
             products = None
             messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error.</li><li>The seller does not exist.</li></ul>"))
-        return render(request, "storefront.html", { "seller": seller, "products": products })
+        return render(request, "storefront.html", { "seller": seller, "upload_banner_picture_form": upload_banner_picture_form, "products": products })
 
 @never_cache
 @login_required
@@ -258,7 +259,7 @@ def add_product_view(request):
         if add_product_form.is_valid():
             file_extension = add_product_form.cleaned_data["picture"].name.split(".")[-1]
             add_product_form.cleaned_data["picture"].name = "product_picture_id_" + str(uuid4()) + "." + file_extension
-            product = Product(title=add_product_form.cleaned_data["title"], picture=add_product_form.cleaned_data["picture"], description=add_product_form.cleaned_data["description"], category=add_product_form.cleaned_data["category"], condition=add_product_form.cleaned_data["condition"], price=add_product_form.cleaned_data["price"], upc=add_product_form.cleaned_data["upc"], ean=add_product_form.cleaned_data["ean"], seller=user)
+            product = Product(title=add_product_form.cleaned_data["title"], product_picture=add_product_form.cleaned_data["picture"], description=add_product_form.cleaned_data["description"], category=add_product_form.cleaned_data["category"], condition=add_product_form.cleaned_data["condition"], price=add_product_form.cleaned_data["price"], upc=add_product_form.cleaned_data["upc"], ean=add_product_form.cleaned_data["ean"], seller=user)
             product.save()
             messages.add_message(request, messages.SUCCESS, "Your product, \"" + product.title + "\" has been successfully added. Image less than/greater than 500x500 have been upsized/downsized and cropped to the middle and center.")
             return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
@@ -280,7 +281,7 @@ def copy_and_add_product_view(request, uuid):
         user = request.user
         try:
             original_product = Product.objects.get(uuid=uuid)
-            product = Product(title=original_product.title, picture=original_product.picture, description=original_product.description, category=original_product.category, condition=original_product.condition, upc=original_product.upc, ean=original_product.ean, seller=user)
+            product = Product(title=original_product.title, product_picture=original_product.picture, description=original_product.description, category=original_product.category, condition=original_product.condition, upc=original_product.upc, ean=original_product.ean, seller=user)
             product.save()
             messages.add_message(request, messages.SUCCESS, "This product's details has been copied over and a new listing has been created. Know that you may edit the product's details at any time.")
         except Product.DoesNotExist:
@@ -304,8 +305,8 @@ def delete_product_view(request, uuid):
             if product.seller != user or product.status == Choices.CHOICES_PRODUCT_STATUS[3][0]: # to see or edit the choices go to choices.py
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in deleting this product from your profile.</li><li>Please try again.</li></ul>"))
             else:
-                if os.path.exists(product.picture.path):
-                    os.remove(product.picture.path)
+                if os.path.exists(product.product_picture.path):
+                    os.remove(product.product_picture.path)
                 product.delete()
                 messages.add_message(request, messages.SUCCESS, "You successfully deleted the product, \"" + product.title + "\", from your profile.")
         except Product.DoesNotExist:
@@ -347,7 +348,7 @@ def edit_product_view(request, uuid):
                             os.remove(product.picture.path)
                         file_extension = edit_product_form.cleaned_data["picture"].name.split(".")[-1]
                         edit_product_form.cleaned_data["picture"].name = "product_picture_id_" + str(uuid4()) + "." + file_extension
-                        product.picture = edit_product_form.cleaned_data["picture"]
+                        product.product_picture = edit_product_form.cleaned_data["picture"]
                     if edit_product_form.cleaned_data["description"] != "":
                         product.description = edit_product_form.cleaned_data["description"]
                     if edit_product_form.cleaned_data["category"] != "":
@@ -652,8 +653,9 @@ def profile_option_view(request, option):
             change_username_form = forms.ChangeUsername()
             change_password_form = forms.ChangePassword()
             upload_profile_picture_form = forms.UploadProfilePicture()
+            upload_banner_picture_form = forms.UploadBannerPicture()
             delete_account_form = forms.DeleteAccount()
-            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "member_id": user.member_id, "option": "settings", "change_username_form": change_username_form, "change_password_form": change_password_form, "upload_profile_picture_form": upload_profile_picture_form,"delete_account_form": delete_account_form })
+            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "member_id": user.member_id, "option": "settings", "change_username_form": change_username_form, "change_password_form": change_password_form, "upload_profile_picture_form": upload_profile_picture_form, "upload_banner_picture_form": upload_banner_picture_form, "delete_account_form": delete_account_form })
         elif option == "wish-list":
             return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "member_id": user.member_id, "option": "wish-list" })
         elif option == "listing-history":
@@ -736,7 +738,7 @@ def upload_profile_picture_view(request):
                 file_extension = upload_profile_picture_form.cleaned_data["picture"].name.split(".")[-1]
                 upload_profile_picture_form.cleaned_data["picture"].name = "profile_picture_id_" + str(uuid4()) + "." + file_extension
                 user = User.objects.get(username=user.username)
-                user.picture = upload_profile_picture_form.cleaned_data["picture"]
+                user.profile_picture = upload_profile_picture_form.cleaned_data["picture"]
                 user.save()
                 messages.add_message(request, messages.SUCCESS, "Your profile picture has successfully been uploaded. Image less than/greater than 125x125 have been upsized/downsized and cropped to the middle and center.")
             except User.DoesNotExist:
@@ -744,6 +746,33 @@ def upload_profile_picture_view(request):
             return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
         else:
             messages.add_message(request, messages.ERROR, upload_profile_picture_form.errors)
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+
+@never_cache
+@login_required
+def upload_banner_picture_view(request):
+    """
+    URL: /profile/settings/upload-profile-picture
+    """
+    if request.method == "GET":
+        return redirect(profile_option_view, option="settings")
+    if request.method == "POST":
+        user = request.user
+        picture = request.FILES
+        upload_banner_picture_form = forms.UploadBannerPicture(request.POST, picture)
+        if upload_banner_picture_form.is_valid():
+            try:
+                file_extension = upload_banner_picture_form.cleaned_data["picture"].name.split(".")[-1]
+                upload_banner_picture_form.cleaned_data["picture"].name = "banner_picture_id_" + str(uuid4()) + "." + file_extension
+                user = User.objects.get(username=user.username)
+                user.banner_picture = upload_banner_picture_form.cleaned_data["picture"]
+                user.save()
+                messages.add_message(request, messages.SUCCESS, "Your banner picture has successfully been uploaded. Image less than/greater than 1250x300 have been upsized/downsized and cropped to the middle and center.")
+            except User.DoesNotExist:
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in uploading your banner picture.</li><li>Please try again.</li></ul>"))
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+        else:
+            messages.add_message(request, messages.ERROR, upload_banner_picture_form.errors)
             return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 @never_cache

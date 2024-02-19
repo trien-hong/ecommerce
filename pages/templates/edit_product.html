@@ -19,7 +19,7 @@
                 <h2>Title: {{product.title}}</h2>
               </div>
               <div>
-                <a href="{% url 'product_view' uuid=product.uuid %}" title="Click to view more details of this product"><img src="{{product.picture.url}}" alt="product picture" style="width: 100%;"></a>
+                <a href="{% url 'product_view' uuid=product.uuid %}" title="Click to view more details of this product"><img src="{{product.product_picture.url}}" alt="product picture" style="width: 100%;"></a>
               </div>
               <div>
                 <h4>Description: {{product.description}}</h4>

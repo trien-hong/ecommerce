@@ -11,22 +11,26 @@
   <body>
     {% include "includes/navbar.html" %}
     <div class="container text-break px-0">
-      <div class="content px-2 py-2">
+      <div class="content">
         {% if seller is None %}
-          <div class="empty_or_error text-center mx-2 my-2 px-3 py-3">
-            <h1>Sorry, the seller, does not exist.</h1>
-            <h1 class="my-0 pt-5"><a href="{% url 'index_view' %}" title="Homepage">Go back to homepage</a> </h1>
+          <div class="px-2 py-2">
+            <div class="empty_or_error text-center mx-2 my-2 px-3 py-3">
+              <h1>Sorry, the seller, does not exist.</h1>
+              <h1 class="my-0 pt-5"><a href="{% url 'index_view' %}" title="Homepage">Go back to homepage</a> </h1>
+            </div>
           </div>
         {% else %}
-          <div class="storefront_header my-2 mx-2 py-3 px-3">
-            <!-- will need to implement fully there's some placeholder code-->
+          {% if seller.banner_picture %}
+            <div class="banner_picture">
+              <img src="{{seller.banner_picture.url}}" alt="banner picture" style="width: 100%;">
+            </div>
+          {% endif %}
+          <div class="storefront_header mb-2 py-3 px-3">
             <div class="seller_basic_info">
-              {% if seller.picture %}
+              {% if seller.profile_picture %}
                 <div>
-                  <img class="profile_picture" src="{{seller.picture.url}}" alt="profile picture" width="125" height="125">
+                  <img class="profile_picture" src="{{seller.profile_picture.url}}" alt="profile picture" width="125" height="125">
                 </div>
-              {% endif %}
-              {% if seller.picture %}
                 <div class="vr mx-3"></div>
               {% endif %}
               <div class="info">
@@ -35,6 +39,7 @@
               </div>
             </div>
             <div class="seller_ratings">
+              <!-- will need to implement fully there's some placeholder code-->
               <div class="text-center">
                 <h5 class="my-0 pb-3"><b>Ratings</b></h5>
               </div>
@@ -54,9 +59,8 @@
               </div>
             </div>
           </div>
-          <hr>
           {% if products %}
-            <div class="products">
+            <div class="products px-2 pb-2">
               {% include "includes/products.html" %}
             </div>
           {% else %}
