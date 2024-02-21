@@ -160,7 +160,6 @@ def index_view(request):
             else:
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with sorting by views.</li><li>Please try again.</li></ul>"))
         products = Paginator(products, 9).page(page_number)
-        products = None
         # cart = Cart.objects.filter(user=user)
         # items_in_cart = products.filter(uuid__in=cart.values_list("product__uuid", flat=True))
         # products = Paginator(products.difference(items_in_cart), 9).page(page_number)
@@ -182,7 +181,7 @@ def storefront_view(request):
         if member_id is not None:
             try:
                 seller = User.objects.get(member_id=member_id)
-                products = Product.objects.filter(seller=seller)
+                products = Product.objects.filter(seller=seller).exclude(status=Choices.CHOICES_PRODUCT_STATUS[2][0]).exclude(status=Choices.CHOICES_PRODUCT_STATUS[3][0]) # to see or edit the choices go to choices.py
             except User.DoesNotExist:
                 seller = None
                 products = None
