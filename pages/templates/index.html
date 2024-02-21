@@ -11,13 +11,13 @@
   <body>
     {% include "includes/navbar.html" with location="index" search=True %}
     <div class="container text-break px-0">
-      {% if products %}
-        <div class="sort_filter_by">
-          {% include "includes/filter_by.html" %}
-          {% include "includes/sort_by.html" %}
-        </div>
-      {% endif %}
       <div class="content px-2 py-2">
+        {% if products %}
+          <div class="sort_filter_by">
+            {% include "includes/filter_by.html" %}
+            {% include "includes/sort_by.html" %}
+          </div>
+        {% endif %}
         {% if products %}
           <div class="products">
             {% include "includes/products.html" %}

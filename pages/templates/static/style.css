@@ -13,6 +13,10 @@ li::marker {
     color: #EA868F;
 }
 
+p {
+    margin-bottom: 0px;
+}
+
 .container {
     background-color: #9DB2BF;
 }
@@ -22,7 +26,7 @@ li::marker {
     border: 2px solid black;
 }
 
-.option_how {
+.option_how_to_add_product {
     background-color: #DDE6ED;
     border: 2px solid black;
 }
@@ -96,7 +100,7 @@ li::marker {
     text-align: center;
 }
 
-.add_to_cart_button {
+.add_to_cart_button, .copy_and_add_product {
     display: flex;
     flex-direction: row;
     justify-content: space-between;

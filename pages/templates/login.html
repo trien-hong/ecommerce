@@ -10,8 +10,8 @@
   </head>
   <body>
     {% include "includes/navbar.html" with location="login" main=False %}
-    <div class="container text-break px-3 py-3">
-      <div class="content">
+    <div class="container text-break px-0">
+      <div class="content px-3 py-3">
         <form class="login_form px-3 py-3" action="{% url 'login_view' %}" method="POST">
           <fieldset>
             {% csrf_token %}
@@ -26,13 +26,13 @@
               </div>
             {% endfor %}
             <div class="text-center py-2">
-              <input class="btn btn-primary" type="submit" value="LOGIN" title="Login">
+              <input class="btn btn-primary text-center" type="submit" value="LOGIN" title="Login">
             </div>
             <div class="footer text-center">
               <hr>
-              <a class="nav-link" href="{% url 'signup_view' %}" title="Signup page">Don't have an account?<b><u class="ps-2">Signup here</u></b></a>
+              <a class="nav-link" href="{% url 'signup_view' %}" title="Signup page">Don't have an account?<b><u class="ps-1">Signup here</u></b></a>
               <hr>
-              <a class="nav-link" href="{% url 'reset_password_view' %}" title="Reset password page">Forgot your password?<b><u class="ps-2">Reset here</u></b></a>
+              <a class="nav-link" href="{% url 'reset_password_view' %}" title="Reset password page">Forgot your password?<b><u class="ps-1">Reset here</u></b></a>
             </div>
           </fieldset>
         </form>

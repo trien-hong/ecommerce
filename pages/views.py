@@ -160,6 +160,7 @@ def index_view(request):
             else:
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with sorting by views.</li><li>Please try again.</li></ul>"))
         products = Paginator(products, 9).page(page_number)
+        products = None
         # cart = Cart.objects.filter(user=user)
         # items_in_cart = products.filter(uuid__in=cart.values_list("product__uuid", flat=True))
         # products = Paginator(products.difference(items_in_cart), 9).page(page_number)

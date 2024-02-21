@@ -55,41 +55,48 @@
                 <div class="product mt-3 mx-2 px-3 py-2">
                   <h4><b>{{product.title}}</b></h4>
                   <a href="{% url 'product_view' uuid=product.uuid %}" title="Click to view more details of this product"><img src="{{product.product_picture.url}}" alt="product picture" style="width: 100%;"></a>
-                  <p class="my-0 pt-2"><b>{{product.description}}</b></p>
-                  <p class="my-0 pt-2"><b>Category: {{product.category}}</b></p>
-                  <p class="my-0 pt-2"><b>Condition: {{product.condition}}</b></p>
-                  <div class="add_to_cart_form pb-2">
+                  <p class="mt-2"><b>{{product.description}}</b></p>
+                  <p class="my-2"><b>Category: {{product.category}}</b></p>
+                  <p><b>Condition: {{product.condition}}</b></p>
+                  <div class="copy_and_add_product_form pb-2">
                     <form action="{% url 'copy_and_add_product_view' uuid=product.uuid %}" method="POST">
                       {% csrf_token %}
+                      <hr>
                       <fieldset>
-                        <hr>
-                        <div class="add_to_cart_button">
-                          <input class="btn btn-primary" type="submit" value="COPY & ADD" title="Copy product's detail & create listing">
+                        <div class="copy_and_add_product">
+                          <div>
+                            <p class="my-0">Price: <b>${{product.price}}</b></p>
+                          </div>
+                          <div>
+                            <input class="btn btn-primary" type="submit" value="COPY & ADD" title="Copy product's detail & create listing">
+                          </div>
                         </div>
                       </fieldset>
-                    </form>
+                  </form>
                   </div>
                 </div>
               {% endfor %}
             </div>
           {% endif %}
         {% else %}
-          <div class="option_how mx-3 px-3 py-3">
-            <h2 class="text-center">How would you like to add your product?</h2>
+          <div class="option_how_to_add_product text-center mx-3 px-3 py-3">
+            <h2>How would you like to add your product?</h2>
             <hr>
             <div class="add_product_options">
               <div class="manually_button">
                 <a class="btn btn-lg btn-primary" href="{% url 'add_product_view' %}?option=manually" role="button">Manually</a>
                 <hr>
-                <p class="text-center">You will need to enter the product's details manually.<br>That includes title, picture, description, category, etc.</p>
+                <p>You will need to enter the product's details manually.<br>That includes title, picture, description, category, etc.</p>
               </div>
               <div class="vr mx-3"></div>
               <div class="upc_ean_lookup_button">
                 <a class="btn btn-lg btn-primary" href="{% url 'add_product_view' %}?option=upc-ean-lookup" role="button">UPC/EAN Lookup</a>
                 <hr>
-                <p class="text-center">You can do a lookup on our database if you know the UPC/EAN.<br>This way, you can simply copy the product's details onto yours.</p>
+                <p>If you know the UPC/EAN, you can do a lookup on our database.<br>This way, you can simply copy the product's details onto yours.</p>
               </div>
             </div>
+            <hr>
+            <p><b>For either options, you can always edit the product details later.</b></p>
           </div>
         {% endif %}
       </div>

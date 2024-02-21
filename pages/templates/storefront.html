@@ -16,7 +16,7 @@
           <div class="px-2 py-2">
             <div class="empty_or_error text-center mx-2 my-2 px-3 py-3">
               <h1>Sorry, the seller, does not exist.</h1>
-              <h1 class="my-0 pt-5"><a href="{% url 'index_view' %}" title="Homepage">Go back to homepage</a> </h1>
+              <h1 class="mt-5"><a href="{% url 'index_view' %}" title="Homepage">Go back to homepage</a> </h1>
             </div>
           </div>
         {% else %}
@@ -26,6 +26,7 @@
             </div>
           {% endif %}
           <div class="storefront_header mb-2 py-3 px-3">
+            <!-- will need to implement fully there's some placeholder code-->
             <div class="seller_basic_info">
               {% if seller.profile_picture %}
                 <div>
@@ -34,26 +35,26 @@
                 <div class="vr mx-3"></div>
               {% endif %}
               <div class="info">
-                <h5 class="my-0 pb-2"><b>{{seller.username}}</b></h5>
-                <p class="my-0 pt-2">Items sold: <b>{{seller.items_sold}}</b></p>
+                <h5 class="my-0"><b>{{seller.username}}</b></h5>
+                <p class="my-2">New York, USA</p>
+                <p class="my-0">Items sold: <b>{{seller.items_sold}}</b></p>
               </div>
             </div>
             <div class="seller_ratings">
-              <!-- will need to implement fully there's some placeholder code-->
               <div class="text-center">
-                <h5 class="my-0 pb-3"><b>Ratings</b></h5>
+                <h5 class="my-0"><b><u>Ratings</u></b></h5>
               </div>
               <div class="ratings">
-                <div class="my-0">
-                  <p>Accurate Description: <b>1/10</b></p>
+                <div>
+                  <p class="my-2">Accurate Description: <b>1/10</b></p>
                 </div>
-                <div class="my-0">
-                  <p>Communication: <b>2/10</b></p>
+                <div>
+                  <p class="my-2">Communication: <b>2/10</b></p>
                 </div>
-                <div class="my-0">
+                <div>
                   <p>Shipping Cost: <b>3/10</b></p>
                 </div>
-                <div class="my-0">
+                <div>
                   <p>Shipping Speed: <b>4/10</b></p>
                 </div>
               </div>
@@ -64,9 +65,11 @@
               {% include "includes/products.html" %}
             </div>
           {% else %}
+          <div class="pt-1 pb-2 px-2">
             <div class="empty_or_error text-center mx-2 my-2 px-3 py-3">
               <h1>Sorry, the seller, {{seller.username}}, does not currently have any active listings.</h1>
             </div>
+          </div>
           {% endif %}
         {% endif %}
       </div>

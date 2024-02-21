@@ -57,17 +57,20 @@
             {% elif option == 'settings' %}
               <div>
                 <div>
-                  {% if user.banner_picture %}
-                    <div class="banner_picture pt-2 px-2">
-                      <img src="{{user.banner_picture.url}}" alt="banner picture" style="width: 100%;">
-                    </div>
-                  {% endif %}
+                {% if user.banner_picture %}
+                  <div class="banner_picture pt-2 px-2">
+                    <img src="{{user.banner_picture.url}}" alt="banner picture" style="width: 100%;">
+                  </div>
                   {% if user.profile_picture %}
                     <div class="settings_profile_picture">
                       <img class="profile_picture" src="{{user.profile_picture.url}}" alt="banner picture">
                     </div>
                   {% endif %}
-                </div>
+                {% else %}
+                  <div class="pt-2">
+                    <img class="profile_picture" src="{{user.profile_picture.url}}" alt="banner picture">
+                  </div>
+                {% endif %}
                 <div class="settings px-2 py-2">
                   <div class="change_username_form me-1 px-3 py-3">
                     <h2 class="py-0 my-0">CHANGE USERNAME</h2>
@@ -141,9 +144,9 @@
                       <div class="profile_items mx-2 my-2 px-3 py-2">
                         <h4><b>{{item.title}}</b></h4>
                         <a href="{% url 'product_view' uuid=item.uuid %}" title="Click to view more details of this product"><img src="{{item.product_picture.url}}" alt="product picture" style="width: 100%;"></a>
-                        <p class="my-0 pt-2"><b>{{item.description}}</b></p>
-                        <p class="my-0 pt-2">Category: <b>{{item.category}}</b></p>
-                        <p class="my-0 pt-2">Condition: <b>{{item.condition}}</b></p>
+                        <p class="mt-2"><b>{{item.description}}</b></p>
+                        <p class="my-2">Category: <b>{{item.category}}</b></p>
+                        <p>Condition: <b>{{item.condition}}</b></p>
                         <div class="add_to_cart_form pb-2">
                           <form action="{% url 'add_to_cart_view' uuid=item.uuid %}" method="POST">
                             <fieldset>
@@ -151,13 +154,13 @@
                               <hr>
                               {% if item.status == "inactive" %}
                                 <a class="btn btn-secondary" href="{% url 'edit_product_view' uuid=item.uuid %}" title="Edit product">EDIT PRODUCT</a>
-                                <h4 class="bg-warning mt-3 mb-0" title="This product has been deactivated by you"><b><u>INACTIVE</u></b></h4>
+                                <h4 class="bg-warning mt-3" title="This product has been deactivated by you"><b><u>INACTIVE</u></b></h4>
                               {% elif item.status == "sold out" %}
                                 <a class="btn btn-danger disabled" href="#">EDIT PRODUCT</a>
-                                <h4 class="bg-danger mt-3 mb-0" title="This product was bought from a buyer"><b><u>SOLD OUT</u></b></h4>
+                                <h4 class="bg-danger mt-3" title="This product was bought from a buyer"><b><u>SOLD OUT</u></b></h4>
                               {% else %}
                                 <a class="btn btn-secondary" href="{% url 'edit_product_view' uuid=item.uuid %}" title="Edit product">EDIT PRODUCT</a>
-                                <h4 class="bg-success mt-3 mb-0" title="No one has bought this yet"><b><u>ACTIVE</b></u></h4>
+                                <h4 class="bg-success mt-3" title="No one has bought this yet"><b><u>ACTIVE</b></u></h4>
                               {% endif %}
                             </fieldset>
                           </form>
@@ -178,11 +181,10 @@
                     {% for item in purchase_history %}
                       <div class="profile_items mx-2 my-2 px-3 py-2">
                         <h4><b>{{item.product.title}}</b></h4>
-                        <a class="pt-2" href="{% url 'product_view' uuid=item.product.uuid %}" title="Click to view more details of this product"><img src="{{item.product.product_picture.url}}" alt="product picture" style="width: 100%;"></a>
-                        <p class="my-0 pt-2"><b>{{item.product.description}}</b></p>
-                        <p class="my-0 pt-2">Category: <b>{{item.product.category}}</b></p>
-                        <p class="my-0 pt-2">Condition: <b>{{item.product.condition}}</b></p>
-                        <p class="my-0 pt-2"><b>Bought @ {{item.buy_date}}</b></p>
+                        <a href="{% url 'product_view' uuid=item.product.uuid %}" title="Click to view more details of this product"><img src="{{item.product.product_picture.url}}" alt="product picture" style="width: 100%;"></a>
+                        <p class="mt-2">Category: <b>{{item.product.category}}</b></p>
+                        <p class="my-2">Condition: <b>{{item.product.condition}}</b></p>
+                        <p><b>Bought on {{item.buy_date}}</b></p>
                       </div>
                     {% endfor %}
                   </div>

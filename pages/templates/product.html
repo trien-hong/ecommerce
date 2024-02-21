@@ -28,6 +28,17 @@
                 <h3>List Date: {{product.list_date}}</h3>
               </div>
               <hr>
+              {% if product.upc != "" or product.ean != "" %}
+                <div>
+                  {% if product.upc != "" %}
+                    <h3>UPC: {{product.upc}}</h3>
+                  {% endif %}
+                  {% if product.ean != "" %}
+                    <h3>EAN: {{product.ean}}</h3>
+                  {% endif %}
+                </div>
+                <hr>
+              {% endif %}
               <div class="seller_basic_info">
                 {% if product.seller.profile_picture %}
                   <div>
@@ -39,20 +50,7 @@
                   <h3>Seller: <a href="{% url 'storefront_view' %}?member-id={{product.seller.member_id}}" title="Vist {{product.seller}} store">{{product.seller}}</a></h3>
                 </div>
               </div>
-              {% if product.upc != "" or product.ean != "" %}
-                <hr>
-                <div>
-                  {% if product.upc != "" %}
-                    <h3>UPC: {{product.upc}}</h3>
-                  {% endif %}
-                  {% if product.ean != "" %}
-                    <h3>EAN: {{product.ean}}</h3>
-                  {% endif %}
-                </div>
-                <hr>
-              {% else %}
-                <hr>
-              {% endif %}
+              <hr>
               <div>
                 <form action="{% url 'add_to_cart_view' uuid=product.uuid %}" method="POST">
                   {% csrf_token %}
