@@ -66,7 +66,7 @@
                       <img class="profile_picture" src="{{user.profile_picture.url}}" alt="banner picture">
                     </div>
                   {% endif %}
-                {% else %}
+                {% elif user.profile_picture %}
                   <div class="pt-2">
                     <img class="profile_picture" src="{{user.profile_picture.url}}" alt="banner picture">
                   </div>
@@ -108,7 +108,7 @@
                       </div>
                     </form>
                   </div>
-                  <div class="upload_banner_picture ms-1 my-2 px-3 py-3">
+                  <div class="upload_banner_picture_form ms-1 my-2 px-3 py-3">
                     <h2 class="py-0 my-0">UPLOAD BANNER PICTURE</h2>
                     <hr class="mb-2">
                     <form action="{% url 'upload_banner_picture_view' %}" enctype="multipart/form-data" method="POST">
@@ -120,7 +120,19 @@
                       </div>
                     </form>
                   </div>
-                  <div class="delete_account_form me-1 px-3 py-3">
+                  <div class="change_state_territory_form me-1 px-3 py-3">
+                    <h2 class="py-0 my-0">CHANGE STATE/TERRITORY</h2>
+                    <hr class="mb-2">
+                    <form action="{% url 'change_state_territory_view' %}" method="POST">
+                      {% csrf_token %}
+                      {{change_state_territory_form}}
+                      <div class="pt-3">
+                        <hr class="mt-0">
+                        <input class="btn btn-primary" type="submit" value="CHANGE STATE/TERRITORY" title="Change state/territory">
+                      </div>
+                    </form>
+                  </div>
+                  <div class="delete_account_form ms-1 px-3 py-3">
                     <h2 class="py-0 my-0">DELETE ACCOUNT</h2>
                     <hr class="mb-2">
                     <form action="{% url 'delete_account_view' %}" method="POST">

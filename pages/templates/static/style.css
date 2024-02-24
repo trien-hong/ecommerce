@@ -17,6 +17,10 @@ p {
     margin-bottom: 0px;
 }
 
+h4 {
+    margin-bottom: 0px;
+}
+
 .container {
     background-color: #9DB2BF;
 }
@@ -283,7 +287,7 @@ p {
     grid-template-columns: 1fr 1fr;
 }
 
-.change_username_form, .change_password_form, .upload_profile_picture_form, .upload_banner_picture, .delete_account_form {
+.change_username_form, .change_password_form, .upload_profile_picture_form, .upload_banner_picture_form, .change_state_territory_form, .delete_account_form {
     background-color: white;
     border: 2px solid black;
     display: flex;
@@ -291,7 +295,7 @@ p {
     justify-content: center;
 }
 
-.change_username_form label, .change_password_form label, .upload_profile_picture_form label, .upload_banner_picture label, .delete_account_form label {
+.change_username_form label, .change_password_form label, .upload_profile_picture_form label, .upload_banner_picture_form label, .change_state_territory_form label, .delete_account_form label {
     display: flex;
     justify-content: flex-start;
     padding-bottom: 1%;

@@ -34,6 +34,66 @@ POSITIVE = "positive"
 NEUTRAL = "neutral"
 NEGATIVE = "negative"
 
+# states/territories
+PLEASE_CHOOSE_STATE_TERRITORY = ""
+OUTSIDE_USA = "Non US state/territory"
+AL = "Alabama"
+AK = "Alaska"
+AS = "American Samoa"
+AZ = "Arizona"
+AR = "Arkansas"
+CA = "California"
+CO = "Colorado"
+CT = "Connecticut"
+DE = "Delaware"
+DC = "Washington D.C."
+FL = "Florida"
+GA = "Georgia"
+GU = "Guam"
+HI = "Hawaii"
+ID = "Idaho"
+IL = "Illinois"
+IN = "Indiana"
+IA = "Iowa"
+KS = "Kansas"
+KY = "Kentucky"
+LA = "Louisiana"
+ME = "Maine"
+MD = "Maryland"
+MA = "Massachusetts"
+MI = "Michigan"
+MN = "Minnesota"
+MS = "Mississippi"
+MO = "Missouri"
+MT = "Montana"
+NE = "Nebraska"
+NV = "Nevada"
+NH = "New Hampshire"
+NJ = "New Jersey"
+NM = "New Mexico"
+NY = "New York"
+NC = "North Carolina"
+ND = "North Dakota"
+MP = "Northern Mariana Islands"
+OH = "Ohio"
+OK = "Oklahoma"
+OR = "Oregon"
+PA = "Pennsylvania"
+PR = "Puerto Rico"
+RI = "Rhode Island"
+SC = "South Carolina"
+SD = "South Dakota"
+TN = "Tennessee"
+TX = "Texas"
+UT = "Utah"
+VT = "Vermont"
+VA = "Virginia"
+VI = "Virgin Islands"
+WA = "Washington"
+WV = "West Virginia"
+WI = "Wisconsin"
+WY = "Wyoming"
+
 class Choices:
     CHOICES_PRODUCT_STATUS = [
         # actual values are what's stores in the database
@@ -85,4 +145,67 @@ class Choices:
         (POSITIVE, "positive"),
         (NEUTRAL, "neutral"),
         (NEGATIVE, "negative")
+    ]
+
+    CHOICES_STATE_TERRITORY = [
+        # actual values are what's stores in the database
+        # (actual values, human readable values)
+        (PLEASE_CHOOSE_STATE_TERRITORY, "Choose your state/territory"),
+        (OUTSIDE_USA, "Non US state/territory"),
+        (AL, "AL - Alabama"),
+        (AK, "AK - Alaska"),
+        (AS, "AS - American Samoa"),
+        (AZ, "AZ - Arizona"),
+        (AR, "AR - Arkansas"),
+        (CA, "CA - California"),
+        (CO, "CO - Colorado"),
+        (CT, "CT - Connecticut"),
+        (DE, "DE - Delaware"),
+        (DC, "DC - Washington D.C."),
+        (FL, "FL - Florida"),
+        (GA, "GA - Georgia"),
+        (GU, "GU - Guam"),
+        (HI, "HI - Hawaii"),
+        (ID, "ID - Idaho"),
+        (IL, "IL - Illinois"),
+        (IN, "IN - Indiana"),
+        (IA, "IA - Iowa"),
+        (KS, "KS - Kansas"),
+        (KY, "KY - Kentucky"),
+        (LA, "LA - Louisiana"),
+        (ME, "ME - Maine"),
+        (MD, "MD - Maryland"),
+        (MA, "MA - Massachusetts"),
+        (MI, "MI - Michigan"),
+        (MN, "MN - Minnesota"),
+        (MS, "MS - Mississippi"),
+        (MO, "MO - Missouri"),
+        (MT, "MT - Montana"),
+        (NE, "NE - Nebraska"),
+        (NV, "NV - Nevada"),
+        (NH, "NH - New Hampshire"),
+        (NJ, "NJ - New Jersey"),
+        (NM, "NM - New Mexico"),
+        (NY, "NY - New York"),
+        (NC, "NC - North Carolina"),
+        (ND, "ND - North Dakota"),
+        (MP, "MP - Northern Mariana Islands"),
+        (OH, "OH - Ohio"),
+        (OK, "OK - Oklahoma"),
+        (OR, "OR - Oregon"),
+        (PA, "PA - Pennsylvania"),
+        (PR, "PR - Puerto Rico"),
+        (RI, "RI - Rhode Island"),
+        (SC, "SC - South Carolina"),
+        (SD, "SD - South Dakota"),
+        (TN, "TN - Tennessee"),
+        (TX, "TX - Texas"),
+        (UT, "UT - Utah"),
+        (VT, "VT - Vermont"),
+        (VA, "VA - Virginia"),
+        (VI, "VI - Virgin Islands"),
+        (WA, "WA - Washington"),
+        (WV, "WV - West Virginia"),
+        (WI, "WI - Wisconsin"),
+        (WY, "WY - Wyoming")
     ]

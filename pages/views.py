@@ -58,7 +58,8 @@ def signup_view(request):
         user_info = request.POST
         signup_form = forms.Signup(user_info)
         if signup_form.is_valid():
-            user = User.objects.create_user(username=signup_form.cleaned_data["username"], password=signup_form.cleaned_data["password"])
+            print(signup_form.cleaned_data["state_territory"])
+            user = User.objects.create_user(username=signup_form.cleaned_data["username"], password=signup_form.cleaned_data["password"], state_territory=signup_form.cleaned_data["state_territory"])
             messages.add_message(request, messages.SUCCESS, "User has been successfully created. You may now login.")
             return redirect(signup_view)
         else:
@@ -281,7 +282,7 @@ def copy_and_add_product_view(request, uuid):
         user = request.user
         try:
             original_product = Product.objects.get(uuid=uuid)
-            product = Product(title=original_product.title, product_picture=original_product.picture, description=original_product.description, category=original_product.category, condition=original_product.condition, upc=original_product.upc, ean=original_product.ean, seller=user)
+            product = Product(title=original_product.title, product_picture=original_product.product_picture, description=original_product.description, category=original_product.category, condition=original_product.condition, price=original_product.price, upc=original_product.upc, ean=original_product.ean, seller=user)
             product.save()
             messages.add_message(request, messages.SUCCESS, "This product's details has been copied over and a new listing has been created. Know that you may edit the product's details at any time.")
         except Product.DoesNotExist:
@@ -654,8 +655,9 @@ def profile_option_view(request, option):
             change_password_form = forms.ChangePassword()
             upload_profile_picture_form = forms.UploadProfilePicture()
             upload_banner_picture_form = forms.UploadBannerPicture()
+            change_state_territory_form = forms.ChangeStateTerritory()
             delete_account_form = forms.DeleteAccount()
-            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "member_id": user.member_id, "option": "settings", "change_username_form": change_username_form, "change_password_form": change_password_form, "upload_profile_picture_form": upload_profile_picture_form, "upload_banner_picture_form": upload_banner_picture_form, "delete_account_form": delete_account_form })
+            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "member_id": user.member_id, "option": "settings", "change_username_form": change_username_form, "change_password_form": change_password_form, "upload_profile_picture_form": upload_profile_picture_form, "upload_banner_picture_form": upload_banner_picture_form, "change_state_territory_form": change_state_territory_form,"delete_account_form": delete_account_form })
         elif option == "wish-list":
             return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "member_id": user.member_id, "option": "wish-list" })
         elif option == "listing-history":
@@ -743,10 +745,10 @@ def upload_profile_picture_view(request):
                 messages.add_message(request, messages.SUCCESS, "Your profile picture has successfully been uploaded. Image less than/greater than 125x125 have been upsized/downsized and cropped to the middle and center.")
             except User.DoesNotExist:
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in uploading your profile picture.</li><li>Please try again.</li></ul>"))
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+            return redirect(profile_option_view, option="settings")
         else:
             messages.add_message(request, messages.ERROR, upload_profile_picture_form.errors)
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+            return redirect(profile_option_view, option="settings")
 
 @never_cache
 @login_required
@@ -770,10 +772,36 @@ def upload_banner_picture_view(request):
                 messages.add_message(request, messages.SUCCESS, "Your banner picture has successfully been uploaded. Image less than/greater than 1250x300 have been upsized/downsized and cropped to the middle and center.")
             except User.DoesNotExist:
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in uploading your banner picture.</li><li>Please try again.</li></ul>"))
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+            return redirect(profile_option_view, option="settings")
         else:
             messages.add_message(request, messages.ERROR, upload_banner_picture_form.errors)
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+            return redirect(profile_option_view, option="settings")
+
+
+@never_cache
+@login_required
+def change_state_territory_view(request):
+    """
+    URL: /profile/settings/change-state-territory
+    """
+    if request.method == "GET":
+        return redirect(profile_option_view, option="settings")
+    if request.method == "POST":
+        user = request.user
+        user_info = request.POST
+        change_state_territory_form = forms.ChangeStateTerritory(user_info)
+        if change_state_territory_form.is_valid():
+            try:
+                user = User.objects.get(username=user.username)
+                user.state_territory = change_state_territory_form.cleaned_data["state_territory"]
+                user.save()
+                messages.add_message(request, messages.SUCCESS, "Your state/territory has been successfully updated.")
+            except User.DoesNotExist:
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in changing your state/territory.</li><li>Please try again.</li></ul>"))
+            return redirect(profile_option_view, option="settings")
+        else:
+            messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in changing your state/territory.</li><li>Please try again.</li></ul>"))
+            return redirect(profile_option_view, option="settings")
 
 @never_cache
 @login_required

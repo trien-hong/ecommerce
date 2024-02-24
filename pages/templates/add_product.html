@@ -53,7 +53,7 @@
             <div class="products mx-2">
               {% for product in products %}
                 <div class="product mt-3 mx-2 px-3 py-2">
-                  <h4><b>{{product.title}}</b></h4>
+                  <h4 class="mb-2"><b>{{product.title}}</b></h4>
                   <a href="{% url 'product_view' uuid=product.uuid %}" title="Click to view more details of this product"><img src="{{product.product_picture.url}}" alt="product picture" style="width: 100%;"></a>
                   <p class="mt-2"><b>{{product.description}}</b></p>
                   <p class="my-2"><b>Category: {{product.category}}</b></p>
@@ -72,7 +72,7 @@
                           </div>
                         </div>
                       </fieldset>
-                  </form>
+                    </form>
                   </div>
                 </div>
               {% endfor %}

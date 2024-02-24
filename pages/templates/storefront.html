@@ -36,13 +36,13 @@
               {% endif %}
               <div class="info">
                 <h5 class="my-0"><b>{{seller.username}}</b></h5>
-                <p class="my-2">New York, USA</p>
+                <p class="my-2">{% if seller.state_territory %}{{seller.state_territory}}{% if seller.state_territory != "Non US state/territory" %} | 🇺🇸{% endif%}{% endif %}</p>
                 <p class="my-0">Items sold: <b>{{seller.items_sold}}</b></p>
               </div>
             </div>
             <div class="seller_ratings">
               <div class="text-center">
-                <h5 class="my-0"><b><u>Ratings</u></b></h5>
+                <h5 class="mb-1"><b><u>Ratings</u></b></h5>
               </div>
               <div class="ratings">
                 <div>

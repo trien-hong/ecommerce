@@ -20,6 +20,7 @@ class Signup(forms.Form):
     username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your username", "class": "field"}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your password", "class": "field"}))
     confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Confirm your password", "class": "field"}))
+    state_territory = forms.ChoiceField(label="State/territory (optional)", choices=Choices.CHOICES_STATE_TERRITORY, widget=forms.Select(attrs={"title": "You can always change this in your settings"}), required=False) # to see or edit the choices go to choices.py
 
     def clean_username(self):
         username = self.cleaned_data["username"]
@@ -40,6 +41,14 @@ class Signup(forms.Form):
             raise forms.ValidationError("Passwords do not match. Please ensure you are using the same password for both fields.")
 
         return confirm_password
+
+    def clean_state_territory(self):
+        state_territoy = self.cleaned_data["state_territory"]
+
+        if len([i[0] for i in Choices.CHOICES_STATE_TERRITORY if i[0] == state_territoy]) == 0:
+            raise forms.ValidationError("State/territory choice is not valid.")
+
+        return state_territoy
 
 class RestPassword(forms.Form):
     username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your username", "class": "field"}))
@@ -104,6 +113,28 @@ class UploadProfilePicture(forms.Form):
 
         return picture
 
+class UploadBannerPicture(forms.Form):
+    picture = forms.ImageField(widget=forms.FileInput(attrs={"class": "field"}))
+
+    def clean_picture(self):
+        picture = self.cleaned_data["picture"]
+
+        if picture.size > 5*1024*1024:
+            raise forms.ValidationError("Image is greater than 5MB. Please upload an image that is less than 5MB.")
+
+        return picture
+
+class ChangeStateTerritory(forms.Form):
+    state_territory = forms.ChoiceField(label="State/territory (optional & 1st option to remove)", choices=Choices.CHOICES_STATE_TERRITORY, widget=forms.Select(attrs={"title": "You can always change this in your settings", "class": "field"}), required=False) # to see or edit the choices go to choices.py
+
+    def clean_state_territory(self):
+        state_territoy = self.cleaned_data["state_territory"]
+
+        if len([i[0] for i in Choices.CHOICES_STATE_TERRITORY if i[0] == state_territoy]) == 0:
+            raise forms.ValidationError("State/territory choice is not valid.")
+
+        return state_territoy
+
 class DeleteAccount(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your password to delete account", "class": "field"}))
 
@@ -119,26 +150,15 @@ class DeleteAccount(forms.Form):
 
         return password
 
-class UploadBannerPicture(forms.Form):
-    picture = forms.ImageField(widget=forms.FileInput(attrs={"class": "field"}))
-
-    def clean_picture(self):
-        picture = self.cleaned_data["picture"]
-
-        if picture.size > 5*1024*1024:
-            raise forms.ValidationError("Image is greater than 5MB. Please upload an image that is less than 5MB.")
-
-        return picture
-
 class AddProduct(forms.Form):
-    title = forms.CharField(max_length=50, label="Title*", widget=forms.TextInput(attrs={"placeholder": "Enter the product's title", "class": "field"}))
-    picture = forms.ImageField(label="Picture*")
-    description = forms.CharField(max_length=500, label="Description*", widget=forms.Textarea(attrs={"placeholder": "Enter the product's description", "rows": "5", "class": "field"}))
-    category = forms.ChoiceField(label="Category*", choices=Choices.CHOICES_CATEGORY) # to see or edit the choices go to choices.py
-    condition = forms.ChoiceField(label="Condition*", choices=Choices.CHOICES_CONDITION) # to see or edit the choices go to choices.py
-    price = forms.DecimalField(label="Price (in $/USD)*", widget=forms.TextInput(attrs={"placeholder": "Enter the product's price (ie. 5.00, 10.50, 9,999.99, etc.)", "class": "field"}), required=True)
-    upc = forms.CharField(min_length=12, max_length=12, label="UPC", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "class": "field"}), required=False)
-    ean = forms.CharField(min_length=13, max_length=13, label="EAN", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "class": "field"}), required=False)
+    title = forms.CharField(max_length=50, label="Title *", widget=forms.TextInput(attrs={"placeholder": "Enter the product's title", "class": "field"}))
+    picture = forms.ImageField(label="Picture *")
+    description = forms.CharField(max_length=500, label="Description *", widget=forms.Textarea(attrs={"placeholder": "Enter the product's description", "rows": "5", "class": "field"}))
+    category = forms.ChoiceField(label="Category *", choices=Choices.CHOICES_CATEGORY) # to see or edit the choices go to choices.py
+    condition = forms.ChoiceField(label="Condition *", choices=Choices.CHOICES_CONDITION) # to see or edit the choices go to choices.py
+    price = forms.DecimalField(label="Price (in $/USD) *", widget=forms.TextInput(attrs={"placeholder": "Enter the product's price (ie. 5.00, 10.50, 9,999.99, etc.)", "class": "field"}))
+    upc = forms.CharField(min_length=12, max_length=12, label="UPC (optional)", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "class": "field"}), required=False)
+    ean = forms.CharField(min_length=13, max_length=13, label="EAN (optional)", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "class": "field"}), required=False)
 
     def clean_title(self):
         title = self.cleaned_data["title"]
@@ -369,7 +389,7 @@ class EditProduct(forms.Form):
         status = self.cleaned_data["status"]
 
         if status != "":
-            if status not in EditProduct.CHOICES_PRODUCT_STATUS: # to see or edit the choices go to choices.py
+            if (status, status) not in Choices.CHOICES_PRODUCT_STATUS: # to see or edit the choices go to choices.py
                 raise forms.ValidationError("Condition choice is not valid.")
 
         return status
