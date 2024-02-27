@@ -14,6 +14,7 @@ from . import forms
 from .models import Product
 from .models import Cart
 from .models import Sold
+from .models import Feedback
 from .choices import Choices # to see or edit the choices go to choices.py
 User = get_user_model()
 
@@ -58,7 +59,6 @@ def signup_view(request):
         user_info = request.POST
         signup_form = forms.Signup(user_info)
         if signup_form.is_valid():
-            print(signup_form.cleaned_data["state_territory"])
             user = User.objects.create_user(username=signup_form.cleaned_data["username"], password=signup_form.cleaned_data["password"], state_territory=signup_form.cleaned_data["state_territory"])
             messages.add_message(request, messages.SUCCESS, "User has been successfully created. You may now login.")
             return redirect(signup_view)
@@ -167,7 +167,7 @@ def index_view(request):
         # it has come to my attention that .difference(...) does not work on either side of .order_by(...)
         # for the time being, i'll remove it and possibly find a different solution later
         # items within cart will now reappear on the index page
-        return render(request, "index.html", { "current_username": user.username, "products": products, "filter_by": filter_by, "sort_by": sort_by, "current_page_number": page_number,"search_product_form": search_product_form })
+        return render(request, "index.html", { "products": products, "filter_by": filter_by, "sort_by": sort_by, "current_page_number": page_number, "search_product_form": search_product_form })
 
 @never_cache
 @login_required
@@ -177,11 +177,28 @@ def storefront_view(request):
     where ?member-id=... is the query string
     """
     if request.method == "GET":
+        feedback_form = forms.Feedback()
         member_id = request.GET.get("member-id", None)
-        upload_banner_picture_form = forms.UploadBannerPicture()
+        accurate_description = 0
+        shipping_speed = 0
+        shipping_cost = 0
+        communication = 0
+        total_feedback = 0
         if member_id is not None:
             try:
                 seller = User.objects.get(member_id=member_id)
+                seller_feedback_ratings = Feedback.objects.filter(seller=seller)
+                if seller_feedback_ratings.exists():
+                    for i in seller_feedback_ratings:
+                        accurate_description = accurate_description + i.accurate_description
+                        shipping_speed = shipping_speed + i.shipping_speed
+                        shipping_cost = shipping_cost + i.shipping_speed
+                        communication = communication + i.communication
+                    accurate_description = round(accurate_description/seller_feedback_ratings.count(), 1)
+                    shipping_speed = round(shipping_speed/seller_feedback_ratings.count(), 1)
+                    shipping_cost = round(shipping_cost/seller_feedback_ratings.count(), 1)
+                    communication = round(communication/seller_feedback_ratings.count(), 1)
+                    total_feedback = seller_feedback_ratings.count()
                 products = Product.objects.filter(seller=seller).exclude(status=Choices.CHOICES_PRODUCT_STATUS[2][0]).exclude(status=Choices.CHOICES_PRODUCT_STATUS[3][0]) # to see or edit the choices go to choices.py
             except User.DoesNotExist:
                 seller = None
@@ -191,7 +208,36 @@ def storefront_view(request):
             seller = None
             products = None
             messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error.</li><li>The seller does not exist.</li></ul>"))
-        return render(request, "storefront.html", { "seller": seller, "upload_banner_picture_form": upload_banner_picture_form, "products": products })
+        return render(request, "storefront.html", { "seller": seller, "products": products, "accurate_description": accurate_description, "shipping_speed": shipping_speed, "shipping_cost": shipping_cost, "communication": communication, "total_feedback": total_feedback, "feedback_form": feedback_form })
+
+@never_cache
+@login_required
+def feedback_view(request):
+    """
+    URL: /storefront/feedback?member-id=...
+    where ?member-id=... is the query string
+    """
+    if request.method == "POST":
+        user = request.user
+        user_feedback = request.POST
+        feedback_form = forms.Feedback(user_feedback)
+        member_id = request.GET.get("member-id", None)
+        if member_id is None:
+            messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error.</li><li>The member id might be missing.</li></ul>"))
+        elif feedback_form.is_valid():
+            try:
+                seller = User.objects.get(member_id=member_id)
+                if seller == user:
+                    messages.add_message(request, messages.ERROR, mark_safe("<ul><li>You cannot leave feedback for yourself.</li></ul>"))
+                else:
+                    feedback = Feedback(buyer=user, seller=seller, overall_rating=feedback_form.cleaned_data["overall_rating"], accurate_description=feedback_form.cleaned_data["accurate_description"], shipping_speed=feedback_form.cleaned_data["shipping_speed"], shipping_cost=feedback_form.cleaned_data["shipping_cost"], communication=feedback_form.cleaned_data["communication"], comment=feedback_form.cleaned_data["comment"])
+                    feedback.save()
+                    messages.add_message(request, messages.SUCCESS, "You successfully left a feedback for this seller.")
+            except User.DoesNotExist:
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>The seller doesn't seem to exist.</li></ul>"))
+        else:
+            messages.add_message(request, messages.ERROR, feedback_form.errors)
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 @never_cache
 @login_required
@@ -215,7 +261,7 @@ def product_view(request, uuid):
         except Product.DoesNotExist:
             product = None
             in_cart = False
-        return render(request, "product.html", { "current_username": user.username, "product": product, "in_cart": in_cart })
+        return render(request, "product.html", { "product": product, "in_cart": in_cart })
 
 @never_cache
 @login_required
@@ -230,10 +276,10 @@ def add_product_view(request):
         ean = request.GET.get("upc", None)
         if option == "manually":
             add_product_form = forms.AddProduct()
-            return render(request, "add_product.html", { "add_product_form": add_product_form, "option": "manually"})
+            return render(request, "add_product.html", { "option": "manually", "add_product_form": add_product_form })
         elif option == "upc-ean-lookup":
             upc_ean_lookup_form = forms.UpcEanLookup()
-            return render(request, "add_product.html", { "upc_ean_lookup_form": upc_ean_lookup_form, "option": "upc_ean_lookup" })
+            return render(request, "add_product.html", { "option": "upc_ean_lookup", "upc_ean_lookup_form": upc_ean_lookup_form })
         elif upc is not None or ean is not None:
             upc_ean_lookup_form = forms.UpcEanLookup(request.GET)
             products = None
@@ -246,10 +292,10 @@ def add_product_view(request):
                     products = Product.objects.filter(upc=upc_ean_lookup_form.cleaned_data["upc"], ean=upc_ean_lookup_form.cleaned_data["ean"])
                 if products.exists() is False:
                     messages.add_message(request, messages.ERROR, mark_safe("<ul><li>The UPC and/or EAN did not match a record on our database.</li><li>Please try again.</li></ul>"))
-                return render(request, "add_product.html", { "upc_ean_lookup_form": upc_ean_lookup_form, "products": products, "option": "upc_ean_lookup" })
+                return render(request, "add_product.html", { "products": products, "option": "upc_ean_lookup", "upc_ean_lookup_form": upc_ean_lookup_form })
             else:
                 messages.add_message(request, messages.ERROR, upc_ean_lookup_form.errors)
-                return render(request, "add_product.html", { "upc_ean_lookup_form": upc_ean_lookup_form, "option": "upc_ean_lookup" })
+                return render(request, "add_product.html", { "option": "upc_ean_lookup", "upc_ean_lookup_form": upc_ean_lookup_form })
         else:
             return render(request, "add_product.html", { "option": "how" })
     if request.method == "POST":
@@ -429,7 +475,7 @@ def search_view(request):
                     items_in_cart = products.filter(uuid__in=cart.values_list("product__uuid", flat=True))
                     products = products.difference(items_in_cart)
                     messages.add_message(request, messages.SUCCESS, "Your search resulted in " + str(products.count()) + " products.")
-            return render(request, "search.html", { "current_username": user.username, "products": products, "search_product_form": search_product_form, "search_term": search_product_form.cleaned_data["title"] })
+            return render(request, "search.html", { "products": products, "search_term": search_product_form.cleaned_data["title"], "search_product_form": search_product_form })
         else:
             messages.add_message(request, messages.ERROR, search_product_form.errors)
             return render(request, "search.html", { "search_product_form", search_product_form })
@@ -478,11 +524,11 @@ def advanced_search_view(request):
             except:
                 products = None
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error with your advanced search.</li><li>Please try again.</li></ul>"))
-            return render (request, "advanced_search.html", { "current_username": user.username, "advanced_search_product_form": advanced_search_product_form, "products": products })
+            return render (request, "advanced_search.html", { "products": products, "advanced_search_product_form": advanced_search_product_form })
         else:
             products = None
             messages.add_message(request, messages.ERROR, advanced_search_product_form.errors)
-            return render (request, "advanced_search.html", { "current_username": user.username, "advanced_search_product_form": advanced_search_product_form, "products": products })
+            return render (request, "advanced_search.html", { "products": products, "advanced_search_product_form": advanced_search_product_form })
 
 @never_cache
 @login_required
@@ -638,8 +684,7 @@ def profile_view(request):
     URL: /profile
     """
     if request.method == "GET":
-        user = request.user
-        return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "member_id": user.member_id, "option": None })
+        return render(request, "profile.html", { "option": None })
 
 @never_cache
 @login_required
@@ -657,17 +702,17 @@ def profile_option_view(request, option):
             upload_banner_picture_form = forms.UploadBannerPicture()
             change_state_territory_form = forms.ChangeStateTerritory()
             delete_account_form = forms.DeleteAccount()
-            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "member_id": user.member_id, "option": "settings", "change_username_form": change_username_form, "change_password_form": change_password_form, "upload_profile_picture_form": upload_profile_picture_form, "upload_banner_picture_form": upload_banner_picture_form, "change_state_territory_form": change_state_territory_form,"delete_account_form": delete_account_form })
+            return render(request, "profile.html", { "option": "settings", "change_username_form": change_username_form, "change_password_form": change_password_form, "upload_profile_picture_form": upload_profile_picture_form, "upload_banner_picture_form": upload_banner_picture_form, "change_state_territory_form": change_state_territory_form,"delete_account_form": delete_account_form })
         elif option == "wish-list":
-            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "member_id": user.member_id, "option": "wish-list" })
+            return render(request, "profile.html", { "option": "wish-list" })
         elif option == "listing-history":
             listing_history = Product.objects.filter(seller=user)
-            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "member_id": user.member_id, "option": "listing-history", "listing_history": listing_history })
+            return render(request, "profile.html", { "option": "listing-history", "listing_history": listing_history })
         elif option == "purchase-history":
             purchase_history = Sold.objects.filter(buyer=user)
-            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "member_id": user.member_id, "option": "purchase-history", "purchase_history": purchase_history })
+            return render(request, "profile.html", { "option": "purchase-history", "purchase_history": purchase_history })
         elif option == "login-history":
-            return render(request, "profile.html", { "current_username": user.username, "available_credits": user.credits, "member_id": user.member_id, "option": "login-history" })
+            return render(request, "profile.html", { "option": "login-history" })
         else:
             return redirect(profile_view)
 
@@ -754,7 +799,7 @@ def upload_profile_picture_view(request):
 @login_required
 def upload_banner_picture_view(request):
     """
-    URL: /profile/settings/upload-profile-picture
+    URL: /profile/settings/upload-banner-picture
     """
     if request.method == "GET":
         return redirect(profile_option_view, option="settings")

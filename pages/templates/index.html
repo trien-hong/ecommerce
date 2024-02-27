@@ -28,9 +28,9 @@
         {% else %}
           <div class="empty_or_error text-center mx-2 my-2 px-3 py-3">
             {% if filter_by is not None %}
-              <h1>Sorry, your filter came back empty. There were no products that matched your filter.<br><br><a href="{% url 'index_view' %}" title="Homepage">Go back to homepage</a> </h1>
+              <h1>Sorry, your filter came back empty. There were no products that matched your filter.<br><br><a href="{% url 'index_view' %}">Go back to homepage</a> </h1>
             {% else %}
-              <h1>There are currently no products to show.<br><br>Why not be the first? <a href="{% url 'add_product_view' %}?option=how" title="Add product">Add product</a></h1>
+              <h1>There are currently no products to show.<br><br>Why not be the first? <a href="{% url 'add_product_view' %}?option=how">Add product</a></h1>
             {% endif %}
           </div>
         {% endif %}

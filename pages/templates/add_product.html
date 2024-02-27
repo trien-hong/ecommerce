@@ -18,17 +18,7 @@
               {% csrf_token %}
               <legend class="display-5 text-center"><b>ADD PRODUCT</b></legend>
               <hr>
-              {% for field in add_product_form %}
-                <div class="control-group mb-3">
-                  <label class="control-label">{{field.label}}</label> 
-                  <div class="controls">
-                    {{field}}
-                  </div>
-                </div>
-              {% endfor %}
-              <div class="text-center py-2">
-                <input class="btn btn-primary" type="submit" value="ADD PRODUCT" title="Add product">
-              </div>
+              {% include "includes/forms.html" with form=add_product_form form_text="Add Product" %}
             </fieldset>
           </form>
         {% elif option == "upc_ean_lookup" %}
@@ -36,17 +26,7 @@
             <fieldset>
               <legend class="display-5 text-center"><b>UPC/EAN LOOKUP</b></legend>
               <hr>
-              {% for field in upc_ean_lookup_form %}
-                <div class="control-group mb-3">
-                  <label class="control-label">{{field.label}}</label> 
-                  <div class="controls">
-                    {{field}}
-                  </div>
-                </div>
-              {% endfor %}
-              <div class="text-center py-2">
-                <input class="btn btn-primary" type="submit" value="LOOKUP" title="Add product">
-              </div>
+              {% include "includes/forms.html" with form=upc_ean_lookup_form form_text="Lookup" %}
             </fieldset>
           </form>
           {% if products %}
@@ -68,7 +48,7 @@
                             <p class="my-0">Price: <b>${{product.price}}</b></p>
                           </div>
                           <div>
-                            <input class="btn btn-primary" type="submit" value="COPY & ADD" title="Copy product's detail & create listing">
+                            <input class="btn btn-primary" type="submit" value="Copy & Add">
                           </div>
                         </div>
                       </fieldset>

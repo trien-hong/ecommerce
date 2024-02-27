@@ -1,5 +1,5 @@
 # E-commerce Web App
-E-commerce Web App using Django and it's templates. Main languages and frameworks consist of Python, Django, HTML, CSS, and Bootstrap. Database is PostgreSQL.
+E-commerce Web App using Python w/ Django and it's templates. Main languages and frameworks consist of Python, Django, HTML, CSS, and Bootstrap. Database is PostgreSQL.
 
 # Setting Up
 To get the web app running you first need to setup your .env file. Within your .env file you'll add in these variables. We can just use the default database of PostgreSQL for now. A total of 6 variables are needed.
@@ -31,7 +31,12 @@ Docker sometimes will attempt to start the app before the database is running. I
 * Users account (login, signup, reset password)
 * For a sense of money interaction, I've implemented pricing and credits
 * All products are neatly displayed using CSS grid layout showing a brief overview of the product
-  * Each product's image is clickable to view even more details about the product
+  * Each product's image is clickable to view even more details about the product; this includes...
+    * The list date
+    * Universal Product Code (UPC) and or International Article Number (EAN)
+    * Seller's profile picture (if they have one)
+    * Seller's storefront link
+    * Number of times the product page has been viewed
 * Ability to list (either manually or through a UPC/EAN lookup), edit, and delete products
 * Ability to filter by (all products, product's category, product's condition)
 * Ability to sort by products's (title, date, views)
@@ -48,10 +53,16 @@ Docker sometimes will attempt to start the app before the database is running. I
   * Universal Product Code (UPC) and International Article Number (EAN) validation are done through Django forms
   * To help prevent brute force, some views in Django will only accept UUIDs
     * If exposed, the UUID is shown to the user and not the ID/PK
+* All forms submitted to the back-end have some sort of validation done on them
 * Dynamic messages with the help of Django messages and Bootstrap Modal
 * Profile page with 5 different options to choose from
-  * Settings where you can change your username/password and delete account
+  * Settings where you can change your username/password, upload profile/banner picture, and delete account
   * Wish List (to be implemented)
-  * Listing History where you can view all the products that you have listed
+  * Listing History where you can view all the products that you have listed (active, inactive, and sold out)
   * Purchase History where you can view all the products that you have purchased
-  * Login History (to be implemented though I may remove it)
+  * Login History (to be implemented though I may remove or replace it)
+* Each user has their own storefront page which includes...
+  * All the seller's products that are not sold out or inactive
+  * Seller's profile picture and banner picture displayed at the top (if they have one)
+  * Seller's basic information including username, which state/territory, and number of items sold
+  * Also includes their rating (to be implemented)

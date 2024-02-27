@@ -12,10 +12,10 @@
                     <hr>
                     <div class="add_to_cart_button">
                         <p class="my-0">Price: <b>${{product.price}}</b></p>
-                        {% if current_username == product.seller.username or seller.username == product.seller.username %}
-                            <input class="btn btn-danger" type="submit" value="ADD TO CART" disabled>
+                        {% if user.username == product.seller.username or seller.username == product.seller.username %}
+                            <input class="btn btn-danger" type="submit" value="Add to Cart" disabled>
                         {% else %}
-                            <input class="btn btn-primary" type="submit" value="ADD TO CART" title="Add &quot;{{product.title}}&quot; to cart">
+                            <input class="btn btn-primary" type="submit" value="Add to Cart" title="Add &quot;{{product.title}}&quot; to cart">
                         {% endif %}
                     </div>
                 </fieldset>

@@ -1,0 +1,14 @@
+<fieldset>
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="control-group mb-3">
+            <label class="control-label">{{field.label}}:</label> 
+            <div class="controls">
+                {{field}}
+            </div>
+        </div>
+    {% endfor %}
+    <div class="text-center py-2">
+        <input class="btn btn-primary" type="submit" value="{{form_text}}" title="{{form_text}}">
+    </div>
+</fieldset>

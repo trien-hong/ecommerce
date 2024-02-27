@@ -17,17 +17,7 @@
             {% csrf_token %}
             <legend class="display-5 text-center"><b>LOGIN</b></legend>
             <hr>
-            {% for field in login_form %}
-              <div class="control-group pb-3">
-                <label class="control-label">{{field.label}}</label> 
-                <div class="controls">
-                  {{field}}
-                </div>
-              </div>
-            {% endfor %}
-            <div class="text-center py-2">
-              <input class="btn btn-primary text-center" type="submit" value="LOGIN" title="Login">
-            </div>
+            {% include "includes/forms.html" with form=login_form form_text="Login" %}
             <div class="footer text-center">
               <hr>
               <a class="nav-link" href="{% url 'signup_view' %}" title="Signup page">Don't have an account?<b><u class="ps-1">Signup here</u></b></a>

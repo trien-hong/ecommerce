@@ -11,6 +11,9 @@ class Login(forms.Form):
     def clean_username(self):
         username = self.cleaned_data["username"]
 
+        if len(username) == 0:
+            raise forms.ValidationError("Username length is 0 or is empty.")
+
         if len(username) > 30:
             raise forms.ValidationError("Username length is greater than 30.")
 
@@ -24,6 +27,9 @@ class Signup(forms.Form):
 
     def clean_username(self):
         username = self.cleaned_data["username"]
+
+        if len(username) == 0:
+            raise forms.ValidationError("Username length is 0 or is empty.")
 
         if len(username) > 30:
             raise forms.ValidationError("Username length is greater than 30.")
@@ -58,6 +64,9 @@ class RestPassword(forms.Form):
     def clean_username(self):
         username = self.cleaned_data["username"]
 
+        if len(username) == 0:
+            raise forms.ValidationError("Username length is 0 or is empty.")
+
         if len(username) > 30:
             raise forms.ValidationError("Username length is greater than 30.")
 
@@ -80,6 +89,9 @@ class ChangeUsername(forms.Form):
 
     def clean_username(self):
         username = self.cleaned_data["username"]
+
+        if len(username) == 0:
+            raise forms.ValidationError("Username length is 0 or is empty.")
 
         if len(username) > 30:
             raise forms.ValidationError("Username length is greater than 30.")
@@ -163,6 +175,9 @@ class AddProduct(forms.Form):
     def clean_title(self):
         title = self.cleaned_data["title"]
 
+        if len(title) == 0:
+            raise forms.ValidationError("Title length is 0 or is empty.")
+
         if len(title) > 50:
             raise forms.ValidationError("Title length is greater than 50.")
 
@@ -178,6 +193,9 @@ class AddProduct(forms.Form):
 
     def clean_description(self):
         description = self.cleaned_data["description"]
+
+        if len(description) == 0:
+            raise forms.ValidationError("Description length is 0 or is empty.")
 
         if len(description) > 500:
             raise forms.ValidationError("Description length is greater than 500.")
@@ -400,6 +418,9 @@ class SearchProduct(forms.Form):
     def clean_title(self):
         title = self.cleaned_data["title"]
 
+        if len(title) == 0:
+            raise forms.ValidationError("Title length is 0 or is empty.")
+
         if len(title) > 50:
             raise forms.ValidationError("Title length is greater than 50.")
 
@@ -569,10 +590,61 @@ class UpcEanLookup(forms.Form):
 
         return ean
 
-class Review(forms.Form):
+class Feedback(forms.Form):
     overall_rating = forms.ChoiceField(choices=Choices.CHOICES_OVERALL_RATING, widget=forms.Select(attrs={"title": "Choose the overall rating", "class": "field"})) # to see or edit the choices go to choices.py
-    accurate_description = forms.IntegerField(min_value=1, max_value=10, widget=forms.Select(attrs={"title": "How accurate was the product's description", "class": "field"}))
-    shipping_speed = forms.IntegerField(min_value=1, max_value=10, widget=forms.Select(attrs={"title": "How reasonable was the shipping speed", "class": "field"}))
-    shipping_cost = forms.IntegerField(min_value=1, max_value=10, widget=forms.Select(attrs={"title": "How reasonable was the shipping cost", "class": "field"}))
-    communication = forms.IntegerField(min_value=1, max_value=10, widget=forms.Select(attrs={"title": "How was the seller's communication", "class": "field"}))
-    comment = forms.CharField(max_length=250, widget=forms.Textarea(attrs={"placeholder": "A simple sentence or two that described your experience", "title": "A simple sentence or two that described your experience", "rows": "6", "class": "field"}))
+    accurate_description = forms.ChoiceField(choices=Choices.CHOICES_FEEDBACK_RATING, widget=forms.Select(attrs={"placeholder": "How accurate was the product's description", "title": "How accurate was the product's description", "class": "field"}))
+    shipping_speed = forms.ChoiceField(choices=Choices.CHOICES_FEEDBACK_RATING, widget=forms.Select(attrs={"placeholder": "How reasonable was the shipping speed", "title": "How reasonable was the shipping speed", "class": "field"}))
+    shipping_cost = forms.ChoiceField(choices=Choices.CHOICES_FEEDBACK_RATING, widget=forms.Select(attrs={"placeholder": "How reasonable was the shipping cost", "title": "How reasonable was the shipping cost", "class": "field"}))
+    communication = forms.ChoiceField(choices=Choices.CHOICES_FEEDBACK_RATING, widget=forms.Select(attrs={"placeholder": "How was the seller's communication", "title": "How was the seller's communication", "class": "field"}))
+    comment = forms.CharField(max_length=250, widget=forms.Textarea(attrs={"placeholder": "A simple sentence or two that described your experience", "title": "A simple sentence or two that described your experience", "rows": "4", "class": "field"}))
+
+    def clean_overall_rating(self):
+        overall_rating = self.cleaned_data["overall_rating"]
+
+        if len([i[0] for i in Choices.CHOICES_OVERALL_RATING if i[0] == overall_rating]) == 0:
+            raise forms.ValidationError("Overall rating is not valid.")
+
+        return overall_rating
+
+    def clean_accurate_description(self):
+        accurate_description = int(self.cleaned_data["accurate_description"])
+
+        if len([i[0] for i in Choices.CHOICES_FEEDBACK_RATING if i[0] == accurate_description]) == 0:
+            raise forms.ValidationError("Accurate description rating is not valid. Must be 1-5.")
+
+        return accurate_description
+
+    def clean_shipping_speed(self):
+        shipping_speed = int(self.cleaned_data["shipping_speed"])
+
+        if len([i[0] for i in Choices.CHOICES_FEEDBACK_RATING if i[0] == shipping_speed]) == 0:
+            raise forms.ValidationError("Shipping speed rating is not valid. Must be 1-5.")
+
+        return shipping_speed
+
+    def clean_shipping_cost(self):
+        shipping_cost = int(self.cleaned_data["shipping_cost"])
+
+        if len([i[0] for i in Choices.CHOICES_FEEDBACK_RATING if i[0] == shipping_cost]) == 0:
+            raise forms.ValidationError("Shipping cost rating is not valid. Must be 1-5.")
+
+        return shipping_cost
+
+    def clean_communication(self):
+        communication = int(self.cleaned_data["communication"])
+
+        if len([i[0] for i in Choices.CHOICES_FEEDBACK_RATING if i[0] == communication]) == 0:
+            raise forms.ValidationError("Communication rating is not valid. Must be 1-5.")
+
+        return communication
+
+    def clean_comment(self):
+        comment = self.cleaned_data["comment"]
+
+        if len(comment) == 0:
+            raise forms.ValidationError("The comment length is 0 or is empty.")
+
+        if len(comment) > 250:
+            raise forms.ValidationError("The comment length is greater than 250.")
+
+        return comment

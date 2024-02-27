@@ -14,20 +14,9 @@
       <div class="content py-3 px-3">
         <form class="signup_form px-3 py-3" action="{% url 'signup_view' %}" method="POST">
           <fieldset>
-            {% csrf_token %}
             <legend class="display-5 text-center"><b>SIGNUP</b></legend>
             <hr>
-            {% for field in signup_form %}
-              <div class="control-group pb-3">
-                <label class="control-label">{{field.label}}</label> 
-                <div class="controls">
-                  {{field}}
-                </div>
-              </div>
-            {% endfor %}
-            <div class="text-center py-2">
-              <input class="btn btn-primary" type="submit" value="SIGNUP" title="Signup">
-            </div>
+            {% include "includes/forms.html" with form=signup_form form_text="Signup" %}
             <div class="footer text-center">
               <hr>
               <a class="nav-link" href="{% url 'login_view' %}" title="Login page">Already have an account?<b><u class="ps-1">Login here</u></b></a>

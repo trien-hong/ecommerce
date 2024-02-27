@@ -1,6 +1,6 @@
 {% if messages %}
 	{% for message in messages %}
-		<div class="modal" id="modal" tabindex="-1">
+		<div class="modal fade" id="modal" tabindex="-1">
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -11,7 +11,7 @@
 						{% elif message.extra_tags == 'check-out' or message.extra_tags == 'delete-all-items-from-cart' or message.extra_tags == 'delete-product' or message.extra_tags == 'delete-upc' or message.extra_tags == 'delete-ean'%}
 							<h4 class="modal-title text-warning"><b><u>PLEASE CONFIRM</u></b></h4>
 						{% endif %}
-						<button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="CLOSE" title="CLOSE ALERT"></button>
+						<button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="CLOSE"></button>
 					</div>
 						{% if message.tags == 'error' %}
 							<div class="modal-body text-break pb-0">
@@ -26,35 +26,35 @@
 						{% if message.extra_tags == 'check-out' %}
 							<form action="{% url 'check_out_view' %}" method="POST">
 								{% csrf_token %}
-								<input class="btn btn-success" type="submit" value="YES" title="YES">
+								<input class="btn btn-success" type="submit" value="YES">
 							</form>
-							<button type="button" class="btn btn-danger" data-bs-dismiss="modal" title="NO">NO</button>
+							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">NO</button>
 						{% elif message.extra_tags == 'delete-all-items-from-cart' %}
 							<form action="{% url 'delete_all_items_from_cart_view' %}" method="POST">
 								{% csrf_token %}
-								<input class="btn btn-success" type="submit" value="YES" title="YES">
+								<input class="btn btn-success" type="submit" value="YES">
 							</form>
-							<button type="button" class="btn btn-danger" data-bs-dismiss="modal" title="NO">NO</button>
+							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">NO</button>
 						{% elif message.extra_tags == 'delete-product' %}
 							<form action="{% url 'delete_product_view' uuid=product.uuid %}" method="POST">
 								{% csrf_token %}
-								<input class="btn btn-success" type="submit" value="YES" title="YES">
+								<input class="btn btn-success" type="submit" value="YES">
 							</form>
-							<button type="button" class="btn btn-danger" data-bs-dismiss="modal" title="NO">NO</button>
+							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">NO</button>
 						{% elif message.extra_tags == 'delete-upc' %}
 							<form action="{% url 'edit_product_delete_upc_ean_view' uuid=product.uuid type='upc' %}" method="POST">
 								{% csrf_token %}
-								<input class="btn btn-success" type="submit" value="YES" title="YES">
+								<input class="btn btn-success" type="submit" value="YES">
 							</form>
-							<button type="button" class="btn btn-danger" data-bs-dismiss="modal" title="NO">NO</button>
+							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">NO</button>
 						{% elif message.extra_tags == 'delete-ean' %}
 							<form action="{% url 'edit_product_delete_upc_ean_view' uuid=product.uuid type='ean' %}" method="POST">
 								{% csrf_token %}
-								<input class="btn btn-success" type="submit" value="YES" title="YES">
+								<input class="btn btn-success" type="submit" value="YES">
 							</form>
-							<button type="button" class="btn btn-danger" data-bs-dismiss="modal" title="NO">NO</button>
+							<button type="button" class="btn btn-danger" data-bs-dismiss="modal">NO</button>
 						{% else %}
-							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" title="CLOSE ALERT">CLOSE</button>
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CLOSE</button>
 						{% endif %}
 					</div>
 				</div>

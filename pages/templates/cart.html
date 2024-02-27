@@ -36,12 +36,12 @@
                     <form action="{% url 'delete_from_cart_view' uuid=item.uuid %}" method="POST">
                       {% csrf_token %}
                       {% if item.product.status == "inactive" %}
-                        <h4 class="bg-warning text-center" title="Sorry, this product has been deactivated by seller or by us"><b><u>INACTIVE</u></b></h4>
+                        <h4 class="bg-warning text-center" title="Sorry, this product has been deactivated"><b><u>INACTIVE</u></b></h4>
                       {% elif item.product.status == "sold out" %}
                         <h4 class="bg-danger text-center" title="Sorry, this product is sold out"><b><u>SOLD OUT</u></b></h4>
                       {% endif %}
                       <div class="remove_from_cart_button">
-                        <input class="btn btn-danger" type="submit" value="REMOVE ITEM" title="Remove item">
+                        <input class="btn btn-danger" type="submit" value="Remove Item">
                       </div>
                     </form>
                   </div>
@@ -50,20 +50,20 @@
               {% endfor %}
               <div class="cart-footer px-4 pb-3"> 
                 <div class="check_out_confirm">
-                  <a class="btn btn-danger" href="{% url 'confirm_message_view' type='delete-all-items-from-cart' %}" role="button" title="Delete all items">DELETE ALL ITEMS</a>
+                  <a class="btn btn-danger" href="{% url 'confirm_message_view' type='delete-all-items-from-cart' %}" role="button">DELETE ALL ITEMS</a>
                 </div>
                 <div>
                   <h3 class="my-0">Total Price: <b>${{total_price}}</b></h3>
                 </div>
                 <div class="check_out_confirm">
-                  <a class="btn btn-primary" href="{% url 'confirm_message_view' type='check-out' %}" role="button" title="Check out">CHECK OUT</a>
+                  <a class="btn btn-primary" href="{% url 'confirm_message_view' type='check-out' %}" role="button">CHECK OUT</a>
                 </div>
               </div>
             </div>
           </div>
         {% else %}
           <div class="empty_or_error text-center px-3 py-3">
-            <h1>Your cart seems to be empty.<br><br>Why not try adding some items to your cart from the homepage first? <a href="{% url 'index_view' %}" title="Homepage">Homepage</a></h1>
+            <h1>Your cart seems to be empty.<br><br>Why not try adding some items to your cart from the homepage first? <a href="{% url 'index_view' %}">Homepage</a></h1>
           </div>
         {% endif %}
       </div>

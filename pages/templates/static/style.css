@@ -175,6 +175,12 @@ h4 {
     justify-content: space-between;
 }
 
+.storefront_header_right_side {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
 .profile_picture {
     background-color: gray;
     border: 1px solid black;

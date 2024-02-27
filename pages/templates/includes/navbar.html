@@ -9,63 +9,63 @@
 				{% if main == False %}
 					<li class="nav-item">
 						{% if location == "login" %}
-							<a class="nav-link active" aria-current="page" href="{% url 'login_view' %}" title="Login page"><u>Login</u></a>
+							<a class="nav-link active" aria-current="page" href="{% url 'login_view' %}"><u>Login</u></a>
 						{% else %}
-							<a class="nav-link" href="{% url 'login_view' %}" title="Login page">Login</a>
+							<a class="nav-link" href="{% url 'login_view' %}">Login</a>
 						{% endif %}
 					</li>
 					<li class="nav-item">
 						{% if location == "signup" %}
-							<a class="nav-link active" aria-current="page" href="{% url 'signup_view' %}" title="Signup page"><u>Signup</u></a>
+							<a class="nav-link active" aria-current="page" href="{% url 'signup_view' %}"><u>Signup</u></a>
 						{% else %}
-							<a class="nav-link" href="{% url 'signup_view' %}" title="Signup page">Signup</a>
+							<a class="nav-link" href="{% url 'signup_view' %}">Signup</a>
 						{% endif %}
 					</li>
 					<li class="nav-item">
 						{% if location == "reset_password" %}
-							<a class="nav-link active" aria-current="page" href="{% url 'reset_password_view' %}" title="Reset password page"><u>Reset password</u></a>
+							<a class="nav-link active" aria-current="page" href="{% url 'reset_password_view' %}"><u>Reset password</u></a>
 						{% else %}
-							<a class="nav-link" href="{% url 'reset_password_view' %}" title="Reset password page">Reset password</a>
+							<a class="nav-link" href="{% url 'reset_password_view' %}">Reset password</a>
 						{% endif %}
 					</li>
 				{% else %}
 					<li class="nav-item">
 						{% if location == "index" %}
-							<a class="nav-link active" aria-current="page" href="{% url 'index_view' %}" title="Homepage"><u>Home</u></a>
+							<a class="nav-link active" aria-current="page" href="{% url 'index_view' %}"><u>Home</u></a>
 						{% else %}
-							<a class="nav-link" href="{% url 'index_view' %}" title="Homepage">Home</a>
+							<a class="nav-link" href="{% url 'index_view' %}">Home</a>
 						{% endif %}
 					</li>
 					<li class="nav-item">
 						{% if location == "advanced_search" %}
-							<a class="nav-link active" aria-current="page" href="{% url 'advanced_search_view' %}" title="Advanced search products"><u>Advanced Search</u></a>
+							<a class="nav-link active" aria-current="page" href="{% url 'advanced_search_view' %}"><u>Advanced Search</u></a>
 						{% else %}
-							<a class="nav-link" href="{% url 'advanced_search_view' %}" title="Advanced search products">Advanced Search</a>
+							<a class="nav-link" href="{% url 'advanced_search_view' %}">Advanced Search</a>
 						{% endif %}
 					</li>
 					<li class="nav-item">
 						{% if location == "add_product" %}
-							<a class="nav-link active" aria-current="page" href="{% url 'add_product_view' %}?option=how" title="Add product"><u>Add product</u></a>
+							<a class="nav-link active" aria-current="page" href="{% url 'add_product_view' %}?option=how"><u>Add product</u></a>
 						{% else %}
-							<a class="nav-link" href="{% url 'add_product_view' %}?option=how" title="Add product">Add product</a>
+							<a class="nav-link" href="{% url 'add_product_view' %}?option=how">Add product</a>
 						{% endif %}
 					</li>
 					<li class="nav-item">
 						{% if location == "cart" %}
-							<a class="nav-link active" aria-current="page" href="{% url 'cart_view' %}" title="View cart"><u>Cart</u></a>
+							<a class="nav-link active" aria-current="page" href="{% url 'cart_view' %}"><u>Cart</u></a>
 						{% else %}
-							<a class="nav-link" href="{% url 'cart_view' %}" title="View cart">Cart</a>
+							<a class="nav-link" href="{% url 'cart_view' %}">Cart</a>
 						{% endif %}
 					</li>
 					<li class="nav-item">
 						{% if location == "profile" %}
-							<a class="nav-link active" aria-current="page" href="{% url 'profile_view' %}" title="View profile"><u>Profile</u></a>
+							<a class="nav-link active" aria-current="page" href="{% url 'profile_view' %}"><u>Profile</u></a>
 						{% else %}
-							<a class="nav-link" href="{% url 'profile_view' %}" title="View profile">Profile</a>
+							<a class="nav-link" href="{% url 'profile_view' %}">Profile</a>
 						{% endif %}
 					</li>
 					<li class="nav-item">
-						<a class="nav-link" href="{% url 'logout_user' %}" title="Logout user">Logout</a>
+						<a class="nav-link" href="{% url 'logout_user' %}">Logout</a>
 					</li>
 				{% endif %}
 			</ul>

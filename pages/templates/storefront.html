@@ -16,7 +16,7 @@
           <div class="px-2 py-2">
             <div class="empty_or_error text-center mx-2 my-2 px-3 py-3">
               <h1>Sorry, the seller, does not exist.</h1>
-              <h1 class="mt-5"><a href="{% url 'index_view' %}" title="Homepage">Go back to homepage</a> </h1>
+              <h1 class="mt-5"><a href="{% url 'index_view' %}">Go back to homepage</a> </h1>
             </div>
           </div>
         {% else %}
@@ -40,22 +40,41 @@
                 <p class="my-0">Items sold: <b>{{seller.items_sold}}</b></p>
               </div>
             </div>
-            <div class="seller_ratings">
-              <div class="text-center">
-                <h5 class="mb-1"><b><u>Ratings</u></b></h5>
+            <div class="storefront_header_right_side">
+              <div class="seller_ratings">
+                <div class="text-center">
+                  <h5 class="mb-1"><b><u>Ratings</u></b></h5>
+                </div>
+                <div class="ratings">
+                  <div>
+                    <p class="my-2">Accurate Description: <b>{{accurate_description}}/5</b></p>
+                  </div>
+                  <div>
+                    <p class="my-2">Communication: <b>{{communication}}/5</b></p>
+                  </div>
+                  <div>
+                    <p>Shipping Cost: <b>{{shipping_cost}}/5</b></p>
+                  </div>
+                  <div>
+                    <p>Shipping Speed: <b>{{shipping_speed}}/5</b></p>
+                  </div>
+                </div>
+                <div class="text-center mt-2">
+                  Total Number of Feedbacks: <b>{{total_feedback}}</b>
+                </div>
               </div>
-              <div class="ratings">
-                <div>
-                  <p class="my-2">Accurate Description: <b>1/10</b></p>
-                </div>
-                <div>
-                  <p class="my-2">Communication: <b>2/10</b></p>
-                </div>
-                <div>
-                  <p>Shipping Cost: <b>3/10</b></p>
-                </div>
-                <div>
-                  <p>Shipping Speed: <b>4/10</b></p>
+              <div class="vr mx-3"></div>
+              <div class="storefront_header_buttons">
+                  {% if user.username != seller.username %}
+                    <div>
+                      <a href="#"><img class="pe-2" src="{% static 'images/contact_icon.svg' %}" alt="contact icon">Contact</a>
+                    </div>
+                    <div>
+                      <a href="#" data-bs-toggle="modal" data-bs-target="#feedback_modal"><img class="pe-2 py-3" src="{% static 'images/clipboard_icon.svg' %}" alt="clipboard icon">Review</a>
+                    </div>
+                    <div>
+                  {% endif %}
+                  <a href="#"><img class="pe-2" src="{% static 'images/share_icon.svg' %}" alt="clipboard icon">Share</a>
                 </div>
               </div>
             </div>
@@ -72,6 +91,21 @@
           </div>
           {% endif %}
         {% endif %}
+      </div>
+    </div>
+    <div class="modal fade" id="feedback_modal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5">Feedback for Seller</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="CLOSE"></button>
+          </div>
+          <div class="modal-body">
+            <form action="{% url 'feedback_view' %}?member-id={{seller.member_id}}" method="POST">
+              {% include "includes/forms.html" with form=feedback_form form_text="Leave Feedback" %}
+            </form>
+          </div>
+        </div>
       </div>
     </div>
     {% include "includes/modal_message.html" %}

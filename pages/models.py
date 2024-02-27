@@ -41,11 +41,10 @@ class Sold(models.Model):
 class Feedback(models.Model):
     buyer = models.ForeignKey(get_user_model(), related_name="buyer", on_delete=models.CASCADE)
     seller = models.ForeignKey(get_user_model(), related_name="seller", on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     overall_rating = models.CharField(choices=Choices.CHOICES_OVERALL_RATING) # to see or edit the choices go to choices.py
-    accurate_description = models.PositiveIntegerField()
-    shipping_speed = models.PositiveIntegerField()
-    shipping_cost = models.PositiveIntegerField()
-    communication = models.PositiveIntegerField()
+    accurate_description = models.PositiveIntegerField(choices=Choices.CHOICES_FEEDBACK_RATING) # to see or edit the choices go to choices.py
+    shipping_speed = models.PositiveIntegerField(choices=Choices.CHOICES_FEEDBACK_RATING) # to see or edit the choices go to choices.py
+    shipping_cost = models.PositiveIntegerField(choices=Choices.CHOICES_FEEDBACK_RATING) # to see or edit the choices go to choices.py
+    communication = models.PositiveIntegerField(choices=Choices.CHOICES_FEEDBACK_RATING) # to see or edit the choices go to choices.py
     comment = models.CharField(max_length=250)
     feedback_date = models.DateTimeField(auto_now_add=True)
