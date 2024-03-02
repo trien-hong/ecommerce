@@ -10,5 +10,8 @@
     {% endfor %}
     <div class="text-center py-2">
         <input class="btn btn-primary" type="submit" value="{{form_text}}" title="{{form_text}}">
+        {% if feedback_form %}
+            <button class="btn btn-primary ms-5" data-bs-target="#feedback_modal" data-bs-toggle="modal">View Seller's Feedback &rsaquo;</button>
+        {% endif %}
     </div>
 </fieldset>

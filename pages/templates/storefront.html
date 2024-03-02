@@ -43,19 +43,19 @@
             <div class="storefront_header_right_side">
               <div class="seller_ratings">
                 <div class="text-center">
-                  <h5 class="mb-1"><b><u>Ratings</u></b></h5>
+                  <h5 class="mb-1 text-center"><b><u>Ratings</u></b></h5>
                 </div>
                 <div class="ratings">
                   <div>
                     <p class="my-2">Accurate Description: <b>{{accurate_description}}/5</b></p>
                   </div>
-                  <div>
+                  <div class="ms-auto">
                     <p class="my-2">Communication: <b>{{communication}}/5</b></p>
                   </div>
                   <div>
                     <p>Shipping Cost: <b>{{shipping_cost}}/5</b></p>
                   </div>
-                  <div>
+                  <div class="ms-auto">
                     <p>Shipping Speed: <b>{{shipping_speed}}/5</b></p>
                   </div>
                 </div>
@@ -69,12 +69,13 @@
                     <div>
                       <a href="#"><img class="pe-2" src="{% static 'images/contact_icon.svg' %}" alt="contact icon">Contact</a>
                     </div>
-                    <div>
-                      <a href="#" data-bs-toggle="modal" data-bs-target="#feedback_modal"><img class="pe-2 py-3" src="{% static 'images/clipboard_icon.svg' %}" alt="clipboard icon">Review</a>
-                    </div>
-                    <div>
                   {% endif %}
-                  <a href="#"><img class="pe-2" src="{% static 'images/share_icon.svg' %}" alt="clipboard icon">Share</a>
+                  <div>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="{% if user.username == seller.username %}#feedback_modal{% else %}#leave_feedback_modal{% endif %}"><img class="pe-2 py-3" src="{% static 'images/clipboard_icon.svg' %}" alt="clipboard icon">Review</a>
+                  </div>
+                  <div>
+                    <a href="#"><img class="pe-2" src="{% static 'images/share_icon.svg' %}" alt="clipboard icon">Share</a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -93,17 +94,30 @@
         {% endif %}
       </div>
     </div>
-    <div class="modal fade" id="feedback_modal" tabindex="-1">
-      <div class="modal-dialog">
+    <div class="modal fade" id="leave_feedback_modal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5">Feedback for Seller</h1>
+            <h1 class="modal-title fs-5"><b><u>Leave Feedback for Seller</u></b></h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="CLOSE"></button>
           </div>
           <div class="modal-body">
             <form action="{% url 'feedback_view' %}?member-id={{seller.member_id}}" method="POST">
               {% include "includes/forms.html" with form=feedback_form form_text="Leave Feedback" %}
             </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="feedback_modal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5"><b><u>Seller's Feedback</u></b></h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="CLOSE"></button>
+          </div>
+          <div class="modal-body">
+            {% include "includes/feedbacks.html" %}
           </div>
         </div>
       </div>

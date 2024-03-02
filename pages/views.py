@@ -184,22 +184,24 @@ def storefront_view(request):
         shipping_cost = 0
         communication = 0
         total_feedback = 0
+        feedbacks = None
         if member_id is not None:
             try:
                 seller = User.objects.get(member_id=member_id)
                 seller_feedback_ratings = Feedback.objects.filter(seller=seller)
                 if seller_feedback_ratings.exists():
-                    for i in seller_feedback_ratings:
-                        accurate_description = accurate_description + i.accurate_description
-                        shipping_speed = shipping_speed + i.shipping_speed
-                        shipping_cost = shipping_cost + i.shipping_speed
-                        communication = communication + i.communication
+                    for feedback in seller_feedback_ratings:
+                        accurate_description = accurate_description + feedback.accurate_description
+                        shipping_speed = shipping_speed + feedback.shipping_speed
+                        shipping_cost = shipping_cost + feedback.shipping_speed
+                        communication = communication + feedback.communication
                     accurate_description = round(accurate_description/seller_feedback_ratings.count(), 1)
                     shipping_speed = round(shipping_speed/seller_feedback_ratings.count(), 1)
                     shipping_cost = round(shipping_cost/seller_feedback_ratings.count(), 1)
                     communication = round(communication/seller_feedback_ratings.count(), 1)
                     total_feedback = seller_feedback_ratings.count()
                 products = Product.objects.filter(seller=seller).exclude(status=Choices.CHOICES_PRODUCT_STATUS[2][0]).exclude(status=Choices.CHOICES_PRODUCT_STATUS[3][0]) # to see or edit the choices go to choices.py
+                feedbacks = Feedback.objects.filter(seller=seller)
             except User.DoesNotExist:
                 seller = None
                 products = None
@@ -208,7 +210,7 @@ def storefront_view(request):
             seller = None
             products = None
             messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error.</li><li>The seller does not exist.</li></ul>"))
-        return render(request, "storefront.html", { "seller": seller, "products": products, "accurate_description": accurate_description, "shipping_speed": shipping_speed, "shipping_cost": shipping_cost, "communication": communication, "total_feedback": total_feedback, "feedback_form": feedback_form })
+        return render(request, "storefront.html", { "seller": seller, "products": products, "feedbacks": feedbacks, "accurate_description": accurate_description, "shipping_speed": shipping_speed, "shipping_cost": shipping_cost, "communication": communication, "total_feedback": total_feedback, "feedback_form": feedback_form })
 
 @never_cache
 @login_required
@@ -217,6 +219,8 @@ def feedback_view(request):
     URL: /storefront/feedback?member-id=...
     where ?member-id=... is the query string
     """
+    if request.method == "GET":
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
     if request.method == "POST":
         user = request.user
         user_feedback = request.POST
@@ -821,7 +825,6 @@ def upload_banner_picture_view(request):
         else:
             messages.add_message(request, messages.ERROR, upload_banner_picture_form.errors)
             return redirect(profile_option_view, option="settings")
-
 
 @never_cache
 @login_required

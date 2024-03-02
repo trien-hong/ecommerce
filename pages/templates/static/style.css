@@ -181,6 +181,18 @@ h4 {
     align-items: center;
 }
 
+.feedback {
+    display: flex;
+    flex-direction: column;
+}
+
+.feedback_header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .profile_picture {
     background-color: gray;
     border: 1px solid black;

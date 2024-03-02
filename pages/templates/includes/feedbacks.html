@@ -1,0 +1,46 @@
+{% load static %}
+{% if feedbacks %}
+    {% for feedback in feedbacks %}
+        <div class="feedback">
+            <h5 class="my-0">#{{forloop.counter}}</h5>
+            <div class="feedback_header">
+                <div>
+                    <h5>Buyer: {{feedback.buyer.username}}</h5>
+                    <h6>{{feedback.feedback_date}}</h6>
+                </div>
+                <div>
+                    {% if feedback.overall_rating == "negative" %}
+                        <img src="{% static 'images/emoji_frown_fill.svg' %}" alt="overall rating picture" width="35" height="35">
+                    {% elif feedback.overall_rating == "neutral" %}
+                        <img src="{% static 'images/emoji_neutral_fill.svg' %}" alt="overall rating picture" width="35" height="35">
+                    {% else %}
+                        <img src="{% static 'images/emoji_smile_fill.svg' %}" alt="overall rating picture" width="35" height="35">
+                    {% endif %}
+                </div>
+            </div>
+            <div class="ratings pb-2">
+                <div>
+                    <p>Accurate Description: <b>{{feedback.accurate_description}}/5</b></p>
+                </div>
+                <div class="ms-auto">
+                    <p>Communication: <b>{{feedback.communication}}/5</b></p>
+                </div>
+                <div>
+                    <p>Shipping Cost: <b>{{feedback.shipping_cost}}/5</b></p>
+                </div>
+                <div class="ms-auto">
+                    <p>Shipping Speed: <b>{{feedback.shipping_speed}}/5</b></p>
+                </div>
+            </div>
+            <p>Comment: {{feedback.comment}}</p>
+        </div>
+        <hr>
+    {% endfor %}
+    <div class="text-center">
+        {% if user.username != seller.username %}
+            <button class="btn btn-primary" data-bs-target="#leave_feedback_modal" data-bs-toggle="modal">Leave Feedback for Seller &rsaquo;</button>
+        {% endif %}
+    </div>
+{% else %}
+    <h3 class="text-center">Seller does not have any feedback.</h3>
+{% endif %}
