@@ -28,7 +28,7 @@ Within your browser go to `0.0.0.0:8000`, or `127.0.0.1:8000`, or `localhost:800
 Docker sometimes will attempt to start the app before the database is running. If that's the case (though rare), you can simply run the `docker-compose up` command again.
 
 # Features
-* Users account (login, signup, reset password)
+* Users account (able to login, signup, reset password, and delete account)
 * For a sense of money interaction, I've implemented pricing and credits
 * All products are neatly displayed using CSS grid layout showing a brief overview of the product
   * Each product's image is clickable to view even more details about the product; this includes...
@@ -38,25 +38,27 @@ Docker sometimes will attempt to start the app before the database is running. I
     * Seller's storefront link
     * Number of times the product page has been viewed
 * Ability to list (either manually or through a UPC/EAN lookup), edit, and delete products
-* Ability to filter by (all products, product's category, product's condition)
-* Ability to sort by products's (title, date, views)
+* Ability to filter by (all products, product's category, and product's condition)
+* Ability to sort by products's (title, date, and views)
 * Ability to search for products
   * Also contains an advanced search function
 * Implemented pagination or paging to help separate content and for better presentation
-* Has cart cart functionality with ability to remove items from the cart along with a check out function
+* Has cart functionality with ability to remove items from the cart along with a check out function
 * Some error checking includes, but is not limited to, ...
   * You must have enough credits on the account to satisfy the total price of all items in your cart in order to check out
-  * Product can only be added to cart if you are the one that didn't list the product and if the product is not sold out
-  * Product can only be edited and deleted if it's not sold out and you are the one who listed it
-  * If the product in cart is sold out before you check out, a message will be displayed and the product will now be marked with a "SOLD OUT"
+  * Product can only be added to cart if you are the one that didn't list the product and if the product is not sold out or inactive
+  * Product can only be edited and deleted if it's not sold out or and you are the one who listed it
+  * If the product in cart is sold out, before you check out, a message will be displayed and the product will now be marked with a "SOLD OUT"
     * These "SOLD OUT" products cannot be purchased and you can only remove them from your cart
+  * If the product in cart is inactive, before you check out, a message will be displayed and the product will now be marked with a "INACTIVE"
+    * These "INACTIVE" products cannot be purchased and you can only remove them from your cart
   * Universal Product Code (UPC) and International Article Number (EAN) validation are done through Django forms
+  * In matter of fact, all forms submitted to the back-end have some sort of validation done on them
   * To help prevent brute force, some views in Django will only accept UUIDs
     * If exposed, the UUID is shown to the user and not the ID/PK
-* All forms submitted to the back-end have some sort of validation done on them
 * Dynamic messages with the help of Django messages and Bootstrap Modal
 * Profile page with 5 different options to choose from
-  * Settings where you can change your username/password, upload profile/banner picture, and delete account
+  * Settings where you can change your username/password/state or territory, upload profile/banner picture, and delete account
   * Wish List (to be implemented)
   * Listing History where you can view all the products that you have listed (active, inactive, and sold out)
   * Purchase History where you can view all the products that you have purchased
@@ -65,4 +67,17 @@ Docker sometimes will attempt to start the app before the database is running. I
   * All the seller's products that are not sold out or inactive
   * Seller's profile picture and banner picture displayed at the top (if they have one)
   * Seller's basic information including username, which state/territory, and number of items sold
-  * Also includes their rating (to be implemented)
+  * Users (but not the seller) can leave a feedback on the seller's storefront
+    * Accurate Description (1-5)
+    * Shipping Speed (1-5)
+    * Shipping Cost (1-5)
+    * Communication (1-5)
+  * Users can also view the feedback left by other users or themselves
+    * The user who left the feedback
+    * The date of the feedback
+    * The overall rating is turned into a picture (emoji smile for good, emoji neutral for neutral, and emoji frown for bad)
+    * Accurate Description (1-5)
+    * Shipping Speed (1-5)
+    * Shipping Cost (1-5)
+    * Communication (1-5)
+    * The comment
