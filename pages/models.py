@@ -39,6 +39,7 @@ class Sold(models.Model):
     buyer = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
 class Feedback(models.Model):
+    uuid = models.UUIDField(primary_key=False, editable=False, unique=True, default=uuid.uuid4)
     buyer = models.ForeignKey(get_user_model(), related_name="buyer", on_delete=models.CASCADE)
     seller = models.ForeignKey(get_user_model(), related_name="seller", on_delete=models.CASCADE)
     overall_rating = models.CharField(choices=Choices.CHOICES_OVERALL_RATING) # to see or edit the choices go to choices.py

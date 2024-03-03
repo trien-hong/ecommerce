@@ -13,18 +13,16 @@
     <div class="container text-break px-0">
       <div class="content px-3 py-3">
         <form class="login_form px-3 py-3" action="{% url 'login_view' %}" method="POST">
-          <fieldset>
-            {% csrf_token %}
-            <legend class="display-5 text-center"><b>LOGIN</b></legend>
+          {% csrf_token %}
+          <legend class="display-5 text-center"><b>LOGIN</b></legend>
+          <hr>
+          {% include "includes/forms.html" with form=login_form form_text="Login" %}
+          <div class="footer text-center">
             <hr>
-            {% include "includes/forms.html" with form=login_form form_text="Login" %}
-            <div class="footer text-center">
-              <hr>
-              <a class="nav-link" href="{% url 'signup_view' %}" title="Signup page">Don't have an account?<b><u class="ps-1">Signup here</u></b></a>
-              <hr>
-              <a class="nav-link" href="{% url 'reset_password_view' %}" title="Reset password page">Forgot your password?<b><u class="ps-1">Reset here</u></b></a>
-            </div>
-          </fieldset>
+            <a class="nav-link" href="{% url 'signup_view' %}" title="Signup page">Don't have an account?<b><u class="ps-1">Signup here</u></b></a>
+            <hr>
+            <a class="nav-link" href="{% url 'reset_password_view' %}" title="Reset password page">Forgot your password?<b><u class="ps-1">Reset here</u></b></a>
+          </div>
         </form>
       </div>
     </div>

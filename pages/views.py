@@ -214,7 +214,7 @@ def storefront_view(request):
 
 @never_cache
 @login_required
-def feedback_view(request):
+def leave_feedback_view(request):
     """
     URL: /storefront/feedback?member-id=...
     where ?member-id=... is the query string
@@ -241,6 +241,29 @@ def feedback_view(request):
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>The seller doesn't seem to exist.</li></ul>"))
         else:
             messages.add_message(request, messages.ERROR, feedback_form.errors)
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+
+@never_cache
+@login_required
+def delete_feedback_view(request):
+    """
+    URL: /storefront/delete-feedback?feedback-id=...
+    where ?feedback-id=... is the query string
+    """
+    if request.method == "GET":
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+    if request.method == "POST":
+        user = request.user
+        feedback_id = request.GET.get("feedback-id", None)
+        try:
+            feedback = Feedback.objects.get(uuid=feedback_id)
+            if user == feedback.buyer:
+                feedback.delete()
+                messages.add_message(request, messages.SUCCESS, "You successfully delete your feedback for this seller.")
+            else:
+                messages.add_message(request, messages.ERROR, "You are not the one who left this feedback.")
+        except Feedback.DoesNotExist:
+            messages.add_message(request, messages.ERROR, mark_safe("There seems to be an error in deleteing this feedback."))
         return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
 @never_cache

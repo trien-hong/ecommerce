@@ -2,8 +2,22 @@
 {% if feedbacks %}
     {% for feedback in feedbacks %}
         <div class="feedback">
-            <h5 class="my-0">#{{forloop.counter}}</h5>
             <div class="feedback_header">
+                <div>
+                    <h5 class="my-0">#{{forloop.counter}}</h5>
+                </div>
+                <div>
+                    {% if feedback.buyer.username == user.username %}
+                        <form action="{% url 'delete_feedback_view' %}?feedback-id={{feedback.uuid}}" method="POST">
+                            {% csrf_token %}
+                            <div>
+                                <input class="btn btn-danger btn-sm" type="submit" value="Delete Your Feedback" title="Delete Your Feedback" src="{% static 'images/trash_icon.svg' %}">
+                            </div>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="feedback_subheader">
                 <div>
                     <h5>Buyer: {{feedback.buyer.username}}</h5>
                     <h6>{{feedback.feedback_date}}</h6>
@@ -42,5 +56,10 @@
         {% endif %}
     </div>
 {% else %}
-    <h3 class="text-center">Seller does not have any feedback.</h3>
+    <div class="text-center">
+        <h3 class="pb-2">Seller does not have any feedback.</h3>
+        {% if user.username != seller.username %}
+            <button class="btn btn-primary" data-bs-target="#leave_feedback_modal" data-bs-toggle="modal">Leave Feedback for Seller &rsaquo;</button>
+        {% endif %}
+    </div>
 {% endif %}

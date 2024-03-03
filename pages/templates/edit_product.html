@@ -49,12 +49,10 @@
             <div class="vr mx-3"></div>
             <div class="edit_product_form pe-3">
               <form action="{% url 'edit_product_view' uuid=product.uuid %}" enctype="multipart/form-data" method="POST">
-                <fieldset>
-                  {% csrf_token %}
-                  <legend class="display-5 text-center"><b>EDIT PRODUCT</b></legend>
-                  <hr>
-                  {% include "includes/forms.html" with form=edit_product_form form_text="Edit Product" %}
-                </fieldset>
+                {% csrf_token %}
+                <legend class="display-5 text-center"><b>EDIT PRODUCT</b></legend>
+                <hr>
+                {% include "includes/forms.html" with form=edit_product_form form_text="Edit Product" %}
               </form>
               <hr>
               {% if product.upc or product.ean %}

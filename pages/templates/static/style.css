@@ -4,11 +4,6 @@ body {
     background-color: #27374D;
 }
 
-ul {
-    padding-bottom: 0px;
-    margin-bottom: 0px;
-}
-
 li::marker {
     color: #EA868F;
 }
@@ -186,7 +181,7 @@ h4 {
     flex-direction: column;
 }
 
-.feedback_header {
+.feedback_header, .feedback_subheader {
     display: flex;
     flex-direction: row;
     justify-content: space-between;

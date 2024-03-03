@@ -35,9 +35,10 @@
                 <div class="vr mx-3"></div>
               {% endif %}
               <div class="info">
-                <h5 class="my-0"><b>{{seller.username}}</b></h5>
-                <p class="my-2">{% if seller.state_territory %}{{seller.state_territory}}{% if seller.state_territory != "Non US state/territory" %} | 🇺🇸{% endif%}{% endif %}</p>
-                <p class="my-0">Items sold: <b>{{seller.items_sold}}</b></p>
+                <h5><b>{{seller.username}}</b></h5>
+                <p>{% if seller.state_territory %}{{seller.state_territory}}{% if seller.state_territory != "Non US state/territory" %} | 🇺🇸{% endif%}{% endif %}</p>
+                <p class="my-2">Items sold: <b>{{seller.items_sold}}</b></p>
+                <p>Member Since: <b>{{seller.date_joined|date:'M, Y'}}</b></p>
               </div>
             </div>
             <div class="storefront_header_right_side">
@@ -102,7 +103,8 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="CLOSE"></button>
           </div>
           <div class="modal-body">
-            <form action="{% url 'feedback_view' %}?member-id={{seller.member_id}}" method="POST">
+            <form action="{% url 'leave_feedback_view' %}?member-id={{seller.member_id}}" method="POST">
+              {% csrf_token %}
               {% include "includes/forms.html" with form=feedback_form form_text="Leave Feedback" %}
             </form>
           </div>
