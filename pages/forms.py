@@ -85,7 +85,7 @@ class RestPassword(forms.Form):
         return confirm_password
 
 class ChangeUsername(forms.Form):
-    username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your new username", "class": "field"}))
+    username = forms.CharField(label="Username *", max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your new username", "class": "field"}))
 
     def clean_username(self):
         username = self.cleaned_data["username"]
@@ -102,8 +102,8 @@ class ChangeUsername(forms.Form):
         return username
 
 class ChangePassword(forms.Form):
-    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your new password", "class": "field"}))
-    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Confirm your new password", "class": "field"}))
+    password = forms.CharField(label="Password *", widget=forms.PasswordInput(attrs={"placeholder": "Enter your new password", "class": "field"}))
+    confirm_password = forms.CharField(label="Confirm password *", widget=forms.PasswordInput(attrs={"placeholder": "Confirm your new password", "class": "field"}))
 
     def clean_confirm_password(self):
         password = self.cleaned_data["password"]
@@ -115,24 +115,26 @@ class ChangePassword(forms.Form):
         return confirm_password
 
 class UploadProfilePicture(forms.Form):
-    picture = forms.ImageField(widget=forms.FileInput(attrs={"class": "field"}))
+    picture = forms.ImageField(label="Profile picture (optional & uploading nothing to remove)", widget=forms.FileInput(attrs={"class": "field"}), required=False)
 
     def clean_picture(self):
         picture = self.cleaned_data["picture"]
 
-        if picture.size > 5*1024*1024:
-            raise forms.ValidationError("Image is greater than 5MB. Please upload an image that is less than 5MB.")
+        if picture is not None:
+            if picture.size > 5*1024*1024:
+                raise forms.ValidationError("Image is greater than 5MB. Please upload an image that is less than 5MB.")
 
         return picture
 
 class UploadBannerPicture(forms.Form):
-    picture = forms.ImageField(widget=forms.FileInput(attrs={"class": "field"}))
+    picture = forms.ImageField(label="Banner picture (optional & uploading nothing to remove)", widget=forms.FileInput(attrs={"class": "field"}), required=False)
 
     def clean_picture(self):
         picture = self.cleaned_data["picture"]
 
-        if picture.size > 5*1024*1024:
-            raise forms.ValidationError("Image is greater than 5MB. Please upload an image that is less than 5MB.")
+        if picture is not None:
+            if picture.size > 5*1024*1024:
+                raise forms.ValidationError("Image is greater than 5MB. Please upload an image that is less than 5MB.")
 
         return picture
 
@@ -148,7 +150,7 @@ class ChangeStateTerritory(forms.Form):
         return state_territoy
 
 class DeleteAccount(forms.Form):
-    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your password to delete account", "class": "field"}))
+    password = forms.CharField(label="Password *", widget=forms.PasswordInput(attrs={"placeholder": "Enter your password to delete account", "class": "field"}))
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
@@ -531,6 +533,10 @@ class AdvancedSearchProduct(forms.Form):
 class UpcEanLookup(forms.Form):
     upc = forms.CharField(min_length=12, max_length=12, label="UPC", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "title": "Enter the product's Universal Product Code (UPC)", "class": "field"}), required=False)
     ean = forms.CharField(min_length=13, max_length=13, label="EAN", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "title": "Enter the product's International Article Number (EAN)", "class": "field"}), required=False)
+
+    def clean(self):
+        if not(self.cleaned_data["upc"] or self.cleaned_data["ean"]):
+            raise forms.ValidationError("You must specify either UPC, EAN, or both.")
 
     def clean_upc(self):
         upc = self.cleaned_data["upc"]

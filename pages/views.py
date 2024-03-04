@@ -3,7 +3,6 @@ from uuid import uuid4
 from django.http import HttpResponseRedirect
 from django.db.models.functions import Lower
 from django.db.models import Sum
-from django.views.decorators.cache import never_cache
 from django.utils.safestring import mark_safe
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -18,7 +17,6 @@ from .models import Feedback
 from .choices import Choices # to see or edit the choices go to choices.py
 User = get_user_model()
 
-@never_cache
 def login_view(request):
     """
     URL: /login
@@ -44,7 +42,6 @@ def login_view(request):
             messages.add_message(request, messages.ERROR, mark_safe("<ul><li>The username and/or password seems to be incorrect.</li><li>Please try agian.</li></ul>"))
             return redirect(login_view)
 
-@never_cache
 def signup_view(request):
     """
     URL: /signup
@@ -66,7 +63,6 @@ def signup_view(request):
             messages.add_message(request, messages.ERROR, signup_form.errors)
             return redirect(signup_view)
 
-@never_cache
 def reset_password_view(request):
     """
     URL: /reset-password
@@ -94,7 +90,6 @@ def reset_password_view(request):
             messages.add_message(request, messages.ERROR, reset_password_form.errors)
             return redirect(reset_password_view)
 
-@never_cache
 @login_required
 def index_view(request):
     """
@@ -169,7 +164,6 @@ def index_view(request):
         # items within cart will now reappear on the index page
         return render(request, "index.html", { "products": products, "filter_by": filter_by, "sort_by": sort_by, "current_page_number": page_number, "search_product_form": search_product_form })
 
-@never_cache
 @login_required
 def storefront_view(request):
     """
@@ -212,7 +206,6 @@ def storefront_view(request):
             messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error.</li><li>The seller does not exist.</li></ul>"))
         return render(request, "storefront.html", { "seller": seller, "products": products, "feedbacks": feedbacks, "accurate_description": accurate_description, "shipping_speed": shipping_speed, "shipping_cost": shipping_cost, "communication": communication, "total_feedback": total_feedback, "feedback_form": feedback_form })
 
-@never_cache
 @login_required
 def leave_feedback_view(request):
     """
@@ -243,7 +236,6 @@ def leave_feedback_view(request):
             messages.add_message(request, messages.ERROR, feedback_form.errors)
         return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
-@never_cache
 @login_required
 def delete_feedback_view(request):
     """
@@ -266,7 +258,6 @@ def delete_feedback_view(request):
             messages.add_message(request, messages.ERROR, mark_safe("There seems to be an error in deleteing this feedback."))
         return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
-@never_cache
 @login_required
 def product_view(request, uuid):
     """
@@ -290,7 +281,6 @@ def product_view(request, uuid):
             in_cart = False
         return render(request, "product.html", { "product": product, "in_cart": in_cart })
 
-@never_cache
 @login_required
 def add_product_view(request):
     """
@@ -317,7 +307,7 @@ def add_product_view(request):
                     products = Product.objects.filter(ean=upc_ean_lookup_form.cleaned_data["ean"])
                 elif upc_ean_lookup_form.cleaned_data["upc"] != "" and upc_ean_lookup_form.cleaned_data["ean"] != "":
                     products = Product.objects.filter(upc=upc_ean_lookup_form.cleaned_data["upc"], ean=upc_ean_lookup_form.cleaned_data["ean"])
-                if products.exists() is False:
+                if products is None or products.exists() is False:
                     messages.add_message(request, messages.ERROR, mark_safe("<ul><li>The UPC and/or EAN did not match a record on our database.</li><li>Please try again.</li></ul>"))
                 return render(request, "add_product.html", { "products": products, "option": "upc_ean_lookup", "upc_ean_lookup_form": upc_ean_lookup_form })
             else:
@@ -335,13 +325,12 @@ def add_product_view(request):
             add_product_form.cleaned_data["picture"].name = "product_picture_id_" + str(uuid4()) + "." + file_extension
             product = Product(title=add_product_form.cleaned_data["title"], product_picture=add_product_form.cleaned_data["picture"], description=add_product_form.cleaned_data["description"], category=add_product_form.cleaned_data["category"], condition=add_product_form.cleaned_data["condition"], price=add_product_form.cleaned_data["price"], upc=add_product_form.cleaned_data["upc"], ean=add_product_form.cleaned_data["ean"], seller=user)
             product.save()
-            messages.add_message(request, messages.SUCCESS, "Your product, \"" + product.title + "\" has been successfully added. Image less than/greater than 500x500 have been upsized/downsized and cropped to the middle and center.")
+            messages.add_message(request, messages.SUCCESS, mark_safe("Your product, \"" + product.title + "\" has been successfully added.<br><br>Image less than or greater than 500x500 have been upsized or downsized and cropped to the middle and center."))
             return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
         else:
             messages.add_message(request, messages.ERROR, add_product_form.errors)
             return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
-@never_cache
 @login_required
 def copy_and_add_product_view(request, uuid):
     """
@@ -362,7 +351,6 @@ def copy_and_add_product_view(request, uuid):
             messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in copying this product's details.</li><li>Please try again.</li></ul>"))
         return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
-@never_cache
 @login_required
 def delete_product_view(request, uuid):
     """
@@ -387,7 +375,6 @@ def delete_product_view(request, uuid):
             messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in deleting this product from your profile.</li><li>Please try again.</li></ul>"))
         return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
-@never_cache
 @login_required
 def edit_product_view(request, uuid):
     """
@@ -444,7 +431,6 @@ def edit_product_view(request, uuid):
             messages.add_message(request, messages.ERROR, edit_product_form.errors)
             return redirect(edit_product_view, uuid)
 
-@never_cache
 @login_required
 def edit_product_delete_upc_ean_view(request, uuid, type):
     """
@@ -476,7 +462,6 @@ def edit_product_delete_upc_ean_view(request, uuid, type):
             messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in deleting the product's UPC/EAN.</li><li>Please try again.</li></ul>"))
         return redirect(edit_product_view, uuid)
 
-@never_cache
 @login_required
 def search_view(request):
     """
@@ -507,7 +492,6 @@ def search_view(request):
             messages.add_message(request, messages.ERROR, search_product_form.errors)
             return render(request, "search.html", { "search_product_form", search_product_form })
 
-@never_cache
 @login_required
 def advanced_search_view(request):
     """
@@ -557,7 +541,6 @@ def advanced_search_view(request):
             messages.add_message(request, messages.ERROR, advanced_search_product_form.errors)
             return render (request, "advanced_search.html", { "products": products, "advanced_search_product_form": advanced_search_product_form })
 
-@never_cache
 @login_required
 def cart_view(request):
     """
@@ -569,7 +552,6 @@ def cart_view(request):
         total_price = Product.objects.filter(uuid__in=cart.values_list("product__uuid", flat=True)).aggregate(Sum('price'))["price__sum"]
         return render(request, "cart.html", { "cart": cart, "total_price": total_price })
 
-@never_cache
 @login_required
 def add_to_cart_view(request, uuid):
     """
@@ -597,7 +579,6 @@ def add_to_cart_view(request, uuid):
             messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in adding this product to your cart.</li></ul>"))
         return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
 
-@never_cache
 @login_required
 def delete_from_cart_view(request, uuid):
     """
@@ -616,7 +597,6 @@ def delete_from_cart_view(request, uuid):
             messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in removing this product from your cart.</li></ul>"))
         return redirect(cart_view)
 
-@never_cache
 @login_required
 def delete_all_items_from_cart_view(request):
     """
@@ -631,7 +611,6 @@ def delete_all_items_from_cart_view(request):
         messages.add_message(request, messages.SUCCESS, "All products within your cart has been removed. Your cart is now empty.")
         return redirect(cart_view)
 
-@never_cache
 @login_required
 def check_out_view(request):
     """
@@ -704,7 +683,6 @@ def check_out_view(request):
                 messages.add_message(request, messages.WARNING, mark_safe("<ul><li>Checkout was successful.</li><li>However, there were multiple items that are already sold out or have been deactivated by the seller's own discretion, or by us due to an overflow of credits on the seller's part.</li><li>Items have been marked with \"SOLD OUT\" or \"INACTIVE\" accordingly.</li></ul>"))
                 return redirect(cart_view)
 
-@never_cache
 @login_required
 def profile_view(request):
     """
@@ -713,7 +691,6 @@ def profile_view(request):
     if request.method == "GET":
         return render(request, "profile.html", { "option": None })
 
-@never_cache
 @login_required
 def profile_option_view(request, option):
     """
@@ -743,7 +720,6 @@ def profile_option_view(request, option):
         else:
             return redirect(profile_view)
 
-@never_cache
 @login_required
 def change_username_view(request):
     """
@@ -769,7 +745,6 @@ def change_username_view(request):
             messages.add_message(request, messages.ERROR, change_username_form.errors)
             return redirect(profile_option_view, option="settings")
 
-@never_cache
 @login_required
 def change_password_view(request):
     """
@@ -795,7 +770,6 @@ def change_password_view(request):
             messages.add_message(request, messages.ERROR, change_password_form.errors)
             return redirect(profile_option_view, option="settings")
 
-@never_cache
 @login_required
 def upload_profile_picture_view(request):
     """
@@ -809,12 +783,22 @@ def upload_profile_picture_view(request):
         upload_profile_picture_form = forms.UploadProfilePicture(request.POST, picture)
         if upload_profile_picture_form.is_valid():
             try:
-                file_extension = upload_profile_picture_form.cleaned_data["picture"].name.split(".")[-1]
-                upload_profile_picture_form.cleaned_data["picture"].name = "profile_picture_id_" + str(uuid4()) + "." + file_extension
-                user = User.objects.get(username=user.username)
-                user.profile_picture = upload_profile_picture_form.cleaned_data["picture"]
-                user.save()
-                messages.add_message(request, messages.SUCCESS, "Your profile picture has successfully been uploaded. Image less than/greater than 125x125 have been upsized/downsized and cropped to the middle and center.")
+                if upload_profile_picture_form.cleaned_data["picture"] is None:
+                    if user.banner_picture != "":
+                        if os.path.exists(user.profile_picture.path):
+                            os.remove(user.profile_picture.path)
+                            user.profile_picture = ""
+                            user.save()
+                        messages.add_message(request, messages.SUCCESS, "Profile picture has been removed.")
+                    else:
+                        messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Your profile picture was already empty.</li><li>There was no profile picture to remove.</li></ul>"))
+                else:
+                    file_extension = upload_profile_picture_form.cleaned_data["picture"].name.split(".")[-1]
+                    upload_profile_picture_form.cleaned_data["picture"].name = "profile_picture_id_" + str(uuid4()) + "." + file_extension
+                    user = User.objects.get(username=user.username)
+                    user.profile_picture = upload_profile_picture_form.cleaned_data["picture"]
+                    user.save()
+                    messages.add_message(request, messages.SUCCESS, mark_safe("Your profile picture has successfully been uploaded.<br><br>Image less than orgreater than 125x125 have been upsized ordownsized and cropped to the middle and center."))
             except User.DoesNotExist:
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in uploading your profile picture.</li><li>Please try again.</li></ul>"))
             return redirect(profile_option_view, option="settings")
@@ -822,7 +806,6 @@ def upload_profile_picture_view(request):
             messages.add_message(request, messages.ERROR, upload_profile_picture_form.errors)
             return redirect(profile_option_view, option="settings")
 
-@never_cache
 @login_required
 def upload_banner_picture_view(request):
     """
@@ -836,12 +819,22 @@ def upload_banner_picture_view(request):
         upload_banner_picture_form = forms.UploadBannerPicture(request.POST, picture)
         if upload_banner_picture_form.is_valid():
             try:
-                file_extension = upload_banner_picture_form.cleaned_data["picture"].name.split(".")[-1]
-                upload_banner_picture_form.cleaned_data["picture"].name = "banner_picture_id_" + str(uuid4()) + "." + file_extension
-                user = User.objects.get(username=user.username)
-                user.banner_picture = upload_banner_picture_form.cleaned_data["picture"]
-                user.save()
-                messages.add_message(request, messages.SUCCESS, "Your banner picture has successfully been uploaded. Image less than/greater than 1250x300 have been upsized/downsized and cropped to the middle and center.")
+                if upload_banner_picture_form.cleaned_data["picture"] is None:
+                    if user.banner_picture != "":
+                        if os.path.exists(user.banner_picture.path):
+                            os.remove(user.banner_picture.path)
+                            user.banner_picture = ""
+                            user.save()
+                        messages.add_message(request, messages.SUCCESS, "Banner picture has been removed.")
+                    else:
+                        messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Your banner picture was already empty.</li><li>There was no banner picture to remove.</li></ul>"))
+                else:
+                    file_extension = upload_banner_picture_form.cleaned_data["picture"].name.split(".")[-1]
+                    upload_banner_picture_form.cleaned_data["picture"].name = "banner_picture_id_" + str(uuid4()) + "." + file_extension
+                    user = User.objects.get(username=user.username)
+                    user.banner_picture = upload_banner_picture_form.cleaned_data["picture"]
+                    user.save()
+                    messages.add_message(request, messages.SUCCESS, mark_safe("Your banner picture has successfully been uploaded.<br><br>Image less than or greater than 1250x300 have been upsized or downsized and cropped to the middle and center."))
             except User.DoesNotExist:
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in uploading your banner picture.</li><li>Please try again.</li></ul>"))
             return redirect(profile_option_view, option="settings")
@@ -849,7 +842,6 @@ def upload_banner_picture_view(request):
             messages.add_message(request, messages.ERROR, upload_banner_picture_form.errors)
             return redirect(profile_option_view, option="settings")
 
-@never_cache
 @login_required
 def change_state_territory_view(request):
     """
@@ -866,7 +858,10 @@ def change_state_territory_view(request):
                 user = User.objects.get(username=user.username)
                 user.state_territory = change_state_territory_form.cleaned_data["state_territory"]
                 user.save()
-                messages.add_message(request, messages.SUCCESS, "Your state/territory has been successfully updated.")
+                if user.state_territory == "":
+                    messages.add_message(request, messages.SUCCESS, "Your state/territory has been removed.")
+                else:
+                    messages.add_message(request, messages.SUCCESS, "Your state/territory has been successfully updated.")
             except User.DoesNotExist:
                 messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in changing your state/territory.</li><li>Please try again.</li></ul>"))
             return redirect(profile_option_view, option="settings")
@@ -874,7 +869,6 @@ def change_state_territory_view(request):
             messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in changing your state/territory.</li><li>Please try again.</li></ul>"))
             return redirect(profile_option_view, option="settings")
 
-@never_cache
 @login_required
 def delete_account_view(request):
     """
@@ -900,7 +894,6 @@ def delete_account_view(request):
             messages.add_message(request, messages.ERROR, delete_account_form.errors)
             return redirect(profile_option_view, option="settings")
 
-@never_cache
 @login_required
 def confirm_message_view(request, type):
     """
@@ -926,7 +919,6 @@ def confirm_message_view(request, type):
         else:
             return redirect(index_view)
 
-@never_cache
 @login_required
 def logout_user(request):
     """

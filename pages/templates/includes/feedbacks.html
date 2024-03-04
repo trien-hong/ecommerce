@@ -4,7 +4,7 @@
         <div class="feedback">
             <div class="feedback_header">
                 <div>
-                    <h5 class="my-0">#{{forloop.counter}}</h5>
+                    <h5>#{{forloop.counter}}</h5>
                 </div>
                 <div>
                     {% if feedback.buyer.username == user.username %}
@@ -32,7 +32,7 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="ratings pb-2">
+            <div class="ratings py-2">
                 <div>
                     <p>Accurate Description: <b>{{feedback.accurate_description}}/5</b></p>
                 </div>
@@ -57,7 +57,7 @@
     </div>
 {% else %}
     <div class="text-center">
-        <h3 class="pb-2">Seller does not have any feedback.</h3>
+        <h3>Seller does not have any feedback.</h3>
         {% if user.username != seller.username %}
             <button class="btn btn-primary" data-bs-target="#leave_feedback_modal" data-bs-toggle="modal">Leave Feedback for Seller &rsaquo;</button>
         {% endif %}
