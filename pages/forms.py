@@ -5,8 +5,8 @@ from .choices import Choices # to see or edit the choices go to choices.py
 User = get_user_model()
 
 class Login(forms.Form):
-    username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your username", "class": "field"}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your password", "class": "field"}))
+    username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your username", "class": "form-control"}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your password", "class": "form-control"}))
 
     def clean_username(self):
         username = self.cleaned_data["username"]
@@ -20,10 +20,10 @@ class Login(forms.Form):
         return username
 
 class Signup(forms.Form):
-    username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your username", "class": "field"}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your password", "class": "field"}))
-    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Confirm your password", "class": "field"}))
-    state_territory = forms.ChoiceField(label="State/territory (optional)", choices=Choices.CHOICES_STATE_TERRITORY, widget=forms.Select(attrs={"title": "You can always change this in your settings"}), required=False) # to see or edit the choices go to choices.py
+    username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your username", "class": "form-control"}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your password", "class": "form-control"}))
+    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Confirm your password", "class": "form-control"}))
+    state_territory = forms.ChoiceField(label="State/territory (optional)", choices=Choices.CHOICES_STATE_TERRITORY, widget=forms.Select(attrs={"title": "You can always change this in your settings", "class": "form-select"}), required=False) # to see or edit the choices go to choices.py
 
     def clean_username(self):
         username = self.cleaned_data["username"]
@@ -57,9 +57,9 @@ class Signup(forms.Form):
         return state_territoy
 
 class RestPassword(forms.Form):
-    username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your username", "class": "field"}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your new password", "class": "field"}))
-    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Confirm your new password", "class": "field"}))
+    username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your username", "class": "form-control"}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Enter your new password", "class": "form-control"}))
+    confirm_password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Confirm your new password", "class": "form-control"}))
 
     def clean_username(self):
         username = self.cleaned_data["username"]
@@ -85,7 +85,7 @@ class RestPassword(forms.Form):
         return confirm_password
 
 class ChangeUsername(forms.Form):
-    username = forms.CharField(label="Username *", max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your new username", "class": "field"}))
+    username = forms.CharField(label="Username *", max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter your new username", "class": "form-control"}))
 
     def clean_username(self):
         username = self.cleaned_data["username"]
@@ -102,8 +102,8 @@ class ChangeUsername(forms.Form):
         return username
 
 class ChangePassword(forms.Form):
-    password = forms.CharField(label="Password *", widget=forms.PasswordInput(attrs={"placeholder": "Enter your new password", "class": "field"}))
-    confirm_password = forms.CharField(label="Confirm password *", widget=forms.PasswordInput(attrs={"placeholder": "Confirm your new password", "class": "field"}))
+    password = forms.CharField(label="Password *", widget=forms.PasswordInput(attrs={"placeholder": "Enter your new password", "class": "form-control"}))
+    confirm_password = forms.CharField(label="Confirm password *", widget=forms.PasswordInput(attrs={"placeholder": "Confirm your new password", "class": "form-control"}))
 
     def clean_confirm_password(self):
         password = self.cleaned_data["password"]
@@ -115,7 +115,7 @@ class ChangePassword(forms.Form):
         return confirm_password
 
 class UploadProfilePicture(forms.Form):
-    picture = forms.ImageField(label="Profile picture (optional & uploading nothing to remove)", widget=forms.FileInput(attrs={"class": "field"}), required=False)
+    picture = forms.ImageField(label="Profile picture (optional & uploading nothing to remove)", widget=forms.FileInput(attrs={"class": "form-control"}), required=False)
 
     def clean_picture(self):
         picture = self.cleaned_data["picture"]
@@ -127,7 +127,7 @@ class UploadProfilePicture(forms.Form):
         return picture
 
 class UploadBannerPicture(forms.Form):
-    picture = forms.ImageField(label="Banner picture (optional & uploading nothing to remove)", widget=forms.FileInput(attrs={"class": "field"}), required=False)
+    picture = forms.ImageField(label="Banner picture (optional & uploading nothing to remove)", widget=forms.FileInput(attrs={"class": "form-control"}), required=False)
 
     def clean_picture(self):
         picture = self.cleaned_data["picture"]
@@ -139,7 +139,7 @@ class UploadBannerPicture(forms.Form):
         return picture
 
 class ChangeStateTerritory(forms.Form):
-    state_territory = forms.ChoiceField(label="State/territory (optional & 1st option to remove)", choices=Choices.CHOICES_STATE_TERRITORY, widget=forms.Select(attrs={"title": "You can always change this in your settings", "class": "field"}), required=False) # to see or edit the choices go to choices.py
+    state_territory = forms.ChoiceField(label="State/territory (optional & 1st option to remove)", choices=Choices.CHOICES_STATE_TERRITORY, widget=forms.Select(attrs={"title": "You can always change this in your settings", "class": "form-control"}), required=False) # to see or edit the choices go to choices.py
 
     def clean_state_territory(self):
         state_territoy = self.cleaned_data["state_territory"]
@@ -150,7 +150,7 @@ class ChangeStateTerritory(forms.Form):
         return state_territoy
 
 class DeleteAccount(forms.Form):
-    password = forms.CharField(label="Password *", widget=forms.PasswordInput(attrs={"placeholder": "Enter your password to delete account", "class": "field"}))
+    password = forms.CharField(label="Password *", widget=forms.PasswordInput(attrs={"placeholder": "Enter your password to delete account", "class": "form-control"}))
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
@@ -165,14 +165,14 @@ class DeleteAccount(forms.Form):
         return password
 
 class AddProduct(forms.Form):
-    title = forms.CharField(max_length=50, label="Title *", widget=forms.TextInput(attrs={"placeholder": "Enter the product's title", "class": "field"}))
-    picture = forms.ImageField(label="Picture *")
-    description = forms.CharField(max_length=500, label="Description *", widget=forms.Textarea(attrs={"placeholder": "Enter the product's description", "rows": "5", "class": "field"}))
-    category = forms.ChoiceField(label="Category *", choices=Choices.CHOICES_CATEGORY) # to see or edit the choices go to choices.py
-    condition = forms.ChoiceField(label="Condition *", choices=Choices.CHOICES_CONDITION) # to see or edit the choices go to choices.py
-    price = forms.DecimalField(label="Price (in $/USD) *", widget=forms.TextInput(attrs={"placeholder": "Enter the product's price (ie. 5.00, 10.50, 9,999.99, etc.)", "class": "field"}))
-    upc = forms.CharField(min_length=12, max_length=12, label="UPC (optional)", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "class": "field"}), required=False)
-    ean = forms.CharField(min_length=13, max_length=13, label="EAN (optional)", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "class": "field"}), required=False)
+    title = forms.CharField(max_length=50, label="Title *", widget=forms.TextInput(attrs={"placeholder": "Enter the product's title", "class": "form-control"}))
+    picture = forms.ImageField(label="Picture *", widget=forms.FileInput(attrs={"class": "form-control"}))
+    description = forms.CharField(max_length=500, label="Description *", widget=forms.Textarea(attrs={"placeholder": "Enter the product's description", "rows": "5", "class": "form-control"}))
+    category = forms.ChoiceField(label="Category *", choices=Choices.CHOICES_CATEGORY, widget=forms.Select(attrs={"class": "form-select"})) # to see or edit the choices go to choices.py
+    condition = forms.ChoiceField(label="Condition *", choices=Choices.CHOICES_CONDITION, widget=forms.Select(attrs={"class": "form-select"})) # to see or edit the choices go to choices.py
+    price = forms.DecimalField(label="Price (in $/USD) *", widget=forms.TextInput(attrs={"placeholder": "Enter the product's price (ie. 5.00, 10.50, 9,999.99, etc.)", "class": "form-control"}))
+    upc = forms.CharField(min_length=12, max_length=12, label="UPC (optional)", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "class": "form-control"}), required=False)
+    ean = forms.CharField(min_length=13, max_length=13, label="EAN (optional)", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "class": "form-control"}), required=False)
 
     def clean_title(self):
         title = self.cleaned_data["title"]
@@ -293,14 +293,14 @@ class EditProduct(forms.Form):
         Choices.CHOICES_PRODUCT_STATUS[2]
     ] # to see or edit the choices go to choices.py
 
-    title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product's new title", "title": "Only edit a field if you need to", "class": "field"}), required=False)
-    picture = forms.ImageField(widget=forms.FileInput(attrs={"title": "Only edit a field if you need to"}), required=False)
-    description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"placeholder": "Enter the product's new description", "title": "Only edit a field if you need to", "rows": "6", "class": "field"}), required=False)
-    category = forms.ChoiceField(choices=Choices.CHOICES_CATEGORY, widget=forms.Select(attrs={"title": "Only edit a field if you need to"}), required=False) # to see or edit the choices go to choices.py
-    condition = forms.ChoiceField(choices=Choices.CHOICES_CONDITION, widget=forms.Select(attrs={"title": "Only edit a field if you need to"}), required=False) # to see or edit the choices go to choices.py
-    upc = forms.CharField(min_length=12, max_length=12, label="UPC", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "title": "Only edit a field if you need to", "class": "field"}), required=False)
-    ean = forms.CharField(min_length=13, max_length=13, label="EAN", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "title": "Only edit a field if you need to", "class": "field"}), required=False)
-    status = forms.ChoiceField(choices=CHOICES_PRODUCT_STATUS, widget=forms.Select(attrs={"title": "Only edit a field if you need to"}), required=False) # to see or edit the choices go to choices.py
+    title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product's new title", "title": "Only edit a field if you need to", "class": "form-control"}), required=False)
+    picture = forms.ImageField(widget=forms.FileInput(attrs={"title": "Only edit a field if you need to", "class": "form-control"}), required=False)
+    description = forms.CharField(max_length=500, widget=forms.Textarea(attrs={"placeholder": "Enter the product's new description", "title": "Only edit a field if you need to", "rows": "6", "class": "form-control"}), required=False)
+    category = forms.ChoiceField(choices=Choices.CHOICES_CATEGORY, widget=forms.Select(attrs={"title": "Only edit a field if you need to", "class": "form-select"}), required=False) # to see or edit the choices go to choices.py
+    condition = forms.ChoiceField(choices=Choices.CHOICES_CONDITION, widget=forms.Select(attrs={"title": "Only edit a field if you need to", "class": "form-select"}), required=False) # to see or edit the choices go to choices.py
+    upc = forms.CharField(min_length=12, max_length=12, label="UPC", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "title": "Only edit a field if you need to", "class": "form-control"}), required=False)
+    ean = forms.CharField(min_length=13, max_length=13, label="EAN", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "title": "Only edit a field if you need to", "class": "form-control"}), required=False)
+    status = forms.ChoiceField(choices=CHOICES_PRODUCT_STATUS, widget=forms.Select(attrs={"title": "Only edit a field if you need to", "class": "form-select"}), required=False) # to see or edit the choices go to choices.py
 
     def clean_title(self):
         title = self.cleaned_data["title"]
@@ -429,12 +429,12 @@ class SearchProduct(forms.Form):
         return title
 
 class AdvancedSearchProduct(forms.Form):
-    title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product's title", "title": "Enter the product's title", "class": "field"}), required=False)
-    category = forms.ChoiceField(choices=Choices.CHOICES_CATEGORY, widget=forms.Select(attrs={"title": "Choose the product's category"}), required=False) # to see or edit the choices go to choices.py
-    condition = forms.ChoiceField(choices=Choices.CHOICES_CONDITION, widget=forms.Select(attrs={"title": "Choose the product's condition"}), required=False) # to see or edit the choices go to choices.py
-    upc = forms.CharField(min_length=12, max_length=12, label="UPC", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "title": "Enter the product's Universal Product Code (UPC)", "class": "field"}), required=False)
-    ean = forms.CharField(min_length=13, max_length=13, label="EAN", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "title": "Enter the product's International Article Number (EAN)", "class": "field"}), required=False)
-    username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter the seller's username", "title": "Enter the seller's username", "class": "field"}), required=False)
+    title = forms.CharField(max_length=50, widget=forms.TextInput(attrs={"placeholder": "Enter the product's title", "title": "Enter the product's title", "class": "form-control"}), required=False)
+    category = forms.ChoiceField(choices=Choices.CHOICES_CATEGORY, widget=forms.Select(attrs={"title": "Choose the product's category", "class": "form-select"}), required=False) # to see or edit the choices go to choices.py
+    condition = forms.ChoiceField(choices=Choices.CHOICES_CONDITION, widget=forms.Select(attrs={"title": "Choose the product's condition", "class": "form-select"}), required=False) # to see or edit the choices go to choices.py
+    upc = forms.CharField(min_length=12, max_length=12, label="UPC", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "title": "Enter the product's Universal Product Code (UPC)", "class": "form-control"}), required=False)
+    ean = forms.CharField(min_length=13, max_length=13, label="EAN", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "title": "Enter the product's International Article Number (EAN)", "class": "form-control"}), required=False)
+    username = forms.CharField(max_length=30, widget=forms.TextInput(attrs={"placeholder": "Enter the seller's username", "title": "Enter the seller's username", "class": "form-control"}), required=False)
 
     def clean_title(self):
         title = self.cleaned_data["title"]
@@ -531,8 +531,8 @@ class AdvancedSearchProduct(forms.Form):
         return username
 
 class UpcEanLookup(forms.Form):
-    upc = forms.CharField(min_length=12, max_length=12, label="UPC", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "title": "Enter the product's Universal Product Code (UPC)", "class": "field"}), required=False)
-    ean = forms.CharField(min_length=13, max_length=13, label="EAN", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "title": "Enter the product's International Article Number (EAN)", "class": "field"}), required=False)
+    upc = forms.CharField(min_length=12, max_length=12, label="UPC", widget=forms.TextInput(attrs={"placeholder": "Enter the product's Universal Product Code (UPC)", "title": "Enter the product's Universal Product Code (UPC)", "class": "form-control"}), required=False)
+    ean = forms.CharField(min_length=13, max_length=13, label="EAN", widget=forms.TextInput(attrs={"placeholder": "Enter the product's International Article Number (EAN)", "title": "Enter the product's International Article Number (EAN)", "class": "form-control"}), required=False)
 
     def clean(self):
         if not(self.cleaned_data["upc"] or self.cleaned_data["ean"]):
@@ -597,12 +597,12 @@ class UpcEanLookup(forms.Form):
         return ean
 
 class Feedback(forms.Form):
-    overall_rating = forms.ChoiceField(choices=Choices.CHOICES_OVERALL_RATING, widget=forms.Select(attrs={"title": "Choose the overall rating", "class": "field"})) # to see or edit the choices go to choices.py
-    accurate_description = forms.ChoiceField(choices=Choices.CHOICES_FEEDBACK_RATING, widget=forms.Select(attrs={"placeholder": "How accurate was the product's description", "title": "How accurate was the product's description", "class": "field"}))
-    shipping_speed = forms.ChoiceField(choices=Choices.CHOICES_FEEDBACK_RATING, widget=forms.Select(attrs={"placeholder": "How reasonable was the shipping speed", "title": "How reasonable was the shipping speed", "class": "field"}))
-    shipping_cost = forms.ChoiceField(choices=Choices.CHOICES_FEEDBACK_RATING, widget=forms.Select(attrs={"placeholder": "How reasonable was the shipping cost", "title": "How reasonable was the shipping cost", "class": "field"}))
-    communication = forms.ChoiceField(choices=Choices.CHOICES_FEEDBACK_RATING, widget=forms.Select(attrs={"placeholder": "How was the seller's communication", "title": "How was the seller's communication", "class": "field"}))
-    comment = forms.CharField(max_length=250, widget=forms.Textarea(attrs={"placeholder": "A simple sentence or two that described your experience", "title": "A simple sentence or two that described your experience", "rows": "4", "class": "field"}))
+    overall_rating = forms.ChoiceField(choices=Choices.CHOICES_OVERALL_RATING, widget=forms.Select(attrs={"title": "Choose the overall rating", "class": "form-select"})) # to see or edit the choices go to choices.py
+    accurate_description = forms.ChoiceField(choices=Choices.CHOICES_FEEDBACK_RATING, widget=forms.Select(attrs={"placeholder": "How accurate was the product's description", "title": "How accurate was the product's description", "class": "form-select"}))
+    shipping_speed = forms.ChoiceField(choices=Choices.CHOICES_FEEDBACK_RATING, widget=forms.Select(attrs={"placeholder": "How reasonable was the shipping speed", "title": "How reasonable was the shipping speed", "class": "form-select"}))
+    shipping_cost = forms.ChoiceField(choices=Choices.CHOICES_FEEDBACK_RATING, widget=forms.Select(attrs={"placeholder": "How reasonable was the shipping cost", "title": "How reasonable was the shipping cost", "class": "form-select"}))
+    communication = forms.ChoiceField(choices=Choices.CHOICES_FEEDBACK_RATING, widget=forms.Select(attrs={"placeholder": "How was the seller's communication", "title": "How was the seller's communication", "class": "form-select"}))
+    comment = forms.CharField(max_length=250, widget=forms.Textarea(attrs={"placeholder": "A simple sentence or two that described your experience", "title": "A simple sentence or two that described your experience", "rows": "4", "class": "form-control"}))
 
     def clean_overall_rating(self):
         overall_rating = self.cleaned_data["overall_rating"]

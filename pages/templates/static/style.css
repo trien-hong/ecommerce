@@ -1,5 +1,3 @@
-/* base CSS for all pages */
-
 body {
     background-color: #27374D;
 }
@@ -66,10 +64,6 @@ h6 {
     flex-direction: column;
     justify-content: center;
     width: 50%;
-}
-
-.field {
-    width: 100%;
 }
 
 .footer hr {

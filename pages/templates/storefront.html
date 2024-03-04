@@ -67,15 +67,18 @@
               <div class="vr mx-3"></div>
               <div class="storefront_header_buttons">
                   {% if user.username != seller.username %}
-                    <div>
+                    <div class="pb-1">
                       <a href="#"><img class="pe-2" src="{% static 'images/contact_icon.svg' %}" alt="contact icon">Contact</a>
                     </div>
                   {% endif %}
-                  <div>
-                    <a href="#" data-bs-toggle="modal" data-bs-target="{% if user.username == seller.username %}#feedback_modal{% else %}#leave_feedback_modal{% endif %}"><img class="pe-2 py-3" src="{% static 'images/clipboard_icon.svg' %}" alt="clipboard icon">Review</a>
+                  <div class="pb-1">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="{% if user.username == seller.username %}#feedback_modal{% else %}#leave_feedback_modal{% endif %}"><img class="pe-2" src="{% static 'images/clipboard_icon.svg' %}" alt="clipboard icon">Review</a>
+                  </div>
+                  <div class="pb-1">
+                    <a href="#"><img class="pe-2" src="{% static 'images/share_icon.svg' %}" alt="clipboard icon">Share</a>
                   </div>
                   <div>
-                    <a href="#"><img class="pe-2" src="{% static 'images/share_icon.svg' %}" alt="clipboard icon">Share</a>
+                    <a href="#"><img class="pe-2 mb-1" src="{% static 'images/star_icon.svg' %}" alt="star icon">Wish List</a>
                   </div>
                 </div>
               </div>
