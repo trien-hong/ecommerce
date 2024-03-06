@@ -38,19 +38,12 @@
                   <p class="mt-2"><b>{{product.description}}</b></p>
                   <p class="my-2"><b>Category: {{product.category}}</b></p>
                   <p><b>Condition: {{product.condition}}</b></p>
-                  <div class="copy_and_add_product_form pb-2">
+                  <div class="pb-2">
                     <form action="{% url 'copy_and_add_product_view' uuid=product.uuid %}" method="POST">
                       {% csrf_token %}
                       <hr>
                       <fieldset>
-                        <div class="copy_and_add_product">
-                          <div>
-                            <p class="my-0">Price: <b>${{product.price}}</b></p>
-                          </div>
-                          <div>
-                            <input class="btn btn-primary" type="submit" value="Copy & Add">
-                          </div>
-                        </div>
+                        <input class="btn btn-primary" type="submit" value="Copy & Add">
                       </fieldset>
                     </form>
                   </div>

@@ -20,6 +20,7 @@ urlpatterns = [
     path("product/edit-product/id/<uuid:uuid>/delete/<str:type>", views.edit_product_delete_upc_ean_view, name="edit_product_delete_upc_ean_view"),
     path("products/search", views.search_view, name="search_view"),
     path("products/advanced-search", views.advanced_search_view, name="advanced_search_view"),
+    path("wish-list/add-to-wish-list/id/<uuid:uuid>", views.add_to_wish_list_view, name="add_to_wish_list_view"),
     path("cart", views.cart_view, name="cart_view"),
     path("cart/add-to-cart/id/<uuid:uuid>", views.add_to_cart_view, name="add_to_cart_view"),
     path("cart/delete-from-cart/id/<uuid:uuid>", views.delete_from_cart_view, name="delete_from_cart_view"),

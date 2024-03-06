@@ -11,7 +11,9 @@
                         <form action="{% url 'delete_feedback_view' %}?feedback-id={{feedback.uuid}}" method="POST">
                             {% csrf_token %}
                             <div>
-                                <input class="btn btn-danger btn-sm" type="submit" value="Delete Your Feedback" title="Delete Your Feedback" src="{% static 'images/trash_icon.svg' %}">
+                                <button class="btn btn-danger btn-sm" type="submit" title="Delete Your Feedback">
+                                    <img class="mb-1" src="{% static 'images/trash_icon.svg' %}">
+                                </button>
                             </div>
                         </form>
                     {% endif %}
@@ -57,7 +59,7 @@
     </div>
 {% else %}
     <div class="text-center">
-        <h3>Seller does not have any feedback.</h3>
+        <h3 class="mb-2">Seller does not have any feedback.</h3>
         {% if user.username != seller.username %}
             <button class="btn btn-primary" data-bs-target="#leave_feedback_modal" data-bs-toggle="modal">Leave Feedback for Seller &rsaquo;</button>
         {% endif %}

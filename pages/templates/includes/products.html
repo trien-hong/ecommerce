@@ -1,3 +1,4 @@
+{% load static %}
 {% for product in products %}
     <div class="product mx-2 my-2 px-3 py-2">
         <h4 class="mb-2"><b>{{product.title}}</b></h4>
@@ -5,21 +6,39 @@
         <p class="mt-2"><b>{{product.description}}</b></p>
         <p class="my-2">Category: <b>{{product.category}}</b></p>
         <p>Condition: <b>{{product.condition}}</b></p>
-        <div class="add_to_cart_form pb-2">
-            <form action="{% url 'add_to_cart_view' uuid=product.uuid %}" method="POST">
-                <fieldset>
+        <hr>
+        <div class="product_footer pb-2">
+            <div>
+                <form action="{% url 'add_to_wish_list_view' uuid=product.uuid %}" method="POST">
                     {% csrf_token %}
-                    <hr>
-                    <div class="add_to_cart_button">
-                        <p class="my-0">Price: <b>${{product.price}}</b></p>
-                        {% if user.username == product.seller.username or seller.username == product.seller.username %}
+                    <fieldset>
+                        {% if user.username == product.seller.username %}
+                            <button class="btn btn-danger btn-sm" type="submit" disabled>
+                                <img class="mb-1" src="{% static 'images/star_icon.svg' %}">
+                            </button>
+                        {% else %}
+                            <button class="btn btn-primary btn-sm" type="submit" title="Add &quot;{{product.title}}&quot; to wish list">
+                                <img class="mb-1" src="{% static 'images/star_icon.svg' %}">
+                            </button>
+                        {% endif %}
+                    </fieldset>
+                </form>
+            </div>
+            <div>
+                <p class="my-0">Price: <b>${{product.price}}</b></p>
+            </div>
+            <div>
+                <form action="{% url 'add_to_cart_view' uuid=product.uuid %}" method="POST">
+                    {% csrf_token %}
+                    <fieldset>
+                        {% if user.username == product.seller.username %}
                             <input class="btn btn-danger" type="submit" value="Add to Cart" disabled>
                         {% else %}
                             <input class="btn btn-primary" type="submit" value="Add to Cart" title="Add &quot;{{product.title}}&quot; to cart">
                         {% endif %}
-                    </div>
-                </fieldset>
-            </form>
+                    </fieldset>
+                </form>
+            </div>
         </div>
     </div>
 {% endfor %}

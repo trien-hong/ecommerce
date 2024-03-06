@@ -11,6 +11,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from . import forms
 from .models import Product
+from .models import WishList
 from .models import Cart
 from .models import Sold
 from .models import Feedback
@@ -266,20 +267,24 @@ def product_view(request, uuid):
     if exposed the uuid is shown to the user and not the ID/PK
     """
     if request.method == "GET":
+        user = request.user
         try:
-            user = request.user
             product = Product.objects.get(uuid=uuid)
             if product.seller != user:
                 product.views = product.views + 1
                 product.save()
-            if Cart.objects.filter(product=product, user=user).exists():
+            if WishList.objects.filter(user=user, product=product).exists():
+                in_wish_list = True
+            else:
+                in_wish_list = False
+            if Cart.objects.filter(user=user, product=product).exists():
                 in_cart = True
             else:
                 in_cart = False
         except Product.DoesNotExist:
             product = None
             in_cart = False
-        return render(request, "product.html", { "product": product, "in_cart": in_cart })
+        return render(request, "product.html", { "product": product, "in_cart": in_cart, "in_wish_list": in_wish_list })
 
 @login_required
 def add_product_view(request):
@@ -542,6 +547,33 @@ def advanced_search_view(request):
             return render (request, "advanced_search.html", { "products": products, "advanced_search_product_form": advanced_search_product_form })
 
 @login_required
+def add_to_wish_list_view(request, uuid):
+    """
+    URL: /wish-list/add-to-wish-list/id/<uuid:uuid>
+    where <uuid:uuid> is the uuid (NOT ID/PK despite the URL) of the product being added to the wish list
+    if exposed the uuid is shown to the user and not the ID/PK
+    """
+    if request.method == "GET":
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+    if request.method == "POST":
+        user = request.user
+        try:
+            user = User.objects.get(username=user.username)
+            product = Product.objects.get(uuid=uuid)
+            wish_list = WishList.objects.filter(user=user, product=product)
+            if product.seller == user:
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>You cannot add your own product to your wish list.</li></ul>"))
+            elif wish_list.exists() == False:
+                wish_list = WishList(user=user, product=product)
+                wish_list.save()
+                messages.add_message(request, messages.SUCCESS, "You've successfully added, \"" + product.title + "\", to your wish list.")
+            else:
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>This product, \"" + product.title + "\", already exist in your wish list.</li></ul>"))
+        except (Product.DoesNotExist, User.DoesNotExist):
+            messages.add_message(request, messages.ERROR, mark_safe("<ul><li>There seems to be an error in adding this product to your wish list.</li></ul>"))
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+
+@login_required
 def cart_view(request):
     """
     URL: /cart
@@ -566,13 +598,13 @@ def add_to_cart_view(request, uuid):
             user = request.user
             product = Product.objects.get(uuid=uuid)
             if product.status == Choices.CHOICES_PRODUCT_STATUS[3][0]: # to see or edit the choices go to choices.py
-                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Sorry, this product, \"" + product.title + "\" is now sold out.</li></ul>"))
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>Sorry, this product, \"" + product.title + "\", is now sold out.</li></ul>"))
             elif product.seller == user:
-                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>You cannot add your own product to the cart.</li></ul>"))
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>You cannot add your own product to your cart.</li></ul>"))
             elif Cart.objects.filter(product=product, user=user).exists():
-                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>This product, \"" + product.title + "\" already exist in your cart.</li></ul>"))
+                messages.add_message(request, messages.ERROR, mark_safe("<ul><li>This product, \"" + product.title + "\", already exist in your cart.</li></ul>"))
             else:
-                cart = Cart(product=product, user=user)
+                cart = Cart(user=user, product=product)
                 cart.save()
                 messages.add_message(request, messages.SUCCESS, "You've successfully added, \"" + product.title + "\", to your cart.")
         except Product.DoesNotExist:
@@ -645,7 +677,7 @@ def check_out_view(request):
                             buyer = User.objects.get(username=user.username)
                             buyer.credits = buyer.credits - product.price
                             buyer.save()
-                            sold = Sold(product=product, buyer=user)
+                            sold = Sold(buyer=user, product=product)
                             sold.save()
                             product.status = Choices.CHOICES_PRODUCT_STATUS[3][0] # to see or edit the choices go to choices.py
                             product.save()

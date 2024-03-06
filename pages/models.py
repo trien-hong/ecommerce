@@ -28,15 +28,20 @@ class Product(models.Model):
     status = models.CharField(choices=Choices.CHOICES_PRODUCT_STATUS, default=Choices.CHOICES_PRODUCT_STATUS[1][0]) # to see or edit the choices go to choices.py
     views = models.PositiveIntegerField(default=0)
 
+class WishList(models.Model):
+    uuid = models.UUIDField(primary_key=False, editable=False, unique=True, default=uuid.uuid4)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
 class Cart(models.Model):
     uuid = models.UUIDField(primary_key=False, editable=False, unique=True, default=uuid.uuid4)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
 class Sold(models.Model):
+    buyer = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     buy_date = models.DateTimeField(auto_now_add=True)
-    buyer = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
 class Feedback(models.Model):
     uuid = models.UUIDField(primary_key=False, editable=False, unique=True, default=uuid.uuid4)
