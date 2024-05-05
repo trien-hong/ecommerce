@@ -38,8 +38,8 @@ Docker sometimes will attempt to start the app before the database is running. I
     * Seller's storefront link
     * Number of times the product page has been viewed
 * Ability to list (either manually or through a UPC/EAN lookup), edit, and delete products
-* Ability to filter by (all products, product's category, and product's condition)
-* Ability to sort by products's (title, date, and views)
+* Ability to filter by all products, product's category, and product's condition
+* Ability to sort by products's title, date, and views
 * Ability to search for products
   * Also contains an advanced search function
 * Implemented pagination or paging to help separate content and for better presentation
@@ -53,7 +53,7 @@ Docker sometimes will attempt to start the app before the database is running. I
   * If the product in cart is inactive, before you check out, a message will be displayed and the product will now be marked with a "INACTIVE"
     * These "INACTIVE" products cannot be purchased and you can only remove them from your cart
   * Universal Product Code (UPC) and International Article Number (EAN) validation are done through Django forms
-  * In matter of fact, all forms submitted to the back-end have some sort of validation done on them
+  * In matter of fact, most forms submitted to the back-end have some sort of validation done on them
   * To help prevent brute force, some views in Django will only accept UUIDs
     * If exposed, the UUID is shown to the user and not the ID/PK
 * Dynamic messages with the help of Django messages and Bootstrap Modal
